@@ -22,11 +22,36 @@ def color_letters(tiles, history_entry, colors):
 
 def create_btn_scramble(manager):
 
-    return ui_btn.UI_Btn(manager, btn_type='btn', dims=(120, 40), coords=(380, 10))
+    return ui_btn.UI_Btn(manager, btn_type='btn', dims=(120, 40), coords=(380, 10), text_color='gray')
 
 def create_score_display(manager):
 
-    return ui_display.UI_Display(manager, dims=(178, 40), coords=(510, 10), text='0')
+    return ui_display.UI_Display(manager, dims=(178, 40), coords=(510, 10), text='0', text_color='gray')
+
+def create_word_display(manager, snake=None, bonus=None, colors=None):
+
+    color = 'red'
+
+    if not snake:
+        text = ''
+    else:
+        word = ''.join(snake.letters)
+        point_string = ''
+        if len(word) > 2:
+            if check_dictionary(word):
+                value = score_word(snake)
+                if word == bonus:
+                    value += len(bonus) * 50
+                    color = 'gold'
+                else:
+                    color = 'green'
+
+                text = f"{word} (+{value})"
+
+    dims = (311, 40)
+    coords = (380, 60)
+
+    return ui_display.UI_Display(manager, dims=dims, coords=coords, text=text, text_color=color)
 
 def do_scramble(snake, board):
 
@@ -137,31 +162,26 @@ def update_selected_tiles(tiles, snake):
     for t in snake.tiles:
         t.select()
 
-def update_word_display(manager, tbox=None, snake=None, bonus=None, colors=None):
+def update_word_display(word_display, snake, bonus):
 
-    if tbox:
-        tbox.kill()
+    color = 'red'
+    text = ''
+    value = 0
+
+    if snake.letters:
         word = ''.join(snake.letters)
-
-        point_string = ''
-        color = colors['no']
         if len(word) > 2:
             if check_dictionary(word):
                 value = score_word(snake)
                 if word == bonus:
                     value += len(bonus) * 50
-                    color = colors['gold']
+                    color = 'gold'
                 else:
-                    color = colors['yes']
-                point_string = f' (+{value})'
-        html_text = f"<font color='{color}'>{word}</font>{point_string}"
-    else:
-        html_text = ''
+                    color = 'green'
 
-    dims = (311, 40)
-    offset = ((dims[0] * -1) - 10, dims[1] + 20)
+        text = f"{word} (+{value})"
 
-    return pygame_gui.elements.UITextBox(html_text=html_text, relative_rect=pygame.Rect(offset, dims), manager=manager, anchors={'left':'right','right':'right','top':'top','bottom':'bottom'}, object_id='#word_display')
+    word_display.update(text=text, text_color=color)
 
 def update_word_history(manager, history, tbox=None):
     '''
@@ -213,19 +233,10 @@ def main(dims):
 
     board = gameboard.Board(manager, DICTIONARY)
     score_display = create_score_display(manager)
-    word_display = update_word_display(manager)
+    word_display = create_word_display(manager)
     word_history = update_word_history(manager, history)
     btn_scramble = create_btn_scramble(manager)
     ui_btns = [btn_scramble]
-
-    colors = {
-        'bonus': '#7bd481',
-        'gold': '#fce803',
-        'no': '#f7806a',
-        'standard': '#aaaa66',
-        'teal': '#50aef2',
-        'yes': '#7bd481'
-    }
 
     mouse_events = [pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]
     btn_down = None
@@ -288,12 +299,12 @@ def main(dims):
                                             history_word = {
                                                 'word': word,
                                                 'value': value,
-                                                'colors': [colors['standard'] for _ in range(len(word))]
+                                                'colors': [colors['beige'] for _ in range(len(word))]
                                             }
                                             history.append(history_word)
                                             if word == board.bonus:
                                                 # Color all letters blue
-                                                history[-1]['colors'] = [colors['bonus'] for _ in range(len(word))]
+                                                history[-1]['colors'] = [colors['green'] for _ in range(len(word))]
                                                 value += board.bonus_counter * 50
                                                 history[-1]['value'] = value
                                                 board.bonus_counter += 1
@@ -324,7 +335,7 @@ def main(dims):
                                 else:
                                     snake.new(active_btn)
 
-                        word_display = update_word_display(manager, word_display, snake, board.bonus, colors)
+                        update_word_display(word_display, snake, board.bonus)
                         update_selected_tiles(board.tiles, snake)
 
                     btn_down = None
@@ -359,8 +370,8 @@ if __name__ == '__main__':
     main(dims)
 
     #TODO:
-        # Refactor word_display
-        # Refactor word_history
+        # Move off pygame_gui
+        # Refactor word_history <- tough one
             # Make scrollbar visible
             # Auto-scroll to bottom with each addition
         # Click-and-drag tiles to select; release to submit
