@@ -58,15 +58,15 @@ class Board():
         # Type currently highlighted key to unhighlight all tiles
         if letter in (last_typed, 'ESCAPE'):
             for t in tiles:
-                t.beacon.hide()
+                t.mouse_out()
             return ''
         else:
             # Otherwise, highlight all tiles with matching letters
             for t in tiles:
                 if t.letter == letter:
-                    t.beacon.show()
+                    t.mouse_over()
                 else:
-                    t.beacon.hide()
+                    t.mouse_out()
         # Return typed key to store as last_typed
         return letter
 
@@ -108,7 +108,7 @@ class Board():
         for tile in self.tiles:
             tile.choose_letter()
             tile.update_point_value()
-            tile.tile_type = 0
+            tile.tile_type = 'normal'
             tile.update_multiplier()
             tile.build_image()
             tile.build_UI()

@@ -10,13 +10,13 @@ def check_dictionary(word):
 
     return bool(word.lower() in DICTIONARY)
 
-def color_letters(tiles, history_entry, colors):
+def color_letters(tiles, history_entry):
 
     for i in range(len(tiles)):
-        if tiles[i].tile_type == 3:
-            history_entry['colors'][i] = colors['gold']
-        elif tiles[i].tile_type == 4:
-            history_entry['colors'][i] = colors['teal']
+        if tiles[i].tile_type == 'gold':
+            history_entry['colors'][i] = 'gold'
+        elif tiles[i].tile_type == 'crystal':
+            history_entry['colors'][i] = 'teal'
 
     return history_entry
 
@@ -52,6 +52,12 @@ def create_word_display(manager, snake=None, bonus=None, colors=None):
     coords = (380, 60)
 
     return ui_display.UI_Display(manager, dims=dims, coords=coords, text=text, text_color=color)
+
+def create_word_history(manager):
+    dims = (311, 350)
+    coords = (379, 110)
+
+    return ui_display.UI_Display(manager, dims=dims, coords=coords, text='')
 
 def do_scramble(snake, board):
 
@@ -183,30 +189,6 @@ def update_word_display(word_display, snake, bonus):
 
     word_display.update(text=text, text_color=color)
 
-def update_word_history(manager, history, tbox=None):
-    '''
-    Items in the 'history' list are dicts. They have the following keys:
-        word   - Word (str)
-        value  - Point value (int)
-        colors - Letter colors (list of hex strings):
-    '''
-
-    dims = (311, 350)
-    offset = ((dims[0] * -1) - 10, 110)
-
-    if tbox:
-        tbox.kill()
-
-    text = ''
-    # Color each letter
-    for entry in history:
-        for i, letter in enumerate(entry['word']):
-            text += f"<font color='{entry['colors'][i]}'>{letter}</font>"
-
-        # Add point value and line break
-        text += f" +{entry['value']}<br>"
-
-    return pygame_gui.elements.UITextBox(html_text=text, relative_rect=pygame.Rect(offset, dims), manager=manager, anchors={'left':'right','right':'right','top':'top','bottom':'bottom'})
 
 def main(dims):
 
@@ -234,7 +216,7 @@ def main(dims):
     board = gameboard.Board(manager, DICTIONARY)
     score_display = create_score_display(manager)
     word_display = create_word_display(manager)
-    word_history = update_word_history(manager, history)
+    word_history = create_word_history(manager)
     btn_scramble = create_btn_scramble(manager)
     ui_btns = [btn_scramble]
 
@@ -258,18 +240,16 @@ def main(dims):
             elif event.type in mouse_events:
                 mouse_pos = pygame.mouse.get_pos()
                 active_btn = None
-                for obj in board.tiles + ui_btns:
-                    obj.mouse_out()
-                try: # Get targeted tile
-                    active_btn = next(t for t in board.tiles if t.btn.get_abs_rect().collidepoint(mouse_pos))
-                except StopIteration: # Didn't interact with a tile
-                    try: # Get targeted UI btn
-                        active_btn = next(b for b in ui_btns if b.btn.get_abs_rect().collidepoint(mouse_pos))
-                    except StopIteration: # Didn't interact with UI either
-                        pass
-                if event.type == pygame.MOUSEMOTION:
-                    if active_btn:
-                        active_btn.mouse_over()
+                try: # Get targeted button
+                    for obj in board.tiles + ui_btns:
+                        if obj.hovered:
+                            obj.mouse_out()
+                            last_typed = ''
+                        if obj.btn.get_abs_rect().collidepoint(mouse_pos):
+                            active_btn = obj
+                            active_btn.mouse_over()
+                except StopIteration: # Didn't interact with a button
+                    pass
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     btn_down = active_btn
                 elif event.type == pygame.MOUSEBUTTONUP:
@@ -299,12 +279,12 @@ def main(dims):
                                             history_word = {
                                                 'word': word,
                                                 'value': value,
-                                                'colors': [colors['beige'] for _ in range(len(word))]
+                                                'colors': ['beige' for _ in range(len(word))]
                                             }
                                             history.append(history_word)
                                             if word == board.bonus:
                                                 # Color all letters blue
-                                                history[-1]['colors'] = [colors['green'] for _ in range(len(word))]
+                                                history[-1]['colors'] = ['green' for _ in range(len(word))]
                                                 value += board.bonus_counter * 50
                                                 history[-1]['value'] = value
                                                 board.bonus_counter += 1
@@ -312,8 +292,8 @@ def main(dims):
                                             score += value
                                             score_display.update(text=score)
 
-                                            history[-1] = color_letters(snake.tiles, history[-1], colors)
-                                            word_history = update_word_history(manager, history, word_history)
+                                            history[-1] = color_letters(snake.tiles, history[-1])
+                                            word_history.set_multiline_text(history)
                                             snake.reroll()
                                             snake.rebuild(value)
                                             board.reset_rows()
@@ -371,8 +351,8 @@ if __name__ == '__main__':
 
     #TODO:
         # Move off pygame_gui
-        # Refactor word_history <- tough one
-            # Make scrollbar visible
+        # word_history
+            # Scrollbar
             # Auto-scroll to bottom with each addition
         # Click-and-drag tiles to select; release to submit
         # Setup ui_btn and ui_display to inherit common attributes from single parent class

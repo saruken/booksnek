@@ -4225,6 +4225,7 @@ awns
 awoke
 awoken
 awry
+axe
 axed
 axes
 axial
@@ -53805,6 +53806,10 @@ queasiest
 queasily
 queasiness
 queasy
+queef
+queefed
+queefing
+queefs
 queen
 queened
 queening
@@ -58420,6 +58425,7 @@ ropier
 ropiest
 roping
 ropy
+roque
 rosaries
 rosary
 rose

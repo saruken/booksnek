@@ -12,16 +12,18 @@ class UI_Btn():
             'black': pygame.Color('#000000'),
             'border_active': pygame.Color('#0000ff'),
             'border_dark': pygame.Color('#202d36'),
-            'bg_bomb': pygame.Color('#244254'),
+            'bg_bomb': pygame.Color('#21282d'),
             'bg_normal': pygame.Color('#c1a663'),
             'bg_normal_selected': pygame.Color('#f0d081'),
             'bg_gold': pygame.Color('#ebc334'),
             'bg_gold_selected': pygame.Color('#fcde72'),
             'bg_crystal': pygame.Color('#349eeb'),
             'bg_crystal_selected': pygame.Color('#76bff5'),
+            'dark_gray': pygame.Color('#546c7a'),
             'gold': pygame.Color('#fce803'),
             'gray': pygame.Color('#bfb9a8'),
             'green': pygame.Color('#65a669'),
+            'ocean': pygame.Color('#244254'),
             'red': pygame.Color('#e05a41'),
             'teal': pygame.Color('#50aef2')
         }
@@ -44,6 +46,7 @@ class UI_Btn():
             self.coords = coords
             self.dims = dims
 
+        self.hovered = False
         self.manager = manager
         self.surf = pygame.Surface(self.dims)
         self.text_color = text_color if text_color else self.colors['black']
@@ -61,14 +64,9 @@ class UI_Btn():
     def build_image(self, border_color=None):
 
         if self.btn_type == 'tile':
-            bg_color = f'bg_{self.tile_type}_{"selected" if self.selected else ""}'
-
-            if self.selected:
-                bg_color = self.colors['bg_normal_selected']
-            else:
-                bg_color = self.colors['bg_normal']
+            bg_color = self.colors[f'bg_{self.tile_type}{"_selected" if self.selected else ""}']
         else:
-            bg_color = self.colors['bg_bomb']
+            bg_color = self.colors['ocean']
 
         if not border_color:
             border_color = self.colors['gray']
@@ -86,8 +84,8 @@ class UI_Btn():
             surf = self.fonts['letter'].render(self.letter, True, self.colors['black'], bg_color)
             # Horiz/vert align center
             offset = [floor((self.surf.get_size()[i]) - surf.get_size()[i]) / 2 for i in range(2)]
-            # Bump (+1px, -4px); convert offset
-            offset = tuple([offset[0] + 1, offset[1] - 4])
+            # Bump (-1px, -4px); convert offset
+            offset = tuple([offset[0], offset[1] - 4])
         else:
             surf = self.fonts['btn'].render('SCRAMBLE', True, self.colors['gray'], bg_color)
             # Horiz/vert align center
@@ -139,11 +137,13 @@ class UI_Btn():
 
     def mouse_out(self):
 
+        self.hovered = False
         self.build_image()
         self.build_UI()
 
     def mouse_over(self):
 
+        self.hovered = True
         self.build_image(border_color=self.colors['border_active'])
         self.build_UI()
 
@@ -179,11 +179,9 @@ class UI_Btn():
     def update_multiplier(self):
 
         self.multiplier = 1
-        # Gold tiles
-        if self.tile_type == 3:
+        if self.tile_type == 'gold':
             self.multiplier = 3
-        # Crystal tiles
-        elif self.tile_type == 4:
+        elif self.tile_type == 'crystal':
             self.multiplier = 5
 
     def update_point_value(self):

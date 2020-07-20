@@ -20,24 +20,24 @@ class Snake():
 
     def rebuild(self, value):
 
-        tile_type = 0
+        tile_type = 'normal'
         special_index = 0
 
         # Crystal tile created when previous word is worth 100+ points
         if value > 100:
-            tile_type = 4
+            tile_type = 'crystal'
         else:
             # Gold tile created when previous word has 5+ letters
             # (and crystal tile not already being created)
             if len(self.tiles) > 4:
-                tile_type = 3
+                tile_type = 'gold'
 
-        if tile_type:
+        if tile_type != 'normal':
             # Randomly choose which new tile will have special tile_type
             special_index = random.choice(range(len(self.tiles)))
 
         for i, tile in enumerate(self.tiles):
-            tile.tile_type = tile_type if i == special_index else 0
+            tile.tile_type = tile_type if i == special_index else 'normal'
             tile.update_multiplier()
             tile.update_point_value()
             tile.build_image()
