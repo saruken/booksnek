@@ -37,7 +37,7 @@ class UI_Btn():
             self.ay = 0
             self.col = col
             self.dims = (48, 48)
-            self.offset = (10, 50) if self.col % 2 else (10, 50 + (self.dims[0] / 2))
+            self.offset = (10, 60) if self.col % 2 else (10, 60 + (self.dims[0] / 2))
             self.row = row
             self.selected = False
             self.tile_types = ['normal', 'bomb', 'stone', 'gold', 'crystal']
