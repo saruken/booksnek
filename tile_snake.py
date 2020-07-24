@@ -29,7 +29,7 @@ class Snake():
         else:
             # Gold tile created when previous word has 5+ letters
             # (and crystal tile not already being created)
-            if len(self.tiles) > 4:
+            if len(''.join(self.letters)) > 4:
                 tile_type = 'gold'
 
         if tile_type != 'normal':
