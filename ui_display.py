@@ -1,9 +1,9 @@
-import pygame, pygame_gui
+import pygame
 from math import floor
 
 class UI_Display():
 
-    def __init__(self, manager, dims, coords, text, text_color='black'):
+    def __init__(self, dims, coords, text, text_color='black'):
 
         self.colors = {
             'beige': pygame.Color('#aaaa66'),
@@ -33,20 +33,22 @@ class UI_Display():
 
         self.bg_color = self.colors['bg_bomb']
         self.border_color = self.colors['dark_gray']
+        self.can_click = False
+        self.can_hover = False
         self.coords = coords
         self.dims = dims
         self.hovered = False
-        self.manager = manager
         self.multiline = False
         self.surf = pygame.Surface(self.dims)
         self.text = text
 
         self.text_color = self.colors[text_color]
 
+        self.btn = pygame.Surface(self.dims)
         self.build_image()
         self.build_UI()
 
-    def build_image(self):
+    def build_image(self, border_color=None):
 
         self.surf.fill(self.border_color)
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
@@ -57,12 +59,25 @@ class UI_Display():
 
     def build_UI(self):
 
-        try:
-            self.btn.kill()
-        except AttributeError:
-            pass
+        self.btn.blit(self.surf, (0, 0))
 
-        self.btn = pygame_gui.elements.UIImage(relative_rect=pygame.Rect(self.coords, self.surf.get_size()), image_surface=self.surf, manager=self.manager)
+    def get_abs_rect(self):
+
+        return pygame.Rect(self.coords, self.dims)
+
+    def mouse_out(self):
+
+        if self.can_hover:
+            self.hovered = False
+            self.build_image()
+            self.build_UI()
+
+    def mouse_over(self):
+
+        if self.can_hover:
+            self.hovered = True
+            self.build_image(border_color=self.colors['border_active'])
+            self.build_UI()
 
     def set_multiline_text(self, history):
 
@@ -97,11 +112,11 @@ class UI_Display():
 
         self.build_UI()
 
-    def update(self, text, text_color=None):
+    def update(self, text=None, text_color=None):
 
         if text_color:
             self.text_color = self.colors[text_color]
-
-        self.text = text
+        if text:
+            self.text = text
         self.build_image()
         self.build_UI()

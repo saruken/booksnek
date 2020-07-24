@@ -1,15 +1,14 @@
-import pygame, pygame_gui
+import pygame
 import random
 
-import ui_btn
+import ui_btn, ui_display
 
 class Board():
 
-    def __init__(self, manager, dictionary):
+    def __init__(self, dictionary):
 
         self.offset = (10, 10)
         self.dims = (360, 448)
-        self.manager = manager
 
         self.create_bonus_display()
 
@@ -27,7 +26,7 @@ class Board():
         for t in to_animate:
             t.ay += .4
             t.coords = (t.coords[0], min(t.coords[1] + t.ay, t.target[1]))
-            t.btn.set_position((t.coords[0], t.coords[1]))
+            # t.btn.set_position((t.coords[0], t.coords[1]))
             if t.coords[1] == t.target[1]:
                 t.ay = 0
 
@@ -36,7 +35,7 @@ class Board():
         dims = (356, 40)
         offset = (0, 0)
 
-        self.bonus_display = pygame_gui.elements.UILabel(relative_rect=pygame.Rect(offset, dims), text='BONUS WORD:', manager=self.manager, object_id='#bonus_word')
+        self.bonus_display = ui_display.UI_Display(dims=dims, coords=offset, text='BONUS WORD:', text_color='gray')
 
     def create_tiles(self):
 
@@ -45,7 +44,7 @@ class Board():
         # Every other column has 7 and 8 tiles, starting and ending with 7s
         for col in range(7):
             for row in range(7 + col % 2):
-                tiles.append(ui_btn.UI_Btn(self.manager, btn_type='tile', col=col, row=row))
+                tiles.append(ui_btn.UI_Btn(btn_type='tile', col=col, row=row))
 
         self.tiles = tiles
 
@@ -124,4 +123,5 @@ class Board():
         self.bonus_value *= self.bonus_counter
         self.bonus_value += self.bonus_counter * 50
 
-        self.bonus_display.set_text(f'BONUS WORD: {self.bonus} (+{self.bonus_value})')
+        self.bonus_display.text = f'BONUS WORD: {self.bonus} (+{self.bonus_value})'
+        self.bonus_display.update()

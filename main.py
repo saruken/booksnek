@@ -1,5 +1,5 @@
 # Common modules
-import pygame, pygame_gui
+import pygame
 from math import floor
 # Hot, single imports in your local directory
 import gameboard, tile_snake, ui_btn, ui_display
@@ -20,15 +20,15 @@ def color_letters(tiles, history_entry):
 
     return history_entry
 
-def create_btn_scramble(manager):
+def create_btn_scramble():
 
-    return ui_btn.UI_Btn(manager, btn_type='btn', dims=(120, 40), coords=(380, 10), text_color='gray')
+    return ui_btn.UI_Btn(btn_type='btn', dims=(120, 40), coords=(380, 10), text_color='gray')
 
-def create_score_display(manager):
+def create_score_display():
 
-    return ui_display.UI_Display(manager, dims=(178, 40), coords=(510, 10), text='0', text_color='gray')
+    return ui_display.UI_Display(dims=(178, 40), coords=(510, 10), text='0', text_color='gray')
 
-def create_word_display(manager, snake=None, bonus=None, colors=None):
+def create_word_display(snake=None, bonus=None, colors=None):
 
     color = 'red'
 
@@ -51,13 +51,13 @@ def create_word_display(manager, snake=None, bonus=None, colors=None):
     dims = (311, 40)
     coords = (380, 60)
 
-    return ui_display.UI_Display(manager, dims=dims, coords=coords, text=text, text_color=color)
+    return ui_display.UI_Display(dims=dims, coords=coords, text=text, text_color=color)
 
-def create_word_history(manager):
+def create_word_history():
     dims = (311, 350)
     coords = (379, 110)
 
-    return ui_display.UI_Display(manager, dims=dims, coords=coords, text='')
+    return ui_display.UI_Display(dims=dims, coords=coords, text='')
 
 def do_scramble(snake, board):
 
@@ -148,8 +148,13 @@ def load_dictionary():
 
     words = None
 
-    with open('dictionary_en_US.txt') as file:
-        words = file.read().split('\n')
+    try:
+        with open('dictionary_en_US.txt') as file:
+            words = file.read().split('\n')
+    except FileNotFoundError:
+        raise SystemExit('Error: Dictionary file not found\nExpexted file at "dictionary_en_US.txt"')
+    if not words:
+        raise SystemExit('Error: Dictionary file at "dictionary_en_US.txt" empty or unreadable')
 
     return words
 
@@ -198,7 +203,6 @@ def main(dims):
     background = pygame.Surface(dims)
     background.fill(pygame.Color('#38424d'))
 
-    manager = pygame_gui.UIManager(dims)
     '''
     font_bold = {
         'name': 'fira_code',
@@ -213,20 +217,23 @@ def main(dims):
     score = 0
     history = []
 
-    board = gameboard.Board(manager, DICTIONARY)
-    score_display = create_score_display(manager)
-    word_display = create_word_display(manager)
-    word_history = create_word_history(manager)
-    btn_scramble = create_btn_scramble(manager)
-    ui_btns = [btn_scramble]
+    board = gameboard.Board(DICTIONARY)
+    score_display = create_score_display()
+    word_display = create_word_display()
+    word_history = create_word_history()
+    btn_scramble = create_btn_scramble()
+    ui_elements = [score_display, word_display, word_history, btn_scramble]
+    ui_elements += [tile for tile in board.tiles]
+    ui_elements.append(board.bonus_display)
 
     mouse_events = [pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]
+    mouse_down = False
     btn_down = None
     snake = tile_snake.Snake()
 
     last_typed = ''
 
-    window_surface.blit(background, (0, 0))
+    # window_surface.blit(background, (0, 0))
 
     while is_running:
 
@@ -241,20 +248,26 @@ def main(dims):
                 mouse_pos = pygame.mouse.get_pos()
                 active_btn = None
                 try: # Get targeted button
-                    for obj in board.tiles + ui_btns:
+                    for obj in ui_elements:
                         if obj.hovered:
                             obj.mouse_out()
                             last_typed = ''
-                        if obj.btn.get_abs_rect().collidepoint(mouse_pos):
+                        if obj.get_abs_rect().collidepoint(mouse_pos):
                             active_btn = obj
                             active_btn.mouse_over()
                 except StopIteration: # Didn't interact with a button
                     pass
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    btn_down = active_btn
+                    mouse_down = True
+                    try:
+                        if active_btn.can_click:
+                            btn_down = active_btn
+                    except AttributeError: # Click outside UI elements
+                        pass
                 elif event.type == pygame.MOUSEBUTTONUP:
-                    if active_btn == btn_down:
-                        if active_btn in ui_btns:
+                    mouse_down = False
+                    if btn_down and active_btn == btn_down:
+                        if active_btn == btn_scramble:
                             do_scramble(snake, board)
                             last_typed = ''
                         else:
@@ -325,11 +338,9 @@ def main(dims):
 
         board.animate()
 
-        manager.process_events(event)
-        manager.update(delta)
-
         window_surface.blit(background, (0, 0))
-        manager.draw_ui(window_surface)
+        for element in ui_elements:
+            window_surface.blit(element.btn, element.coords)
 
         pygame.display.update()
 
@@ -340,9 +351,6 @@ if __name__ == '__main__':
     global DICTIONARY
 
     DICTIONARY = load_dictionary()
-    if not DICTIONARY:
-        print('Dictionary file not found; closing')
-        raise SystemExit
 
     pygame.init()
     pygame.display.set_caption('Booksnake')
@@ -350,7 +358,6 @@ if __name__ == '__main__':
     main(dims)
 
     #TODO:
-        # Move off pygame_gui
         # word_history
             # Scrollbar
             # Auto-scroll to bottom with each addition

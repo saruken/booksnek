@@ -1,10 +1,10 @@
-import pygame, pygame_gui
+import pygame
 from math import floor
 from numpy.random import choice
 
 class UI_Btn():
 
-    def __init__(self, manager, btn_type, dims=None, coords=None, col=None, row=None, text_color=None):
+    def __init__(self, btn_type, dims=None, coords=None, col=None, row=None, text_color=None):
 
         self.btn_type = btn_type
         self.colors = {
@@ -46,8 +46,10 @@ class UI_Btn():
             self.coords = coords
             self.dims = dims
 
+        self.btn = pygame.Surface(self.dims)
+        self.can_click = True
+        self.can_hover = True
         self.hovered = False
-        self.manager = manager
         self.surf = pygame.Surface(self.dims)
         self.text_color = text_color if text_color else self.colors['black']
 
@@ -95,12 +97,7 @@ class UI_Btn():
 
     def build_UI(self):
 
-        try:
-            self.btn.kill()
-        except AttributeError:
-            pass
-
-        self.btn = pygame_gui.elements.UIImage(relative_rect=pygame.Rect(self.coords, self.surf.get_size()), image_surface=self.surf, manager=self.manager)
+        self.btn.blit(self.surf, (0, 0))
 
     def choose_letter(self):
 
@@ -135,17 +132,23 @@ class UI_Btn():
 
         self.letter = str(choice([key for key in letter_weights], 1, p=[letter_weights[key] for key in letter_weights])[0])
 
+    def get_abs_rect(self):
+
+        return pygame.Rect(self.coords, self.dims)
+
     def mouse_out(self):
 
-        self.hovered = False
-        self.build_image()
-        self.build_UI()
+        if self.can_hover:
+            self.hovered = False
+            self.build_image()
+            self.build_UI()
 
     def mouse_over(self):
 
-        self.hovered = True
-        self.build_image(border_color=self.colors['border_active'])
-        self.build_UI()
+        if self.can_hover:
+            self.hovered = True
+            self.build_image(border_color=self.colors['border_active'])
+            self.build_UI()
 
     def select(self):
 

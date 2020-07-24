@@ -1,4 +1,4 @@
-import pygame, pygame_gui
+import pygame
 import random
 
 class Snake():
