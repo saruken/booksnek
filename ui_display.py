@@ -116,7 +116,7 @@ class UI_Display():
 
         if text_color:
             self.text_color = self.colors[text_color]
-        if text:
+        if text != None:
             self.text = text
         self.build_image()
         self.build_UI()
