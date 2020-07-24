@@ -32,8 +32,8 @@ class Board():
 
     def create_bonus_display(self):
 
-        dims = (356, 40)
-        offset = (0, 0)
+        dims = (346, 40)
+        offset = (10, 10)
 
         self.bonus_display = ui_display.UI_Display(dims=dims, coords=offset, text='BONUS WORD:', text_color='gray')
 
@@ -106,9 +106,9 @@ class Board():
 
         for tile in self.tiles:
             tile.choose_letter()
-            tile.update_point_value()
             tile.tile_type = 'normal'
             tile.update_multiplier()
+            tile.update_point_value()
             tile.build_image()
             tile.build_UI()
 
