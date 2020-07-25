@@ -129,6 +129,8 @@ class UI_Display():
 
     def update(self, text=None, text_color=None):
 
+        if text:
+            print(f'update(): text="{text}"')
         if text_color:
             self.text_color = self.colors[text_color]
         if text != None:

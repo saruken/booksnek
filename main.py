@@ -10,6 +10,22 @@ def check_dictionary(word):
 
     return bool(word.lower() in DICTIONARY)
 
+def check_best(best, new_word):
+
+    return new_word
+
+def check_longest(longest, new_word):
+
+    if longest:
+        if len(new_word['word']) > len(longest['word']):
+            print('new word is longer')
+            return new_word
+        print('old word is longer')
+        return longest
+    else:
+        print('no saved word')
+        return new_word
+
 def color_letters(tiles, history_entry):
 
     for i in range(len(tiles)):
@@ -192,12 +208,12 @@ def main(dims):
     coords = offset_from_element(btn_scramble, corner=(0, 1), offset=(0, 10))
     word_display = ui_display.UI_Display(dims=(310, 40), coords=coords)
     coords = offset_from_element(word_display, corner=(0, 1), offset=(0, 10))
-    word_longest = ui_display.UI_Display(dims=(310, 34), coords=coords, label='LONGEST', text_color='beige')
-    coords = offset_from_element(word_longest, corner=(0, 1), offset=(0, 4))
-    word_best = ui_display.UI_Display(dims=(310, 34), coords=coords, text='TEST', label='HIGHEST SCORE', text_color='beige', text_align='left', text_offset=(30, 2))
-    coords = offset_from_element(word_best, corner=(0, 1), offset=(0, 4))
+    longest_display = ui_display.UI_Display(dims=(310, 34), coords=coords, label='LONGEST', text_color='beige')
+    coords = offset_from_element(longest_display, corner=(0, 1), offset=(0, 4))
+    best_display = ui_display.UI_Display(dims=(310, 34), coords=coords, text='TEST', label='HIGHEST SCORE', text_color='beige', text_align='left', text_offset=(30, 2))
+    coords = offset_from_element(best_display, corner=(0, 1), offset=(0, 4))
     word_history = ui_display.UI_Display(dims=(310, 258), coords=coords, label='HISTORY')
-    ui_elements = [score_display, word_display, word_history, btn_scramble, word_longest, word_best]
+    ui_elements = [score_display, word_display, word_history, btn_scramble, longest_display, best_display]
     ui_elements += [tile for tile in board.tiles]
     ui_elements.append(board.bonus_display)
 
@@ -206,6 +222,8 @@ def main(dims):
     btn_down = None
     snake = tile_snake.Snake()
 
+    word_best = None
+    word_longest = None
     last_typed = ''
 
     while is_running:
@@ -280,6 +298,10 @@ def main(dims):
 
                                             history[-1] = color_letters(snake.tiles, history[-1])
                                             word_history.set_multiline_text(history)
+                                            word_best = check_best(word_best, history[-1])
+                                            word_longest = check_longest(word_longest, history[-1])
+                                            print(f'word_longest = {word_longest}')
+                                            longest_display.update(text=word_longest['word'])
                                             snake.reroll()
                                             snake.rebuild(value)
                                             board.reset_rows()
