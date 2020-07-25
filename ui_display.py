@@ -3,7 +3,7 @@ from math import floor
 
 class UI_Display():
 
-    def __init__(self, dims, coords, text, text_color='black'):
+    def __init__(self, dims, coords, label='', text='', text_align='center', text_color='black', text_offset=(0, 0)):
 
         self.colors = {
             'beige': pygame.Color('#aaaa66'),
@@ -38,11 +38,12 @@ class UI_Display():
         self.coords = coords
         self.dims = dims
         self.hovered = False
-        self.multiline = False
+        self.label = label
         self.surf = pygame.Surface(self.dims)
         self.text = text
-
+        self.text_align = text_align
         self.text_color = self.colors[text_color]
+        self.text_offset = text_offset
 
         self.btn = pygame.Surface(self.dims)
         self.build_image()
@@ -53,9 +54,23 @@ class UI_Display():
         self.surf.fill(self.border_color)
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
         surf = self.fonts['btn'].render(str(self.text), True, self.text_color, self.bg_color)
-            # Horiz/vert align center
-        offset = tuple([floor((self.surf.get_size()[i]) - surf.get_size()[i]) / 2 for i in range(2)])
-        self.surf.blit(surf, dest=offset)
+        # Horiz align
+        if self.text_align == 'left':
+            offset_x = self.text_offset[0]
+        elif self.text_align == 'center':
+            offset_x = floor((self.surf.get_size()[0] - surf.get_size()[0]) / 2) + self.text_offset[0]
+        else:
+            offset_x = self.surf.get_size()[0] - surf.get_size()[0] + self.text_offset[0]
+        # Vert align
+        offset_y = floor((self.surf.get_size()[1] - surf.get_size()[1]) / 2) + self.text_offset[1]
+        self.surf.blit(surf, dest=(offset_x, offset_y))
+
+        if self.label:
+            text = self.fonts['point_value'].render(str(self.label), True, self.colors['dark_gray'], self.bg_color)
+            surf = pygame.Surface((text.get_size()[0] + 20, text.get_size()[1]))
+            surf.fill(self.bg_color)
+            surf.blit(text, (10, 0))
+            self.surf.blit(surf, (14, -2))
 
     def build_UI(self):
 

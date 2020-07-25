@@ -20,45 +20,6 @@ def color_letters(tiles, history_entry):
 
     return history_entry
 
-def create_btn_scramble():
-
-    return ui_btn.UI_Btn(btn_type='btn', dims=(120, 40), coords=(380, 10), text_color='gray')
-
-def create_score_display():
-
-    return ui_display.UI_Display(dims=(178, 40), coords=(510, 10), text='0', text_color='gray')
-
-def create_word_display(snake=None, bonus=None, colors=None):
-
-    color = 'red'
-
-    if not snake:
-        text = ''
-    else:
-        word = ''.join(snake.letters)
-        point_string = ''
-        if len(word) > 2:
-            if check_dictionary(word):
-                value = score_word(snake)
-                if word == bonus:
-                    value += len(bonus) * 50
-                    color = 'gold'
-                else:
-                    color = 'green'
-
-                text = f"{word} (+{value})"
-
-    dims = (311, 40)
-    coords = (380, 60)
-
-    return ui_display.UI_Display(dims=dims, coords=coords, text=text, text_color=color)
-
-def create_word_history():
-    dims = (311, 350)
-    coords = (379, 110)
-
-    return ui_display.UI_Display(dims=dims, coords=coords, text='')
-
 def do_scramble(snake, board):
 
     snake.new()
@@ -158,6 +119,12 @@ def load_dictionary():
 
     return words
 
+def offset_from_element(element, corner, offset):
+
+    point = [element.coords[i] + element.surf.get_size()[i] if corner[i] else element.coords[i] for i in range(len(corner))]
+
+    return tuple([point[i] + offset[i] for i in range(len(point))])
+
 def score_word(snake):
 
     value = 0
@@ -218,11 +185,19 @@ def main(dims):
     history = []
 
     board = gameboard.Board(DICTIONARY)
-    score_display = create_score_display()
-    word_display = create_word_display()
-    word_history = create_word_history()
-    btn_scramble = create_btn_scramble()
-    ui_elements = [score_display, word_display, word_history, btn_scramble]
+    coords = offset_from_element(board.bonus_display, corner=(1, 0), offset=(10, 0))
+    btn_scramble = ui_btn.UI_Btn(btn_type='btn', dims=(120, 40), coords=coords, text_color='gray')
+    coords = offset_from_element(btn_scramble, corner=(1, 0), offset=(10, 0))
+    score_display = ui_display.UI_Display(dims=(180, 40), coords=coords, text='0', text_color='gray')
+    coords = offset_from_element(btn_scramble, corner=(0, 1), offset=(0, 10))
+    word_display = ui_display.UI_Display(dims=(310, 40), coords=coords)
+    coords = offset_from_element(word_display, corner=(0, 1), offset=(0, 10))
+    word_longest = ui_display.UI_Display(dims=(310, 34), coords=coords, label='LONGEST', text_color='beige')
+    coords = offset_from_element(word_longest, corner=(0, 1), offset=(0, 4))
+    word_best = ui_display.UI_Display(dims=(310, 34), coords=coords, text='TEST', label='HIGHEST SCORE', text_color='beige', text_align='left', text_offset=(30, 2))
+    coords = offset_from_element(word_best, corner=(0, 1), offset=(0, 4))
+    word_history = ui_display.UI_Display(dims=(310, 258), coords=coords, label='HISTORY')
+    ui_elements = [score_display, word_display, word_history, btn_scramble, word_longest, word_best]
     ui_elements += [tile for tile in board.tiles]
     ui_elements.append(board.bonus_display)
 
@@ -232,8 +207,6 @@ def main(dims):
     snake = tile_snake.Snake()
 
     last_typed = ''
-
-    # window_surface.blit(background, (0, 0))
 
     while is_running:
 
@@ -346,7 +319,7 @@ def main(dims):
 
 if __name__ == '__main__':
 
-    dims = (700, 468)
+    dims = (677, 454)
 
     global DICTIONARY
 
@@ -359,7 +332,6 @@ if __name__ == '__main__':
 
     #TODO:
         # word_history
-            # Scrollbar
             # Auto-scroll to bottom with each addition
         # Click-and-drag tiles to select; release to submit
         # Setup ui_btn and ui_display to inherit common attributes from single parent class

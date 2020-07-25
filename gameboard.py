@@ -32,10 +32,10 @@ class Board():
 
     def create_bonus_display(self):
 
-        dims = (346, 40)
-        offset = (10, 10)
+        dims = (336, 40)
+        coords = (10, 10)
 
-        self.bonus_display = ui_display.UI_Display(dims=dims, coords=offset, text='BONUS WORD:', text_color='gray')
+        self.bonus_display = ui_display.UI_Display(dims=dims, coords=coords, text='BONUS WORD:', text_color='gray')
 
     def create_tiles(self):
 
