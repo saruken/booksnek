@@ -17,14 +17,11 @@ def check_best(best, new_word):
 def check_longest(longest, new_word):
 
     if longest:
-        if len(new_word['word']) > len(longest['word']):
-            print('new word is longer')
-            return new_word
-        print('old word is longer')
+        if len(new_word['word']) > len(longest):
+            return new_word['word']
         return longest
     else:
-        print('no saved word')
-        return new_word
+        return new_word['word']
 
 def color_letters(tiles, history_entry):
 
@@ -223,7 +220,7 @@ def main(dims):
     snake = tile_snake.Snake()
 
     word_best = None
-    word_longest = None
+    word_longest = ''
     last_typed = ''
 
     while is_running:
@@ -300,8 +297,7 @@ def main(dims):
                                             word_history.set_multiline_text(history)
                                             word_best = check_best(word_best, history[-1])
                                             word_longest = check_longest(word_longest, history[-1])
-                                            print(f'word_longest = {word_longest}')
-                                            longest_display.update(text=word_longest['word'])
+                                            longest_display.update(text=word_longest)
                                             snake.reroll()
                                             snake.rebuild(value)
                                             board.reset_rows()
