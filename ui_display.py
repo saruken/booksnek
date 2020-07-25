@@ -94,6 +94,40 @@ class UI_Display():
             self.build_image(border_color=self.colors['border_active'])
             self.build_UI()
 
+    def render_multicolor_text(self, text_obj):
+
+
+        self.surf.fill(self.border_color)
+        pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
+
+        letter_height = 0
+        letter_width = 0
+        offset_x = 0
+        offset_y = 0
+        for index, letter in enumerate(text_obj['word']):
+            surf = self.fonts['btn'].render(letter, True, self.colors[text_obj['colors'][index]], self.bg_color)
+            if not letter_width:
+                letter_width = surf.get_size()[0]
+            if not letter_height:
+                letter_height = surf.get_size()[1]
+            offset_x = floor((self.dims[0] - letter_width * (len(text_obj['word']) + len(str(text_obj["value"])) + 3)) / 2) + letter_width * index
+            if not offset_y:
+                offset_y = floor((self.dims[1] - letter_height) / 2)
+            self.surf.blit(surf, dest=(offset_x, offset_y))
+
+            surf = self.fonts['btn'].render(f' (+{text_obj["value"]})', True, self.colors['beige'], self.bg_color)
+            offset_x += letter_width
+            self.surf.blit(surf, dest=(offset_x, offset_y))
+
+        self.text = ''
+
+        if self.label:
+            text = self.fonts['point_value'].render(str(self.label), True, self.colors['dark_gray'], self.bg_color)
+            surf = pygame.Surface((text.get_size()[0] + 20, text.get_size()[1]))
+            surf.fill(self.bg_color)
+            surf.blit(text, (10, 0))
+            self.surf.blit(surf, (14, -2))
+
     def set_multiline_text(self, history):
 
         '''
@@ -103,7 +137,7 @@ class UI_Display():
             colors - Letter colors (list of strings):
         '''
         text = ''
-        text_offset = (8, 8)
+        text_offset = (8, 10)
         letter_height = 0
         letter_width = 0
 
@@ -125,13 +159,23 @@ class UI_Display():
                     offset = (text_offset[0] + letter_width * (index_letter + 1), text_offset[1] + letter_height * index_hist)
                     self.surf.blit(surf, dest=offset)
 
+        if self.label:
+            text = self.fonts['point_value'].render(str(self.label), True, self.colors['dark_gray'], self.bg_color)
+            surf = pygame.Surface((text.get_size()[0] + 20, text.get_size()[1]))
+            surf.fill(self.bg_color)
+            surf.blit(text, (10, 0))
+            self.surf.blit(surf, (14, -2))
+
         self.build_UI()
 
-    def update(self, text=None, text_color=None):
+    def update(self, text=None, text_color=None, multicolor_text=None):
 
-        if text_color:
-            self.text_color = self.colors[text_color]
-        if text != None:
-            self.text = text
-        self.build_image()
+        if multicolor_text:
+            self.render_multicolor_text(multicolor_text)
+        else:
+            if text_color:
+                self.text_color = self.colors[text_color]
+            if text != None:
+                self.text = text
+            self.build_image()
         self.build_UI()

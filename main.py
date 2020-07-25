@@ -12,7 +12,12 @@ def check_dictionary(word):
 
 def check_best(best, new_word):
 
-    return new_word
+    if best:
+        if new_word['value'] > best['value']:
+            return new_word
+        return best
+    else:
+        return new_word
 
 def check_longest(longest, new_word):
 
@@ -207,9 +212,9 @@ def main(dims):
     coords = offset_from_element(word_display, corner=(0, 1), offset=(0, 10))
     longest_display = ui_display.UI_Display(dims=(310, 34), coords=coords, label='LONGEST', text_color='beige')
     coords = offset_from_element(longest_display, corner=(0, 1), offset=(0, 4))
-    best_display = ui_display.UI_Display(dims=(310, 34), coords=coords, text='TEST', label='HIGHEST SCORE', text_color='beige', text_align='left', text_offset=(30, 2))
+    best_display = ui_display.UI_Display(dims=(310, 34), coords=coords, label='HIGHEST SCORE', text_color='beige', text_align='left', text_offset=(30, 2))
     coords = offset_from_element(best_display, corner=(0, 1), offset=(0, 4))
-    word_history = ui_display.UI_Display(dims=(310, 258), coords=coords, label='HISTORY')
+    word_history = ui_display.UI_Display(dims=(310, 258), coords=coords, label='WORD LIST')
     ui_elements = [score_display, word_display, word_history, btn_scramble, longest_display, best_display]
     ui_elements += [tile for tile in board.tiles]
     ui_elements.append(board.bonus_display)
@@ -296,6 +301,7 @@ def main(dims):
                                             history[-1] = color_letters(snake.tiles, history[-1])
                                             word_history.set_multiline_text(history)
                                             word_best = check_best(word_best, history[-1])
+                                            best_display.update(multicolor_text=word_best)
                                             word_longest = check_longest(word_longest, history[-1])
                                             longest_display.update(text=word_longest)
                                             snake.reroll()

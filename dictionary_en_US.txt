@@ -1389,6 +1389,7 @@ aimless
 aimlessly
 aimlessness
 aims
+aint
 air
 airbag
 airbags
@@ -61220,6 +61221,8 @@ shapelier
 shapeliest
 shapeliness
 shapely
+shaper
+shapers
 shapes
 shaping
 shard
