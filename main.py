@@ -188,13 +188,6 @@ def main(dims):
     background = pygame.Surface(dims)
     background.fill(pygame.Color('#38424d'))
 
-    '''
-    font_bold = {
-        'name': 'fira_code',
-        'point_size': 14,
-        'style': 'bold'
-    }
-    '''
     clock = pygame.time.Clock()
     is_running = True
 
@@ -305,9 +298,11 @@ def main(dims):
                                             word_longest = check_longest(word_longest, history[-1])
                                             longest_display.update(text=word_longest)
                                             snake.reroll()
-                                            snake.rebuild(value)
+                                            last_five = [len(h['word']) for h in history[-5:]]
+                                            snake.rebuild(value, last_five)
                                             board.reset_rows()
                                             last_typed = ''
+                                            board.update_bombs()
                                         else:
                                             print(f'Word "{word}" not in dictionary')
                                         snake.new()
@@ -355,8 +350,8 @@ if __name__ == '__main__':
     main(dims)
 
     #TODO:
-        # word_history
-            # Auto-scroll to bottom with each addition
+        # Nerf bonus point value
+        # Add "chain" multiplier somehow?
         # Click-and-drag tiles to select; release to submit
         # Setup ui_btn and ui_display to inherit common attributes from single parent class
         # Save best score & word list

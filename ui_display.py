@@ -149,7 +149,7 @@ class UI_Display():
 
         max_lines = floor((self.surf.get_size()[1] - text_offset[1]) / self.letter_height)
         if len(history) > max_lines:
-            history = history[len(history) - max_lines:]
+            history = history[-max_lines:]
 
         container = pygame.Surface((self.dims[0], self.dims[1]))
 

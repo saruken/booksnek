@@ -32448,6 +32448,8 @@ hospitalized
 hospitalizes
 hospitalizing
 hospitals
+hoss
+hosses
 host
 hostage
 hostages
@@ -41584,7 +41586,6 @@ mezzanine
 mezzanines
 mezzo
 mezzos
-mfr
 mfrs
 mgr
 miasma

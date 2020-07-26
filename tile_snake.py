@@ -1,5 +1,7 @@
 import pygame
 import random
+from math import log10
+from numpy.random import choice
 
 class Snake():
 
@@ -10,20 +12,39 @@ class Snake():
 
     def add(self, tile):
 
-        self.tiles.append(tile)
-        self.update_letters()
+        if tile.tile_type != 'stone':
+            self.tiles.append(tile)
+            self.update_letters()
 
     def new(self, tile=None):
 
-        self.tiles = [tile] if tile else []
+        if tile:
+            if tile.tile_type != 'stone':
+                self.tiles = [tile]
+        else:
+            self.tiles = []
         self.update_letters()
 
-    def rebuild(self, value):
+    def rebuild(self, value, last_five):
 
         tile_type = 'normal'
         special_index = 0
 
+        # Bomb tiles are created when your last 5 words have been on the
+        # short side. Generally, maintaining an average of 5 letters
+        # keeps you safe; anything below this and there's a better
+        # chance of a bomb tile spawning.
+        # avg = 5; bomb = 8%
+        # avg = 3; bomb = 85%
+        if len(last_five) == 5:
+            avg = round(sum(last_five) / len(last_five), 1)
+            # Keep bomb_weight non-negative
+            bomb_weight = max(round((-0.5 * log10(0.34 * avg - 1)), 2), 0)
+            normal_weight = 1 - bomb_weight
+            tile_type = choice(['normal', 'bomb'], 1, p=[normal_weight, bomb_weight])[0]
+
         # Crystal tile created when previous word is worth 100+ points
+        # Crystal/gold overrides a bomb, if one would have been created.
         if value > 100:
             tile_type = 'crystal'
         else:
@@ -38,10 +59,7 @@ class Snake():
 
         for i, tile in enumerate(self.tiles):
             tile.tile_type = tile_type if i == special_index else 'normal'
-            tile.update_multiplier()
-            tile.update_point_value()
-            tile.build_image()
-            tile.build_UI()
+            tile.update()
 
     def reroll(self):
 

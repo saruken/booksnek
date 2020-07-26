@@ -9,16 +9,18 @@ class UI_Btn():
         self.btn_type = btn_type
         self.colors = {
             'beige': pygame.Color('#aaaa66'),
+            'bg_bomb': pygame.Color('#21282d'),
+            'bg_bomb_selected': pygame.Color('#435663'),
+            'bg_crystal': pygame.Color('#349eeb'),
+            'bg_crystal_selected': pygame.Color('#76bff5'),
+            'bg_gold': pygame.Color('#ebc334'),
+            'bg_gold_selected': pygame.Color('#fcde72'),
+            'bg_normal': pygame.Color('#c1a663'),
+            'bg_normal_selected': pygame.Color('#f0d081'),
+            'bg_stone': pygame.Color('#5f666b'),
             'black': pygame.Color('#000000'),
             'border_active': pygame.Color('#0000ff'),
             'border_dark': pygame.Color('#202d36'),
-            'bg_bomb': pygame.Color('#21282d'),
-            'bg_normal': pygame.Color('#c1a663'),
-            'bg_normal_selected': pygame.Color('#f0d081'),
-            'bg_gold': pygame.Color('#ebc334'),
-            'bg_gold_selected': pygame.Color('#fcde72'),
-            'bg_crystal': pygame.Color('#349eeb'),
-            'bg_crystal_selected': pygame.Color('#76bff5'),
             'dark_gray': pygame.Color('#546c7a'),
             'gold': pygame.Color('#fce803'),
             'gray': pygame.Color('#bfb9a8'),
@@ -35,12 +37,13 @@ class UI_Btn():
 
         if self.btn_type == 'tile':
             self.ay = 0
+            self.bomb_timer = 5
             self.col = col
             self.dims = (48, 48)
             self.offset = (10, 60) if self.col % 2 else (10, 60 + (self.dims[0] / 2))
             self.row = row
             self.selected = False
-            self.tile_types = ['normal', 'bomb', 'stone', 'gold', 'crystal']
+            self.tile_types = ['normal', 'bomb', 'gold', 'crystal']
             self.tile_type = 'normal'
         else:
             self.coords = coords
@@ -59,6 +62,7 @@ class UI_Btn():
             self.update_multiplier()
             self.choose_letter()
             self.update_point_value()
+            self.set_text_color()
 
         self.build_image()
         self.build_UI()
@@ -77,21 +81,32 @@ class UI_Btn():
         pygame.draw.rect(self.surf, bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
 
         if self.btn_type == 'tile':
-            # Font.render params: text, antialias, text color, background color
-            surf_pts = self.fonts['point_value'].render(str(self.point_value), True, self.colors['black'], bg_color)
-            # Align bottom/right
-            pts_offset = tuple([self.surf.get_size()[i] - surf_pts.get_size()[i] - 3 for i in range(2)])
-            self.surf.blit(surf_pts, dest=pts_offset)
+            if self.tile_type == 'stone':
+                surf = pygame.Surface((self.dims[0] - 4, self.dims[1] - 4))
+                surf.fill(bg_color)
+                offset = (2, 2)
+            else:
+                # Font.render params: text, antialias, text color, background color
+                surf_pts = self.fonts['point_value'].render(str(self.point_value), True, self.text_color, bg_color)
+                # Align bottom/right
+                pts_offset = tuple([self.surf.get_size()[i] - surf_pts.get_size()[i] - 3 for i in range(2)])
+                self.surf.blit(surf_pts, dest=pts_offset)
 
-            surf = self.fonts['letter'].render(self.letter, True, self.colors['black'], bg_color)
-            # Horiz/vert align center
-            offset = [floor((self.surf.get_size()[i]) - surf.get_size()[i]) / 2 for i in range(2)]
-            # Bump (-1px, -4px); convert offset
-            offset = tuple([offset[0], offset[1] - 4])
+                surf = self.fonts['letter'].render(self.letter, True, self.text_color, bg_color)
+                # Horiz/vert align center
+                offset = [floor((self.surf.get_size()[i]) - surf.get_size()[i]) / 2 for i in range(2)]
+                # Bump (-1px, -4px); convert offset
+                offset = tuple([offset[0], offset[1] - 4])
+
+                if self.tile_type == 'bomb':
+                    surf_timer = self.fonts['point_value'].render(str(self.bomb_timer), True, self.colors['red'], bg_color)
+                    # Align bottom/left
+                    timer_offset = (3, self.dims[1] - surf_timer.get_size()[1] - 3)
+                    self.surf.blit(surf_timer, dest=timer_offset)
         else:
-            surf = self.fonts['btn'].render('SCRAMBLE', True, self.colors['gray'], bg_color)
+            surf = self.fonts['btn'].render('SCRAMBLE', True, self.text_color, bg_color)
             # Horiz/vert align center
-            offset = tuple([floor((self.surf.get_size()[i]) - surf.get_size()[i]) / 2 for i in range(2)])
+            offset = tuple([floor((self.dims[i]) - surf.get_size()[i]) / 2 for i in range(2)])
 
         self.surf.blit(surf, dest=offset)
 
@@ -173,16 +188,41 @@ class UI_Btn():
 
         self.target = (x, y)
 
+    def set_text_color(self):
+
+        if self.btn_type == 'tile':
+            if self.tile_type == 'bomb':
+                self.text_color = self.colors['gray']
+            else:
+                self.text_color = self.colors['black']
+        else:
+            self.text_color = self.colors['gray']
+
     def unselect(self):
 
         self.selected = False
         self.build_image(border_color=self.colors['gray'])
         self.build_UI()
 
+    def update(self):
+
+        if self.btn_type == 'tile':
+            if self.tile_type == 'bomb':
+                if self.bomb_timer == 0:
+                    self.tile_type = 'stone'
+
+        self.update_multiplier()
+        self.update_point_value()
+        self.set_text_color()
+        self.build_image()
+        self.build_UI()
+
     def update_multiplier(self):
 
         self.multiplier = 1
-        if self.tile_type == 'gold':
+        if self.tile_type == 'bomb':
+            self.multiplier = 2
+        elif self.tile_type == 'gold':
             self.multiplier = 3
         elif self.tile_type == 'crystal':
             self.multiplier = 5

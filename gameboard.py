@@ -26,7 +26,6 @@ class Board():
         for t in to_animate:
             t.ay += .4
             t.coords = (t.coords[0], min(t.coords[1] + t.ay, t.target[1]))
-            # t.btn.set_position((t.coords[0], t.coords[1]))
             if t.coords[1] == t.target[1]:
                 t.ay = 0
 
@@ -106,11 +105,11 @@ class Board():
 
         for tile in self.tiles:
             tile.choose_letter()
-            tile.tile_type = 'normal'
-            tile.update_multiplier()
-            tile.update_point_value()
-            tile.build_image()
-            tile.build_UI()
+            if tile.tile_type == 'bomb':
+                tile.bomb_timer -= 1
+            elif tile.tile_type != 'stone':
+                tile.tile_type = 'normal'
+            tile.update()
 
     def set_bonus(self, dictionary):
 
@@ -125,3 +124,9 @@ class Board():
 
         self.bonus_display.text = f'BONUS WORD: {self.bonus} (+{self.bonus_value})'
         self.bonus_display.update()
+
+    def update_bombs(self):
+
+        for tile in [t for t in self.tiles if t.tile_type == 'bomb']:
+            tile.bomb_timer -= 1
+            tile.update()
