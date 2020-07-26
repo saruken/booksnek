@@ -39,6 +39,8 @@ class UI_Display():
         self.dims = dims
         self.hovered = False
         self.label = label
+        self.letter_height = 19
+        self.letter_width = 19
         self.surf = pygame.Surface(self.dims)
         self.text = text
         self.text_align = text_align
@@ -122,11 +124,15 @@ class UI_Display():
         self.text = ''
 
         if self.label:
-            text = self.fonts['point_value'].render(str(self.label), True, self.colors['dark_gray'], self.bg_color)
-            surf = pygame.Surface((text.get_size()[0] + 20, text.get_size()[1]))
-            surf.fill(self.bg_color)
-            surf.blit(text, (10, 0))
-            self.surf.blit(surf, (14, -2))
+            self.set_label()
+
+    def set_label(self):
+
+        text = self.fonts['point_value'].render(str(self.label), True, self.colors['dark_gray'], self.bg_color)
+        surf = pygame.Surface((text.get_size()[0] + 20, text.get_size()[1]))
+        surf.fill(self.bg_color)
+        surf.blit(text, (10, 0))
+        self.surf.blit(surf, (14, -2))
 
     def set_multiline_text(self, history):
 
@@ -138,33 +144,38 @@ class UI_Display():
         '''
         text = ''
         text_offset = (8, 10)
-        letter_height = 0
-        letter_width = 0
 
-        self.surf.fill(self.border_color)
-        pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
+        self.surf.fill(self.bg_color)
+
+        max_lines = floor((self.surf.get_size()[1] - text_offset[1]) / self.letter_height)
+        if len(history) > max_lines:
+            history = history[len(history) - max_lines:]
+
+        container = pygame.Surface((self.dims[0], self.dims[1]))
+
+        container.fill(self.bg_color)
 
         for index_hist, d in enumerate(history):
             for index_letter, letter in enumerate(d['word']):
                 surf = self.fonts['btn'].render(letter, True, self.colors[d['colors'][index_letter]], self.bg_color)
-                if not letter_width:
-                    letter_width = surf.get_size()[0]
-                if not letter_height:
-                    letter_height = surf.get_size()[1]
-                offset = (text_offset[0] + letter_width * index_letter, text_offset[1] + letter_height * index_hist)
-                self.surf.blit(surf, dest=offset)
+                if self.letter_width == 19:
+                    self.letter_width = surf.get_size()[0]
+                if self.letter_height == 19:
+                    self.letter_height = surf.get_size()[1]
+                offset = (text_offset[0] + self.letter_width * index_letter, text_offset[1] + self.letter_height * index_hist)
+                container.blit(surf, dest=offset)
 
                 if index_letter == len(d['word']) - 1:
                     surf = self.fonts['btn'].render(f' (+{d["value"]})', True, self.colors['beige'], self.bg_color)
-                    offset = (text_offset[0] + letter_width * (index_letter + 1), text_offset[1] + letter_height * index_hist)
-                    self.surf.blit(surf, dest=offset)
+                    offset = (text_offset[0] + self.letter_width * (index_letter + 1), text_offset[1] + self.letter_height * index_hist)
+                    container.blit(surf, dest=offset)
+
+        self.surf.blit(container, (0, 0))
+        pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((0, 0), (self.dims[0], self.dims[1])), width=15)
+        pygame.draw.rect(self.surf, self.border_color, pygame.Rect((0, 0), (self.dims[0], self.dims[1])), width=3)
 
         if self.label:
-            text = self.fonts['point_value'].render(str(self.label), True, self.colors['dark_gray'], self.bg_color)
-            surf = pygame.Surface((text.get_size()[0] + 20, text.get_size()[1]))
-            surf.fill(self.bg_color)
-            surf.blit(text, (10, 0))
-            self.surf.blit(surf, (14, -2))
+            self.set_label()
 
         self.build_UI()
 

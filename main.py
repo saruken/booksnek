@@ -210,7 +210,7 @@ def main(dims):
     coords = offset_from_element(btn_scramble, corner=(0, 1), offset=(0, 10))
     word_display = ui_display.UI_Display(dims=(310, 40), coords=coords)
     coords = offset_from_element(word_display, corner=(0, 1), offset=(0, 10))
-    longest_display = ui_display.UI_Display(dims=(310, 34), coords=coords, label='LONGEST', text_color='beige')
+    longest_display = ui_display.UI_Display(dims=(310, 34), coords=coords, label='LONGEST WORD', text_color='beige')
     coords = offset_from_element(longest_display, corner=(0, 1), offset=(0, 4))
     best_display = ui_display.UI_Display(dims=(310, 34), coords=coords, label='HIGHEST SCORE', text_color='beige', text_align='left', text_offset=(30, 2))
     coords = offset_from_element(best_display, corner=(0, 1), offset=(0, 4))
@@ -359,3 +359,10 @@ if __name__ == '__main__':
             # Auto-scroll to bottom with each addition
         # Click-and-drag tiles to select; release to submit
         # Setup ui_btn and ui_display to inherit common attributes from single parent class
+        # Save best score & word list
+        # Right click a tile to mark it ("Save me!")
+        # Change border around word preview when it's a word / not a word / is the bonus word
+    # Add
+        #
+    # Remove
+        #

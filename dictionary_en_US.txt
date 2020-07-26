@@ -9011,7 +9011,6 @@ cakes
 cakewalk
 cakewalks
 caking
-cal
 calabash
 calabashes
 calaboose
@@ -39498,6 +39497,8 @@ louts
 louver
 louvered
 louvers
+louvre
+louvres
 lovable
 lovableness
 lovably
