@@ -28269,6 +28269,7 @@ gees
 geese
 geezer
 geezers
+gefilte
 geisha
 gel
 gelatin
@@ -28284,6 +28285,7 @@ gelignite
 gelled
 gelling
 gels
+gelt
 gem
 gemological
 gemologist
@@ -65826,6 +65828,8 @@ stood
 stooge
 stooges
 stool
+stoolie
+stoolies
 stools
 stoop
 stooped

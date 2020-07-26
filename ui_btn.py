@@ -22,6 +22,7 @@ class UI_Btn():
             'border_active': pygame.Color('#0000ff'),
             'border_dark': pygame.Color('#202d36'),
             'dark_gray': pygame.Color('#546c7a'),
+            'bomb': pygame.Color('#7f8f99'),
             'gold': pygame.Color('#fce803'),
             'gray': pygame.Color('#bfb9a8'),
             'green': pygame.Color('#65a669'),

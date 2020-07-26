@@ -120,7 +120,7 @@ class Board():
         for letter in self.bonus:
             self.bonus_value += self.lookup_point_value(letter)
         self.bonus_value *= self.bonus_counter
-        self.bonus_value += self.bonus_counter * 50
+        self.bonus_value += self.bonus_counter * 10
 
         self.bonus_display.text = f'BONUS WORD: {self.bonus} (+{self.bonus_value})'
         self.bonus_display.update()

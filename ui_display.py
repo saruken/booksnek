@@ -7,17 +7,20 @@ class UI_Display():
 
         self.colors = {
             'beige': pygame.Color('#aaaa66'),
+            'bg_bomb': pygame.Color('#21282d'),
+            'bg_bomb_selected': pygame.Color('#435663'),
+            'bg_crystal': pygame.Color('#349eeb'),
+            'bg_crystal_selected': pygame.Color('#76bff5'),
+            'bg_gold': pygame.Color('#ebc334'),
+            'bg_gold_selected': pygame.Color('#fcde72'),
+            'bg_normal': pygame.Color('#c1a663'),
+            'bg_normal_selected': pygame.Color('#f0d081'),
+            'bg_stone': pygame.Color('#5f666b'),
             'black': pygame.Color('#000000'),
             'border_active': pygame.Color('#0000ff'),
             'border_dark': pygame.Color('#202d36'),
-            'bg_bomb': pygame.Color('#21282d'),
-            'bg_normal': pygame.Color('#c1a663'),
-            'bg_normal_selected': pygame.Color('#f0d081'),
-            'bg_gold': pygame.Color('#ebc334'),
-            'bg_gold_selected': pygame.Color('#fcde72'),
-            'bg_crystal': pygame.Color('#349eeb'),
-            'bg_crystal_selected': pygame.Color('#76bff5'),
             'dark_gray': pygame.Color('#546c7a'),
+            'bomb': pygame.Color('#7f8f99'),
             'gold': pygame.Color('#fce803'),
             'gray': pygame.Color('#bfb9a8'),
             'green': pygame.Color('#65a669'),
@@ -107,6 +110,7 @@ class UI_Display():
         offset_x = 0
         offset_y = 0
         for index, letter in enumerate(text_obj['word']):
+            color = text_obj['colors'][index]
             surf = self.fonts['btn'].render(letter, True, self.colors[text_obj['colors'][index]], self.bg_color)
             if not letter_width:
                 letter_width = surf.get_size()[0]

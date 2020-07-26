@@ -31,7 +31,9 @@ def check_longest(longest, new_word):
 def color_letters(tiles, history_entry):
 
     for i in range(len(tiles)):
-        if tiles[i].tile_type == 'gold':
+        if tiles[i].tile_type == 'bomb':
+            history_entry['colors'][i] = 'bomb'
+        elif tiles[i].tile_type == 'gold':
             history_entry['colors'][i] = 'gold'
         elif tiles[i].tile_type == 'crystal':
             history_entry['colors'][i] = 'teal'
@@ -170,7 +172,7 @@ def update_word_display(word_display, snake, bonus):
             if check_dictionary(word):
                 value = score_word(snake)
                 if word == bonus:
-                    value += len(bonus) * 50
+                    value += len(bonus) * 10
                     color = 'gold'
                 else:
                     color = 'green'
@@ -284,7 +286,7 @@ def main(dims):
                                             if word == board.bonus:
                                                 # Color all letters blue
                                                 history[-1]['colors'] = ['green' for _ in range(len(word))]
-                                                value += board.bonus_counter * 50
+                                                value += board.bonus_counter * 10
                                                 history[-1]['value'] = value
                                                 board.bonus_counter += 1
                                                 board.set_bonus(DICTIONARY)
@@ -350,7 +352,7 @@ if __name__ == '__main__':
     main(dims)
 
     #TODO:
-        # Nerf bonus point value
+        # Add bomb to scramble
         # Add "chain" multiplier somehow?
         # Click-and-drag tiles to select; release to submit
         # Setup ui_btn and ui_display to inherit common attributes from single parent class
@@ -358,6 +360,7 @@ if __name__ == '__main__':
         # Right click a tile to mark it ("Save me!")
         # Change border around word preview when it's a word / not a word / is the bonus word
     # Add
-        #
+        # stoolie
+        # gelt
     # Remove
         #
