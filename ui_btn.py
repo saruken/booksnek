@@ -216,7 +216,7 @@ class UI_Btn():
         self.build_image(border_color=self.colors['gray'])
         self.build_UI()
 
-    def update(self):
+    def update(self, mult=1):
 
         if self.btn_type == 'tile':
             if self.tile_type == 'bomb':
@@ -224,7 +224,7 @@ class UI_Btn():
                     self.tile_type = 'stone'
 
         self.update_multiplier()
-        self.update_point_value()
+        self.update_point_value(mult)
         self.set_text_color()
         self.build_image()
         self.build_UI()
@@ -239,7 +239,7 @@ class UI_Btn():
         elif self.tile_type == 'crystal':
             self.multiplier = 5
 
-    def update_point_value(self):
+    def update_point_value(self, mult=1):
 
         value = 0
 
@@ -258,4 +258,6 @@ class UI_Btn():
         else:
             value = 10
 
-        self.point_value = value * self.multiplier
+        if self.tile_type == 'bomb':
+            print(f'Bomb tile "{self.letter}": Base value is {value}; tile multiplier is {self.multiplier}; global multiplier is {mult}')
+        self.point_value = value * self.multiplier * mult

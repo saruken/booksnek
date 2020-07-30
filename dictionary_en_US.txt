@@ -36051,6 +36051,7 @@ ionosphere
 ionospheres
 ionospheric
 ions
+ios
 iota
 iotas
 ipecac
@@ -45574,7 +45575,6 @@ oboe
 oboes
 oboist
 oboists
-obs
 obscene
 obscenely
 obscener
@@ -56245,7 +56245,6 @@ rekindle
 rekindled
 rekindles
 rekindling
-rel
 relabel
 relabeled
 relabeling
@@ -58264,6 +58263,7 @@ robuster
 robustest
 robustly
 robustness
+roc
 rock
 rockabilly
 rockbound
@@ -58286,6 +58286,7 @@ rocking
 rocks
 rocky
 rococo
+rocs
 rod
 rode
 rodent

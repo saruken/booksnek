@@ -29,7 +29,7 @@ class Snake():
             self.tiles = []
         self.update_letters()
 
-    def rebuild(self, value, last_five):
+    def rebuild(self, value, last_five, mult):
 
         tile_type = 'normal'
         special_index = 0
@@ -64,7 +64,7 @@ class Snake():
         for i, tile in enumerate(self.tiles):
             tile.tile_type = tile_type if i == special_index else 'normal'
             tile.bomb_timer = 6
-            tile.update()
+            tile.update(mult)
 
     def reroll(self):
 

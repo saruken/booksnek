@@ -153,13 +153,13 @@ def offset_from_element(element, corner, offset):
 
     return tuple([point[i] + offset[i] for i in range(len(point))])
 
-def score_word(snake):
+def score_word(snake, mult):
 
     value = 0
     for t in snake.tiles:
         value += t.point_value
 
-    return value * len(snake.tiles)
+    return value * len(snake.tiles) * mult
 
 def update_bomb_chance(display, last_five, snake, is_word):
 
@@ -172,6 +172,11 @@ def update_bomb_chance(display, last_five, snake, is_word):
         text = str(snake.get_bomb_weight(avg) * 100) + '%'
         display.update(text=text)
 
+def update_multiplier(display, board):
+
+    board.multiplier += 1
+    display.update(text=f'x{board.multiplier}')
+
 def update_selected_tiles(tiles, snake):
 
     for t in tiles:
@@ -179,7 +184,7 @@ def update_selected_tiles(tiles, snake):
     for t in snake.tiles:
         t.select()
 
-def update_word_display(word_display, snake, bonus):
+def update_word_display(word_display, snake, bonus, mult):
 
     color = 'red'
     text = ''
@@ -191,9 +196,9 @@ def update_word_display(word_display, snake, bonus):
         if len(word) > 2:
             if check_dictionary(word):
                 is_word = True
-                value = score_word(snake)
+                value = score_word(snake, mult)
                 if word == bonus:
-                    value += len(bonus) * 10
+                    value += len(bonus) * 10 * mult
                     color = 'gold'
                 else:
                     color = 'green'
@@ -309,7 +314,7 @@ def main(dims):
                                     elif len(snake.tiles) > 2 or len(snake.tiles) == 2 and 'QU' in snake.letters:
                                         word = ''.join(snake.letters)
                                         if check_dictionary(word):
-                                            value = score_word(snake)
+                                            value = score_word(snake, board.multiplier)
                                             history_word = {
                                                 'word': word,
                                                 'value': value,
@@ -323,6 +328,8 @@ def main(dims):
                                                 history[-1]['value'] = value
                                                 board.bonus_counter += 1
                                                 board.set_bonus(DICTIONARY)
+                                                update_multiplier(multiplier_display, board)
+                                                board.update_tiles()
                                             score += value
                                             score_display.update(text=score)
 
@@ -334,10 +341,9 @@ def main(dims):
                                             longest_display.update(text=word_longest)
                                             snake.reroll()
                                             last_five = [len(h['word']) for h in history[-5:]]
-                                            snake.rebuild(value, last_five)
+                                            snake.rebuild(value, last_five, board.multiplier)
                                             board.reset_rows()
                                             last_typed = ''
-                                            board.update_bombs(snake.tiles)
                                         else:
                                             print(f'Word "{word}" not in dictionary')
                                         snake.new()
@@ -355,7 +361,7 @@ def main(dims):
                                 else:
                                     snake.new(active_btn)
 
-                        is_word = update_word_display(word_display, snake, board.bonus)
+                        is_word = update_word_display(word_display, snake, board.bonus, board.multiplier)
                         update_selected_tiles(board.tiles, snake)
                         update_bomb_chance(bomb_chance_display, last_five, snake, is_word)
 
@@ -386,7 +392,6 @@ if __name__ == '__main__':
     main(dims)
 
     #TODO:
-        # Add "chain" multiplier somehow?
         # Click-and-drag tiles to select; release to submit
         # Setup ui_btn and ui_display to inherit common attributes from single parent class
         # Save best score & word list

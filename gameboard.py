@@ -16,6 +16,7 @@ class Board():
 
         self.bonus_counter = 3
         self.set_bonus(dictionary)
+        self.multiplier = 1
 
     def animate(self):
 
@@ -115,7 +116,7 @@ class Board():
             elif tile.tile_type != 'stone':
                 tile.choose_letter()
                 tile.tile_type = 'normal'
-            tile.update()
+            tile.update(self.multiplier)
 
     def set_bonus(self, dictionary):
 
@@ -131,8 +132,9 @@ class Board():
         self.bonus_display.text = f'BONUS WORD: {self.bonus} (+{self.bonus_value})'
         self.bonus_display.update()
 
-    def update_bombs(self, snake_tiles):
+    def update_tiles(self):
 
-        for tile in [t for t in self.tiles if t.tile_type == 'bomb']:
-            tile.bomb_timer -= 1
-            tile.update()
+        for tile in self.tiles:
+            if tile.tile_type == 'bomb':
+                tile.bomb_timer -= 1
+            tile.update(self.multiplier)
