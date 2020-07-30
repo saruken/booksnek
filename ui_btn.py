@@ -211,6 +211,8 @@ class UI_Btn():
             if self.tile_type == 'bomb':
                 if self.bomb_timer == 0:
                     self.tile_type = 'stone'
+            else:
+                self.bomb_timer = 5
 
         self.update_multiplier()
         self.update_point_value()

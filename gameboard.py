@@ -103,11 +103,17 @@ class Board():
 
     def scramble(self):
 
+        try:
+            bomb = random.choice([t for t in self.tiles if (t.row == 0 and t.tile_type == 'normal')])
+            bomb.tile_type = 'bomb'
+            bomb.bomb_timer = 6
+        except IndexError: # No normal tiles on top row
+            pass
         for tile in self.tiles:
-            tile.choose_letter()
             if tile.tile_type == 'bomb':
                 tile.bomb_timer -= 1
             elif tile.tile_type != 'stone':
+                tile.choose_letter()
                 tile.tile_type = 'normal'
             tile.update()
 

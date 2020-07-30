@@ -352,7 +352,6 @@ if __name__ == '__main__':
     main(dims)
 
     #TODO:
-        # Add bomb to scramble
         # Add "chain" multiplier somehow?
         # Click-and-drag tiles to select; release to submit
         # Setup ui_btn and ui_display to inherit common attributes from single parent class
@@ -360,7 +359,6 @@ if __name__ == '__main__':
         # Right click a tile to mark it ("Save me!")
         # Change border around word preview when it's a word / not a word / is the bonus word
     # Add
-        # stoolie
-        # gelt
+        #
     # Remove
         #
