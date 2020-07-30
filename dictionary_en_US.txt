@@ -16307,7 +16307,6 @@ cutup
 cutups
 cutworm
 cutworms
-cwt
 cyan
 cyanide
 cyanobacteria
@@ -59838,7 +59837,6 @@ schusses
 schussing
 schwa
 schwas
-sci
 sciatic
 sciatica
 science
@@ -68593,7 +68591,6 @@ teetotalers
 teetotalism
 tektite
 tektites
-tel
 telecast
 telecaster
 telecasters

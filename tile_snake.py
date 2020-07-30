@@ -16,6 +16,10 @@ class Snake():
             self.tiles.append(tile)
             self.update_letters()
 
+    def get_bomb_weight(self, avg):
+
+        return max(round((-0.5 * log10(0.34 * avg - 1)), 2), 0)
+
     def new(self, tile=None):
 
         if tile:
@@ -39,7 +43,7 @@ class Snake():
         if len(last_five) == 5:
             avg = round(sum(last_five) / len(last_five), 1)
             # Keep bomb_weight non-negative
-            bomb_weight = max(round((-0.5 * log10(0.34 * avg - 1)), 2), 0)
+            bomb_weight = self.get_bomb_weight(avg)
             normal_weight = 1 - bomb_weight
             tile_type = choice(['normal', 'bomb'], 1, p=[normal_weight, bomb_weight])[0]
 
@@ -59,6 +63,7 @@ class Snake():
 
         for i, tile in enumerate(self.tiles):
             tile.tile_type = tile_type if i == special_index else 'normal'
+            tile.bomb_timer = 6
             tile.update()
 
     def reroll(self):

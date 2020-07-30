@@ -4,7 +4,7 @@ from numpy.random import choice
 
 class UI_Btn():
 
-    def __init__(self, btn_type, dims=None, coords=None, col=None, row=None, text_color=None):
+    def __init__(self, btn_type, dims=None, coords=None, col=None, row=None, text=None, text_color=None, enabled=True):
 
         self.btn_type = btn_type
         self.colors = {
@@ -41,7 +41,7 @@ class UI_Btn():
             self.bomb_timer = 5
             self.col = col
             self.dims = (48, 48)
-            self.offset = (10, 60) if self.col % 2 else (10, 60 + (self.dims[0] / 2))
+            self.offset = (10, 110) if self.col % 2 else (10, 110 + (self.dims[0] / 2))
             self.row = row
             self.selected = False
             self.tile_types = ['normal', 'bomb', 'gold', 'crystal']
@@ -53,8 +53,10 @@ class UI_Btn():
         self.btn = pygame.Surface(self.dims)
         self.can_click = True
         self.can_hover = True
+        self.enabled = enabled
         self.hovered = False
         self.surf = pygame.Surface(self.dims)
+        self.text = text
         self.text_color = text_color if text_color else self.colors['black']
 
         if self.btn_type == 'tile':
@@ -73,10 +75,16 @@ class UI_Btn():
         if self.btn_type == 'tile':
             bg_color = self.colors[f'bg_{self.tile_type}{"_selected" if self.selected else ""}']
         else:
-            bg_color = self.colors['ocean']
+            if self.enabled:
+                bg_color = self.colors['ocean']
+            else:
+                bg_color = self.colors['dark_gray']
 
         if not border_color:
-            border_color = self.colors['gray']
+            if self.enabled:
+                border_color = self.colors['gray']
+            else:
+                border_color = self.colors['ocean']
 
         self.surf.fill(border_color)
         pygame.draw.rect(self.surf, bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
@@ -105,7 +113,7 @@ class UI_Btn():
                     timer_offset = (3, self.dims[1] - surf_timer.get_size()[1] - 3)
                     self.surf.blit(surf_timer, dest=timer_offset)
         else:
-            surf = self.fonts['btn'].render('SCRAMBLE', True, self.text_color, bg_color)
+            surf = self.fonts['btn'].render(self.text, True, self.text_color, bg_color)
             # Horiz/vert align center
             offset = tuple([floor((self.dims[i]) - surf.get_size()[i]) / 2 for i in range(2)])
 
@@ -197,7 +205,10 @@ class UI_Btn():
             else:
                 self.text_color = self.colors['black']
         else:
-            self.text_color = self.colors['gray']
+            if self.enabled:
+                self.text_color = self.colors['gray']
+            else:
+                self.text_color = self.colors['black']
 
     def unselect(self):
 
@@ -211,8 +222,6 @@ class UI_Btn():
             if self.tile_type == 'bomb':
                 if self.bomb_timer == 0:
                     self.tile_type = 'stone'
-            else:
-                self.bomb_timer = 5
 
         self.update_multiplier()
         self.update_point_value()

@@ -131,7 +131,7 @@ class Board():
         self.bonus_display.text = f'BONUS WORD: {self.bonus} (+{self.bonus_value})'
         self.bonus_display.update()
 
-    def update_bombs(self):
+    def update_bombs(self, snake_tiles):
 
         for tile in [t for t in self.tiles if t.tile_type == 'bomb']:
             tile.bomb_timer -= 1
