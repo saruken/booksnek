@@ -47,21 +47,19 @@ class Snake():
             normal_weight = 1 - bomb_weight
             tile_type = choice(['normal', 'bomb'], 1, p=[normal_weight, bomb_weight])[0]
 
-        # Crystal tile created when previous word is worth 100+ points
-        # Crystal/gold overrides a bomb, if one would have been created.
-        if value > 100:
+        if len(''.join(self.letters)) > 6:
             tile_type = 'crystal'
-        else:
-            # Gold tile created when previous word has 5+ letters
-            # (and crystal tile not already being created)
-            if len(''.join(self.letters)) > 4:
-                tile_type = 'gold'
+        elif len(''.join(self.letters)) == 6:
+            tile_type = 'gold'
+        elif len(''.join(self.letters)) == 5:
+            tile_type = 'silver'
 
         if tile_type != 'normal':
             # Randomly choose which new tile will have special tile_type
             special_index = random.choice(range(len(self.tiles)))
 
         for i, tile in enumerate(self.tiles):
+            tile.marked = False
             tile.tile_type = tile_type if i == special_index else 'normal'
             tile.bomb_timer = 6
             tile.update(mult)

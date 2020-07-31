@@ -793,7 +793,6 @@ adieu
 adieus
 adios
 adipose
-adj
 adjacency
 adjacent
 adjacently
@@ -982,7 +981,6 @@ adumbrated
 adumbrates
 adumbrating
 adumbration
-adv
 advance
 advanced
 advancement
@@ -4663,6 +4661,7 @@ baluster
 balusters
 balustrade
 balustrades
+bam
 bamboo
 bamboos
 bamboozle
@@ -15220,7 +15219,6 @@ coziness
 cozy
 cpd
 cpl
-cps
 crab
 crabbed
 crabber
@@ -48577,6 +48575,7 @@ pebbled
 pebbles
 pebbling
 pebbly
+pec
 pecan
 pecans
 peccadillo
@@ -50181,7 +50180,6 @@ pizzeria
 pizzerias
 pizzicati
 pizzicato
-pkg
 pkt
 pkwy
 placard
@@ -74101,7 +74099,6 @@ vainglorious
 vaingloriously
 vainglory
 vainly
-val
 valance
 valances
 vale

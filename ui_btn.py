@@ -4,30 +4,33 @@ from numpy.random import choice
 
 class UI_Btn():
 
-    def __init__(self, btn_type, dims=None, coords=None, col=None, row=None, text=None, text_color=None, enabled=True):
+    def __init__(self, btn_type, dims=None, coords=None, col=None, row=None, text=None, text_color=None, enabled=True, can_mark=False):
 
         self.btn_type = btn_type
         self.colors = {
             'beige': pygame.Color('#aaaa66'),
-            'bg_bomb': pygame.Color('#21282d'),
-            'bg_bomb_selected': pygame.Color('#435663'),
+            'bg_bomb': pygame.Color('#3b3245'),
+            'bg_bomb_selected': pygame.Color('#655775'),
             'bg_crystal': pygame.Color('#349eeb'),
             'bg_crystal_selected': pygame.Color('#76bff5'),
             'bg_gold': pygame.Color('#ebc334'),
             'bg_gold_selected': pygame.Color('#fcde72'),
             'bg_normal': pygame.Color('#c1a663'),
             'bg_normal_selected': pygame.Color('#f0d081'),
+            'bg_silver': pygame.Color('#9eadad'),
+            'bg_silver_selected': pygame.Color('#d5e7e8'),
             'bg_stone': pygame.Color('#5f666b'),
             'black': pygame.Color('#000000'),
             'border_active': pygame.Color('#0000ff'),
             'border_dark': pygame.Color('#202d36'),
             'dark_gray': pygame.Color('#546c7a'),
-            'bomb': pygame.Color('#7f8f99'),
+            'bomb': pygame.Color('#7c6e8a'),
             'gold': pygame.Color('#fce803'),
             'gray': pygame.Color('#bfb9a8'),
             'green': pygame.Color('#65a669'),
             'ocean': pygame.Color('#244254'),
             'red': pygame.Color('#e05a41'),
+            'silver': pygame.Color('#d5e7e8'),
             'teal': pygame.Color('#50aef2')
         }
         self.fonts = {
@@ -44,7 +47,6 @@ class UI_Btn():
             self.offset = (10, 110) if self.col % 2 else (10, 110 + (self.dims[0] / 2))
             self.row = row
             self.selected = False
-            self.tile_types = ['normal', 'bomb', 'gold', 'crystal']
             self.tile_type = 'normal'
         else:
             self.coords = coords
@@ -53,8 +55,10 @@ class UI_Btn():
         self.btn = pygame.Surface(self.dims)
         self.can_click = True
         self.can_hover = True
+        self.can_mark = can_mark
         self.enabled = enabled
         self.hovered = False
+        self.marked = False
         self.surf = pygame.Surface(self.dims)
         self.text = text
         self.text_color = text_color if text_color else self.colors['black']
@@ -112,12 +116,16 @@ class UI_Btn():
                     # Align bottom/left
                     timer_offset = (3, self.dims[1] - surf_timer.get_size()[1] - 3)
                     self.surf.blit(surf_timer, dest=timer_offset)
+
         else:
             surf = self.fonts['btn'].render(self.text, True, self.text_color, bg_color)
             # Horiz/vert align center
             offset = tuple([floor((self.dims[i]) - surf.get_size()[i]) / 2 for i in range(2)])
 
         self.surf.blit(surf, dest=offset)
+        if self.marked:
+            pygame.draw.circle(self.surf, self.colors['dark_gray'], (8, 8), 4)
+            pygame.draw.circle(self.surf, self.colors['teal'], (8, 8), 2)
 
     def build_UI(self):
 
@@ -210,6 +218,11 @@ class UI_Btn():
             else:
                 self.text_color = self.colors['black']
 
+    def toggle_mark(self):
+
+        self.marked = not self.marked
+        self.update()
+
     def unselect(self):
 
         self.selected = False
@@ -222,9 +235,11 @@ class UI_Btn():
             if self.tile_type == 'bomb':
                 if self.bomb_timer == 0:
                     self.tile_type = 'stone'
+                    self.letter = '_'
 
-        self.update_multiplier()
-        self.update_point_value(mult)
+            self.update_multiplier()
+            self.update_point_value(mult)
+
         self.set_text_color()
         self.build_image()
         self.build_UI()
@@ -232,7 +247,7 @@ class UI_Btn():
     def update_multiplier(self):
 
         self.multiplier = 1
-        if self.tile_type == 'bomb':
+        if self.tile_type in ('bomb', 'silver'):
             self.multiplier = 2
         elif self.tile_type == 'gold':
             self.multiplier = 3
@@ -258,6 +273,4 @@ class UI_Btn():
         else:
             value = 10
 
-        if self.tile_type == 'bomb':
-            print(f'Bomb tile "{self.letter}": Base value is {value}; tile multiplier is {self.multiplier}; global multiplier is {mult}')
         self.point_value = value * self.multiplier * mult

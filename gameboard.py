@@ -9,6 +9,7 @@ class Board():
 
         self.offset = (10, 10)
         self.dims = (360, 448)
+        self.multiplier = 1
 
         self.create_bonus_display()
 
@@ -16,7 +17,6 @@ class Board():
 
         self.bonus_counter = 3
         self.set_bonus(dictionary)
-        self.multiplier = 1
 
     def animate(self):
 
@@ -35,7 +35,7 @@ class Board():
         dims = (336, 40)
         coords = (10, 10)
 
-        self.bonus_display = ui_display.UI_Display(dims=dims, coords=coords, text='BONUS WORD:', text_color='gray')
+        self.bonus_display = ui_display.UI_Display(dims=dims, coords=coords, text_color='gray', label='BONUS WORD')
 
     def create_tiles(self):
 
@@ -44,7 +44,7 @@ class Board():
         # Every other column has 7 and 8 tiles, starting and ending with 7s
         for col in range(7):
             for row in range(7 + col % 2):
-                tiles.append(ui_btn.UI_Btn(btn_type='tile', col=col, row=row))
+                tiles.append(ui_btn.UI_Btn(btn_type='tile', col=col, row=row, can_mark=True))
 
         self.tiles = tiles
 
@@ -114,6 +114,7 @@ class Board():
             if tile.tile_type == 'bomb':
                 tile.bomb_timer -= 1
             elif tile.tile_type != 'stone':
+                tile.marked = False
                 tile.choose_letter()
                 tile.tile_type = 'normal'
             tile.update(self.multiplier)
@@ -126,10 +127,10 @@ class Board():
         self.bonus_value = 0
         for letter in self.bonus:
             self.bonus_value += self.lookup_point_value(letter)
-        self.bonus_value *= self.bonus_counter
+        self.bonus_value *= self.bonus_counter * self.multiplier
         self.bonus_value += self.bonus_counter * 10
 
-        self.bonus_display.text = f'BONUS WORD: {self.bonus} (+{self.bonus_value})'
+        self.bonus_display.text = f'{self.bonus} (+{self.bonus_value})'
         self.bonus_display.update()
 
     def update_tiles(self):
