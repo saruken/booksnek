@@ -3,7 +3,7 @@ from math import floor
 
 class UI_Display():
 
-    def __init__(self, dims, coords, label='', text='', text_align='center', text_color='black', text_offset=(0, 0)):
+    def __init__(self, dims, coords, label='', text='', text_align='center', text_color='black', text_offset=(0, 0), show_progress=False):
 
         self.colors = {
             'beige': pygame.Color('#aaaa66'),
@@ -16,6 +16,7 @@ class UI_Display():
             'bg_gold_selected': pygame.Color('#fcde72'),
             'bg_normal': pygame.Color('#c1a663'),
             'bg_normal_selected': pygame.Color('#f0d081'),
+            'bg_progress': pygame.Color('#161a1c'),
             'bg_silver': pygame.Color('#9eadad'),
             'bg_silver_selected': pygame.Color('#d5e7e8'),
             'bg_stone': pygame.Color('#5f666b'),
@@ -29,6 +30,7 @@ class UI_Display():
             'gray': pygame.Color('#bfb9a8'),
             'green': pygame.Color('#65a669'),
             'ocean': pygame.Color('#244254'),
+            'progress': pygame.Color('#c9c618'),
             'red': pygame.Color('#e05a41'),
             'silver': pygame.Color('#d5e7e8'),
             'teal': pygame.Color('#50aef2')
@@ -49,6 +51,10 @@ class UI_Display():
         self.label = label
         self.letter_height = 19
         self.letter_width = 19
+        self.progress = 0
+        self.progress_floor = 0
+        self.progress_max = 0
+        self.show_progress = show_progress
         self.surf = pygame.Surface(self.dims)
         self.text = text
         self.text_align = text_align
@@ -63,6 +69,12 @@ class UI_Display():
 
         self.surf.fill(self.border_color)
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
+        if self.show_progress:
+            if not self.progress_max:
+                self.progress_max = self.dims[0] - 4
+            pygame.draw.rect(self.surf, self.colors['bg_progress'], pygame.Rect((2, self.dims[1] - 6), (self.progress_max, 4)))
+            pygame.draw.rect(self.surf, self.colors['progress'], pygame.Rect((2, self.dims[1] - 6), (self.progress, 4)))
+
         surf = self.fonts['btn'].render(str(self.text), True, self.text_color, self.bg_color)
         # Horiz align
         if self.text_align == 'left':
@@ -76,7 +88,7 @@ class UI_Display():
         self.surf.blit(surf, dest=(offset_x, offset_y))
 
         if self.label:
-            text = self.fonts['point_value'].render(str(self.label), True, self.colors['dark_gray'], self.bg_color)
+            text = self.fonts['point_value'].render(str(self.label), True, self.colors['dark_gray'])
             surf = pygame.Surface((text.get_size()[0] + 20, text.get_size()[1]))
             surf.fill(self.bg_color)
             surf.blit(text, (10, 0))
@@ -187,16 +199,27 @@ class UI_Display():
 
         self.build_UI()
 
-    def update(self, text=None, text_color=None, multicolor_text=None, border_color=None):
+    def set_progress(self, score, mult):
 
-        if border_color:
-            self.border_color = self.colors[border_color]
+        self.progress = floor((score - self.progress_floor) / (1000 * mult) * self.progress_max)
+
+    def update(self, text=None, text_color=None, multicolor_text=None, border_color=None, mult=1, score=0, progress_floor=0):
+
         if multicolor_text:
             self.render_multicolor_text(multicolor_text)
         else:
+            if border_color:
+                self.border_color = self.colors[border_color]
             if text_color:
                 self.text_color = self.colors[text_color]
             if text != None:
                 self.text = text
+            if self.show_progress:
+                if progress_floor:
+                    self.progress_floor = progress_floor
+
+                self.set_progress(score, mult)
+
             self.build_image()
+
         self.build_UI()

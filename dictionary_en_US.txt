@@ -38119,7 +38119,6 @@ lazy
 lazybones
 lazying
 lbs
-lbw
 lea
 leach
 leached
@@ -58147,7 +58146,6 @@ rituals
 ritzier
 ritziest
 ritzy
-riv
 rival
 rivaled
 rivaling
@@ -68917,7 +68915,7 @@ tern
 ternaries
 ternary
 terns
-terr
+terra
 terrace
 terraced
 terraces

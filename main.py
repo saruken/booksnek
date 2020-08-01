@@ -183,10 +183,12 @@ def update_btn_clear_marked(btn_clear_marked, tiles):
 
     btn_clear_marked.update()
 
-def update_multiplier(display, board):
+def update_multiplier(display, board, score, value):
 
     board.multiplier += 1
+    board.bonus_counter += 1
     display.update(text=f'x{board.multiplier}')
+    board.set_bonus(DICTIONARY, board.multiplier, score + value)
 
 def update_selected_tiles(tiles, snake):
 
@@ -344,9 +346,11 @@ def main(dims):
                                                     history[-1]['colors'] = ['green' for _ in range(len(word))]
                                                     value += board.bonus_counter * 10
                                                     history[-1]['value'] = value
-                                                    board.bonus_counter += 1
-                                                    board.set_bonus(DICTIONARY)
-                                                    update_multiplier(multiplier_display, board)
+                                                    update_multiplier(multiplier_display, board, score, value)
+                                                else:
+                                                    board.update_bonus(snake, board.multiplier, score + value)
+                                                    if board.check_bonus_progress():
+                                                        update_multiplier(multiplier_display, board, score, value)
                                                 score += value
                                                 score_display.update(text=score)
 
@@ -391,7 +395,7 @@ def main(dims):
                         btn_down_right = None
 
                     update_btn_clear_marked(btn_clear_marked, board.tiles)
-                    board.update_bonus(snake)
+                    board.update_bonus(snake, board.multiplier, score)
 
             elif event.type == pygame.KEYDOWN:
                 last_typed = board.highlight_tiles_from_letter(board.tiles, event.key, last_typed)
@@ -418,15 +422,12 @@ if __name__ == '__main__':
     main(dims)
 
     #TODO:
-        # Bug: Bomb tile that's part of a word, that then cycles into another bomb tile -- Counter is not resetting
+        # Bug: Bomb tile that's part of a word, that then cycles into another bomb tile -- Counter is not resetting?
         # Click-and-drag tiles to select; release to submit
         # Setup ui_btn and ui_display to inherit common attributes from single parent class
         # Save best score & word list
-        # Progress bar to advance multiplier
-            # Resets to 0 if you get bonus
-            # Bonus resets if you hit 100%
         # Bonuses for making shapes with the tiles in a word would be neat
     # Add
-        # hir, hirself, vee, vees, dev, devs
+        #
     # Remove
         #

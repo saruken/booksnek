@@ -30,12 +30,16 @@ class Board():
             if t.coords[1] == t.target[1]:
                 t.ay = 0
 
+    def check_bonus_progress(self):
+
+        return bool(self.bonus_display.progress >= self.bonus_display.progress_max)
+
     def create_bonus_display(self):
 
         dims = (336, 40)
         coords = (10, 10)
 
-        self.bonus_display = ui_display.UI_Display(dims=dims, coords=coords, text_color='gray', label='BONUS WORD')
+        self.bonus_display = ui_display.UI_Display(dims=dims, coords=coords, text_color='gray', label='BONUS WORD', show_progress=True)
 
     def create_tiles(self):
 
@@ -119,7 +123,7 @@ class Board():
                 tile.tile_type = 'normal'
             tile.update(self.multiplier)
 
-    def set_bonus(self, dictionary):
+    def set_bonus(self, dictionary, mult=1, score=0):
 
         word_pool = [w for w in dictionary if len(w) == self.bonus_counter]
         self.bonus = random.choice(word_pool).upper()
@@ -131,14 +135,14 @@ class Board():
         self.bonus_value += self.bonus_counter * 10
 
         self.bonus_display.text = f'{self.bonus} (+{self.bonus_value})'
-        self.bonus_display.update()
+        self.bonus_display.update(mult=mult, progress_floor=score)
 
-    def update_bonus(self, snake):
+    def update_bonus(self, snake, mult, score):
 
         if ''.join(snake.letters) == self.bonus:
-            self.bonus_display.update(border_color='green')
+            self.bonus_display.update(border_color='green', mult=mult, score=score)
         else:
-            self.bonus_display.update(border_color='dark_gray')
+            self.bonus_display.update(border_color='dark_gray', mult=mult, score=score)
 
     def update_tiles(self):
 
