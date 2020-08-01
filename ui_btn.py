@@ -21,7 +21,7 @@ class UI_Btn():
             'bg_silver_selected': pygame.Color('#d5e7e8'),
             'bg_stone': pygame.Color('#5f666b'),
             'black': pygame.Color('#000000'),
-            'border_active': pygame.Color('#0000ff'),
+            'border_active': pygame.Color('#546c7a'),
             'border_dark': pygame.Color('#202d36'),
             'dark_gray': pygame.Color('#546c7a'),
             'bomb': pygame.Color('#7c6e8a'),
@@ -61,7 +61,7 @@ class UI_Btn():
         self.marked = False
         self.surf = pygame.Surface(self.dims)
         self.text = text
-        self.text_color = text_color if text_color else self.colors['black']
+        self.text_color = text_color if text_color else self.colors['border_dark']
 
         if self.btn_type == 'tile':
             self.set_coords()
@@ -216,7 +216,7 @@ class UI_Btn():
             if self.enabled:
                 self.text_color = self.colors['gray']
             else:
-                self.text_color = self.colors['black']
+                self.text_color = self.colors['border_dark']
 
     def toggle_mark(self, board_mult):
 

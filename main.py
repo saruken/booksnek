@@ -155,13 +155,13 @@ def offset_from_element(element, corner, offset):
 
     return tuple([point[i] + offset[i] for i in range(len(point))])
 
-def score_word(snake, mult):
+def score_word(snake):
 
     value = 0
     for t in snake.tiles:
         value += t.point_value
 
-    return value * len(snake.tiles) * mult
+    return value * len(snake.tiles)
 
 def update_bomb_chance(display, last_five, snake, is_word):
 
@@ -209,7 +209,7 @@ def update_word_display(word_display, snake, bonus, mult):
         if len(word) > 2:
             if check_dictionary(word):
                 is_word = True
-                value = score_word(snake, mult)
+                value = score_word(snake)
                 if word == bonus:
                     value += len(bonus) * 10 * mult
                     color = 'green'
@@ -249,7 +249,7 @@ def main(dims):
     coords = offset_from_element(board.bonus_display, corner=(1, 0), offset=(10, 0))
     btn_scramble = ui_btn.UI_Btn(btn_type='btn', dims=(120, 40), coords=coords, text='SCRAMBLE', text_color='gray')
     coords = offset_from_element(btn_scramble, corner=(1, 0), offset=(10, 0))
-    score_display = ui_display.UI_Display(dims=(180, 40), coords=coords, text='0', text_color='gray')
+    score_display = ui_display.UI_Display(dims=(180, 40), coords=coords, text='0', text_color='gray', label='SCORE')
     coords = offset_from_element(btn_scramble, corner=(0, 1), offset=(0, 10))
     word_display = ui_display.UI_Display(dims=(310, 40), coords=coords, text_color='gray', label="SELECTED")
     coords = offset_from_element(word_display, corner=(0, 1), offset=(0, 10))
@@ -334,7 +334,7 @@ def main(dims):
                                         elif len(snake.tiles) > 2 or len(snake.tiles) == 2 and 'QU' in snake.letters:
                                             word = ''.join(snake.letters)
                                             if check_dictionary(word):
-                                                value = score_word(snake, board.multiplier)
+                                                value = score_word(snake)
                                                 history_word = {
                                                     'word': word,
                                                     'value': value,
@@ -422,7 +422,7 @@ if __name__ == '__main__':
     main(dims)
 
     #TODO:
-        # Bug: Bomb tile that's part of a word, that then cycles into another bomb tile -- Counter is not resetting?
+        # Possible bug: Bomb tile that's part of a word, that then cycles into another bomb tile -- Counter is not resetting?
         # Click-and-drag tiles to select; release to submit
         # Setup ui_btn and ui_display to inherit common attributes from single parent class
         # Save best score & word list

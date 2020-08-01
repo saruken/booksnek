@@ -1363,6 +1363,7 @@ aha
 ahchoo
 ahead
 ahem
+ahi
 ahoy
 aid
 aide
@@ -15947,7 +15948,6 @@ crystallographic
 crystallography
 crystals
 ctn
-ctr
 cub
 cubbyhole
 cubbyholes
@@ -20008,7 +20008,6 @@ diuretic
 diuretics
 diurnal
 diurnally
-div
 diva
 divalent
 divan
@@ -53604,7 +53603,6 @@ puzzlers
 puzzles
 puzzling
 pvt
-pwn
 pwned
 pwning
 pwns
@@ -55005,7 +55003,6 @@ recasting
 recasts
 recce
 recces
-recd
 recede
 receded
 recedes
@@ -73994,11 +73991,13 @@ usurpers
 usurping
 usurps
 usury
+ute
 utensil
 utensils
 uteri
 uterine
 uterus
+utes
 utilitarian
 utilitarianism
 utilitarians

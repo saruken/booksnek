@@ -3,7 +3,7 @@ from math import floor
 
 class UI_Display():
 
-    def __init__(self, dims, coords, label='', text='', text_align='center', text_color='black', text_offset=(0, 0), show_progress=False):
+    def __init__(self, dims, coords, label='', text='', text_align='center', text_color='dark_gray', text_offset=(0, 0), show_progress=False):
 
         self.colors = {
             'beige': pygame.Color('#aaaa66'),
