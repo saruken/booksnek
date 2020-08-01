@@ -422,10 +422,14 @@ if __name__ == '__main__':
     main(dims)
 
     #TODO:
-        # Possible bug: Bomb tile that's part of a word, that then cycles into another bomb tile -- Counter is not resetting?
+        # Possible bug: Bomb tile that's part of a word, that then cycles into another bomb tile -- Counter not resetting?
         # Click-and-drag tiles to select; release to submit
-        # Setup ui_btn and ui_display to inherit common attributes from single parent class
-        # Save best score & word list
+        # Big refactor
+            # Setup ui_btn and ui_display to inherit common attributes from single parent class
+        # Top menu
+            # Export score, longest, best & word list
+            # Save/load game
+            # New game
         # Bonuses for making shapes with the tiles in a word would be neat
     # Add
         #
