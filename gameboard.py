@@ -133,6 +133,13 @@ class Board():
         self.bonus_display.text = f'{self.bonus} (+{self.bonus_value})'
         self.bonus_display.update()
 
+    def update_bonus(self, snake):
+
+        if ''.join(snake.letters) == self.bonus:
+            self.bonus_display.update(border_color='border_gold')
+        else:
+            self.bonus_display.update(border_color='dark_gray')
+
     def update_tiles(self):
 
         for tile in self.tiles:

@@ -201,7 +201,7 @@ def update_selected_tiles(tiles, snake):
 
 def update_word_display(word_display, snake, bonus, mult):
 
-    color = 'red'
+    color = 'dark_gray'
     text = ''
     value = 0
     is_word = False
@@ -214,13 +214,15 @@ def update_word_display(word_display, snake, bonus, mult):
                 value = score_word(snake, mult)
                 if word == bonus:
                     value += len(bonus) * 10 * mult
-                    color = 'gold'
+                    color = 'border_gold'
                 else:
                     color = 'green'
+            else:
+                color = 'red'
 
         text = f"{word} (+{value})"
 
-    word_display.update(text=text, text_color=color)
+    word_display.update(text=text, border_color=color)
     return is_word
 
 
@@ -251,7 +253,7 @@ def main(dims):
     coords = offset_from_element(btn_scramble, corner=(1, 0), offset=(10, 0))
     score_display = ui_display.UI_Display(dims=(180, 40), coords=coords, text='0', text_color='gray')
     coords = offset_from_element(btn_scramble, corner=(0, 1), offset=(0, 10))
-    word_display = ui_display.UI_Display(dims=(310, 40), coords=coords)
+    word_display = ui_display.UI_Display(dims=(310, 40), coords=coords, text_color='gray')
     coords = offset_from_element(word_display, corner=(0, 1), offset=(0, 10))
     longest_display = ui_display.UI_Display(dims=(310, 34), coords=coords, label='LONGEST WORD', text_color='beige')
     coords = offset_from_element(longest_display, corner=(0, 1), offset=(0, 4))
@@ -382,6 +384,7 @@ def main(dims):
                                         snake.new(active_btn)
 
                             is_word = update_word_display(word_display, snake, board.bonus, board.multiplier)
+                            board.update_bonus(snake)
                             update_selected_tiles(board.tiles, snake)
                             update_bomb_chance(bomb_chance_display, last_five, snake, is_word)
 
@@ -390,8 +393,10 @@ def main(dims):
                         if btn_down_right and active_btn == btn_down_right:
                             if active_btn.can_mark:
                                 active_btn.toggle_mark()
-                                update_btn_clear_marked(btn_clear_marked, board.tiles)
                         btn_down_right = None
+
+                    update_btn_clear_marked(btn_clear_marked, board.tiles)
+                    board.update_bonus(snake)
 
             elif event.type == pygame.KEYDOWN:
                 last_typed = board.highlight_tiles_from_letter(board.tiles, event.key, last_typed)
@@ -421,11 +426,10 @@ if __name__ == '__main__':
         # Click-and-drag tiles to select; release to submit
         # Setup ui_btn and ui_display to inherit common attributes from single parent class
         # Save best score & word list
-        # Change border around word preview when it's a word / not a word / is the bonus word
         # Progress bar to advance multiplier
             # Resets to 0 if you get bonus
             # Bonus resets if you hit 100%
     # Add
-        # pec
+        #
     # Remove
         #

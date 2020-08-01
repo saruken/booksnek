@@ -22,6 +22,7 @@ class UI_Display():
             'black': pygame.Color('#000000'),
             'border_active': pygame.Color('#0000ff'),
             'border_dark': pygame.Color('#202d36'),
+            'border_gold': pygame.Color('#d4c413'),
             'dark_gray': pygame.Color('#546c7a'),
             'bomb': pygame.Color('#7c6e8a'),
             'gold': pygame.Color('#fce803'),
@@ -105,7 +106,6 @@ class UI_Display():
 
     def render_multicolor_text(self, text_obj):
 
-
         self.surf.fill(self.border_color)
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
 
@@ -187,8 +187,10 @@ class UI_Display():
 
         self.build_UI()
 
-    def update(self, text=None, text_color=None, multicolor_text=None):
+    def update(self, text=None, text_color=None, multicolor_text=None, border_color=None):
 
+        if border_color:
+            self.border_color = self.colors[border_color]
         if multicolor_text:
             self.render_multicolor_text(multicolor_text)
         else:
