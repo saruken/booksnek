@@ -42,17 +42,13 @@ def color_letters(tiles, history_entry):
 
     return history_entry
 
-def do_clear(tiles, btn_clear_marked):
+def do_clear(tiles, btn_clear_marked, mult):
 
     for tile in [t for t in tiles if t.marked]:
-        tile.toggle_mark()
+        tile.toggle_mark(mult)
 
     btn_clear_marked.enabled = False
     btn_clear_marked.update()
-
-def do_mark():
-
-    pass
 
 def do_scramble(snake, board):
 
@@ -214,9 +210,9 @@ def update_word_display(word_display, snake, bonus, mult):
                 value = score_word(snake, mult)
                 if word == bonus:
                     value += len(bonus) * 10 * mult
-                    color = 'border_gold'
-                else:
                     color = 'green'
+                else:
+                    color = 'teal'
             else:
                 color = 'red'
 
@@ -253,7 +249,7 @@ def main(dims):
     coords = offset_from_element(btn_scramble, corner=(1, 0), offset=(10, 0))
     score_display = ui_display.UI_Display(dims=(180, 40), coords=coords, text='0', text_color='gray')
     coords = offset_from_element(btn_scramble, corner=(0, 1), offset=(0, 10))
-    word_display = ui_display.UI_Display(dims=(310, 40), coords=coords, text_color='gray')
+    word_display = ui_display.UI_Display(dims=(310, 40), coords=coords, text_color='gray', label="SELECTED")
     coords = offset_from_element(word_display, corner=(0, 1), offset=(0, 10))
     longest_display = ui_display.UI_Display(dims=(310, 34), coords=coords, label='LONGEST WORD', text_color='beige')
     coords = offset_from_element(longest_display, corner=(0, 1), offset=(0, 4))
@@ -316,7 +312,7 @@ def main(dims):
                                 do_scramble(snake, board)
                                 last_typed = ''
                             elif active_btn == btn_clear_marked:
-                                do_clear(board.tiles, btn_clear_marked)
+                                do_clear(board.tiles, btn_clear_marked, board.multiplier)
                                 last_typed = ''
                             else:
                                 # If the clicked tile is already selected, and
@@ -384,7 +380,6 @@ def main(dims):
                                         snake.new(active_btn)
 
                             is_word = update_word_display(word_display, snake, board.bonus, board.multiplier)
-                            board.update_bonus(snake)
                             update_selected_tiles(board.tiles, snake)
                             update_bomb_chance(bomb_chance_display, last_five, snake, is_word)
 
@@ -392,7 +387,7 @@ def main(dims):
                     elif event.__dict__['button'] == 3:
                         if btn_down_right and active_btn == btn_down_right:
                             if active_btn.can_mark:
-                                active_btn.toggle_mark()
+                                active_btn.toggle_mark(board.multiplier)
                         btn_down_right = None
 
                     update_btn_clear_marked(btn_clear_marked, board.tiles)
@@ -423,13 +418,15 @@ if __name__ == '__main__':
     main(dims)
 
     #TODO:
+        # Bug: Bomb tile that's part of a word, that then cycles into another bomb tile -- Counter is not resetting
         # Click-and-drag tiles to select; release to submit
         # Setup ui_btn and ui_display to inherit common attributes from single parent class
         # Save best score & word list
         # Progress bar to advance multiplier
             # Resets to 0 if you get bonus
             # Bonus resets if you hit 100%
+        # Bonuses for making shapes with the tiles in a word would be neat
     # Add
-        #
+        # hir, hirself, vee, vees, dev, devs
     # Remove
         #

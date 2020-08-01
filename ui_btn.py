@@ -218,10 +218,10 @@ class UI_Btn():
             else:
                 self.text_color = self.colors['black']
 
-    def toggle_mark(self):
+    def toggle_mark(self, board_mult):
 
         self.marked = not self.marked
-        self.update()
+        self.update(board_mult)
 
     def unselect(self):
 
@@ -229,7 +229,7 @@ class UI_Btn():
         self.build_image(border_color=self.colors['gray'])
         self.build_UI()
 
-    def update(self, mult=1):
+    def update(self, board_mult=1):
 
         if self.btn_type == 'tile':
             if self.tile_type == 'bomb':
@@ -238,7 +238,7 @@ class UI_Btn():
                     self.letter = '_'
 
             self.update_multiplier()
-            self.update_point_value(mult)
+            self.update_point_value(board_mult)
 
         self.set_text_color()
         self.build_image()

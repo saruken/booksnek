@@ -7596,7 +7596,6 @@ boysenberry
 bozo
 bozos
 bpm
-bps
 bra
 brace
 braced
@@ -18439,6 +18438,7 @@ detritus
 deuce
 deuces
 deuterium
+dev
 devaluation
 devaluations
 devalue
@@ -18524,6 +18524,7 @@ devouter
 devoutest
 devoutly
 devoutness
+devs
 dew
 dewberries
 dewberry
@@ -31836,6 +31837,7 @@ hippy
 hips
 hipster
 hipsters
+hir
 hiragana
 hire
 hired
@@ -31845,6 +31847,7 @@ hirer
 hirers
 hires
 hiring
+hirself
 hirsute
 hirsuteness
 his
@@ -74305,6 +74308,7 @@ vector
 vectored
 vectoring
 vectors
+vee
 veejay
 veejays
 veep
@@ -74313,6 +74317,7 @@ veer
 veered
 veering
 veers
+vees
 veg
 vegan
 veganism

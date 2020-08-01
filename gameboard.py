@@ -136,7 +136,7 @@ class Board():
     def update_bonus(self, snake):
 
         if ''.join(snake.letters) == self.bonus:
-            self.bonus_display.update(border_color='border_gold')
+            self.bonus_display.update(border_color='green')
         else:
             self.bonus_display.update(border_color='dark_gray')
 
