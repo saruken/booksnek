@@ -5,9 +5,9 @@ import ui_btn, ui_display
 
 class Board():
 
-    def __init__(self, dictionary):
+    def __init__(self, coords, dictionary):
 
-        self.offset = (10, 10)
+        self.coords = coords
         self.dims = (360, 448)
         self.multiplier = 1
 
@@ -37,7 +37,7 @@ class Board():
     def create_bonus_display(self):
 
         dims = (336, 40)
-        coords = (10, 10)
+        coords = self.coords
 
         self.bonus_display = ui_display.UI_Display(dims=dims, coords=coords, text_color='gray', label='BONUS WORD', show_progress=True)
 

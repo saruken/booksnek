@@ -4,7 +4,7 @@ from numpy.random import choice
 
 class UI_Btn():
 
-    def __init__(self, btn_type, dims=None, coords=None, col=None, row=None, text=None, text_color=None, enabled=True, can_mark=False):
+    def __init__(self, btn_type, dims=None, coords=None, col=None, row=None, text=None, text_color=None, border_color=None, enabled=True, can_mark=False):
 
         self.btn_type = btn_type
         self.colors = {
@@ -15,6 +15,8 @@ class UI_Btn():
             'bg_crystal_selected': pygame.Color('#76bff5'),
             'bg_gold': pygame.Color('#ebc334'),
             'bg_gold_selected': pygame.Color('#fcde72'),
+            'bg_gray': pygame.Color('#4e575c'),
+            'bg_gray_inactive': pygame.Color('#4e575c'),
             'bg_normal': pygame.Color('#c1a663'),
             'bg_normal_selected': pygame.Color('#f0d081'),
             'bg_silver': pygame.Color('#9eadad'),
@@ -44,7 +46,7 @@ class UI_Btn():
             self.bomb_timer = 5
             self.col = col
             self.dims = (48, 48)
-            self.offset = (10, 110) if self.col % 2 else (10, 110 + (self.dims[0] / 2))
+            self.offset = (10, 168) if self.col % 2 else (10, 168 + (self.dims[0] / 2))
             self.row = row
             self.selected = False
             self.tile_type = 'normal'
@@ -71,7 +73,10 @@ class UI_Btn():
             self.update_point_value()
             self.set_text_color()
 
-        self.build_image()
+        if border_color:
+            self.build_image(self.colors[border_color])
+        else:
+            self.build_image()
         self.build_UI()
 
     def build_image(self, border_color=None):
@@ -82,7 +87,7 @@ class UI_Btn():
             if self.enabled:
                 bg_color = self.colors['ocean']
             else:
-                bg_color = self.colors['dark_gray']
+                bg_color = self.colors['bg_gray_inactive']
 
         if not border_color:
             if self.enabled:

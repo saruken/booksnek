@@ -50,6 +50,14 @@ def do_clear(tiles, btn_clear_marked, mult):
     btn_clear_marked.enabled = False
     btn_clear_marked.update()
 
+def do_open():
+
+    print('open')
+
+def do_save():
+
+    print('save')
+
 def do_scramble(snake, board):
 
     snake.new()
@@ -172,7 +180,9 @@ def update_bomb_chance(display, last_five, snake, is_word):
             new_five.append(len(''.join(snake.letters)))
         avg = round(sum(new_five) / len(new_five), 1)
         text = str(snake.get_bomb_weight(avg) * 100) + '%'
-        display.update(text=text)
+    else:
+        text = '--%'
+    display.update(text=text)
 
 def update_btn_clear_marked(btn_clear_marked, tiles):
 
@@ -185,8 +195,9 @@ def update_btn_clear_marked(btn_clear_marked, tiles):
 
 def update_multiplier(display, board, score, value):
 
-    board.multiplier += 1
-    board.bonus_counter += 1
+    if score:
+        board.multiplier += 1
+        board.bonus_counter += 1
     display.update(text=f'x{board.multiplier}')
     board.set_bonus(DICTIONARY, board.multiplier, score + value)
 
@@ -229,38 +240,45 @@ def main(dims):
     global DICTIONARY
 
     window_surface = pygame.display.set_mode(dims)
+    bg_color = pygame.Color('#38424d')
     background = pygame.Surface(dims)
-    background.fill(pygame.Color('#38424d'))
+    background.fill(bg_color)
 
     clock = pygame.time.Clock()
     is_running = True
-
-    # Board
     score = 0
     history = []
 
-    board = gameboard.Board(DICTIONARY)
+    menu = ui_display.UI_Display(dims=(348, 60), coords=(-2, -2))
+    coords = offset_from_element(menu, corner=(0, 0), offset=(10, 10))
+    menu_new = ui_btn.UI_Btn(btn_type='btn', dims=(52, 40), coords=coords, text='NEW', text_color='gray')
+    coords = offset_from_element(menu_new, corner=(1, 0), offset=(10, 0))
+    menu_open = ui_btn.UI_Btn(btn_type='btn', dims=(63, 40), coords=coords, text='OPEN', text_color='gray')
+    coords = offset_from_element(menu_open, corner=(1, 0), offset=(10, 0))
+    menu_save = ui_btn.UI_Btn(btn_type='btn', dims=(63, 40), coords=coords, text='SAVE', enabled=False)
+    coords = offset_from_element(menu, corner=(0, 1), offset=(12, 10))
+    board = gameboard.Board(coords=coords, dictionary=DICTIONARY)
     coords = offset_from_element(board.bonus_display, corner=(0, 1), offset=(0, 10))
     bomb_chance_display = ui_display.UI_Display(dims=(120, 40), coords=coords, label='BOMB' ,text='--%', text_color='gray')
     coords = offset_from_element(bomb_chance_display, corner=(1, 0), offset=(10, 0))
     multiplier_display = ui_display.UI_Display(dims=(96, 40), coords=coords, label='MULT.', text='x1', text_color='gray')
     coords = offset_from_element(multiplier_display, corner=(1, 0), offset=(10, 0))
     btn_clear_marked = ui_btn.UI_Btn(btn_type='btn', dims=(100, 40), coords=coords, text='UNMARK', enabled=False)
-    coords = offset_from_element(board.bonus_display, corner=(1, 0), offset=(10, 0))
+    coords = offset_from_element(menu_save, corner=(1, 0), offset=(10, 0))
     btn_scramble = ui_btn.UI_Btn(btn_type='btn', dims=(120, 40), coords=coords, text='SCRAMBLE', text_color='gray')
-    coords = offset_from_element(btn_scramble, corner=(1, 0), offset=(10, 0))
-    score_display = ui_display.UI_Display(dims=(180, 40), coords=coords, text='0', text_color='gray', label='SCORE')
-    coords = offset_from_element(btn_scramble, corner=(0, 1), offset=(0, 10))
+    coords = offset_from_element(btn_scramble, corner=(1, 0), offset=(20, 0))
+    score_display = ui_display.UI_Display(dims=(310, 40), coords=coords, text='0', text_color='gray', label='SCORE')
+    coords = offset_from_element(score_display, corner=(0, 1), offset=(0, 10))
     word_display = ui_display.UI_Display(dims=(310, 40), coords=coords, text_color='gray', label="SELECTED")
     coords = offset_from_element(word_display, corner=(0, 1), offset=(0, 10))
     longest_display = ui_display.UI_Display(dims=(310, 34), coords=coords, label='LONGEST WORD', text_color='beige')
     coords = offset_from_element(longest_display, corner=(0, 1), offset=(0, 4))
     best_display = ui_display.UI_Display(dims=(310, 34), coords=coords, label='HIGHEST SCORE', text_color='beige', text_align='left', text_offset=(30, 2))
     coords = offset_from_element(best_display, corner=(0, 1), offset=(0, 4))
-    word_history = ui_display.UI_Display(dims=(310, 308), coords=coords, label='WORD LIST')
-    ui_elements = [score_display, word_display, word_history, btn_scramble, longest_display, best_display]
+    word_history = ui_display.UI_Display(dims=(310, 369), coords=coords, label='WORD LIST')
+    ui_elements = [score_display, word_display, word_history, longest_display, best_display]
     ui_elements += [tile for tile in board.tiles]
-    ui_elements += [board.bonus_display, bomb_chance_display, multiplier_display, btn_clear_marked]
+    ui_elements += [board.bonus_display, bomb_chance_display, multiplier_display, btn_clear_marked, menu, menu_new, menu_open, menu_save, btn_scramble]
 
     mouse_events = [pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]
     mouse_down = False
@@ -310,12 +328,42 @@ def main(dims):
                     if event.__dict__['button'] == 1:
                         mouse_down = False
                         if btn_down and active_btn == btn_down:
-                            if active_btn == btn_scramble:
+                            if active_btn == menu_new:
+                                snake.new()
+                                board.multiplier = 1
+                                board.scramble()
+                                for t in board.tiles:
+                                    if t.tile_type == 'stone':
+                                        t.choose_letter()
+                                    t.tile_type = 'normal'
+                                    t.bomb_timer = 5
+                                    t.update()
+                                board.bonus_display.update()
+                                board.bonus_counter = 3
+                                board.set_bonus(DICTIONARY)
+                                score = 0
+                                update_multiplier(multiplier_display, board, score, value)
+                                score_display.update(text=score)
+                                word_best = ''
+                                longest_display.update(text='')
+                                word_longest = ''
+                                best_display.update(text='')
+                                history = []
+                                last_five = []
+                                word_history.update(text='')
+                                update_bomb_chance(bomb_chance_display, last_five, snake, is_word)
+                            elif active_btn == menu_open:
+                                do_open()
+                            elif active_btn == menu_save:
+                                if menu_save.enabled:
+                                    do_save()
+                            elif active_btn == btn_scramble:
                                 do_scramble(snake, board)
                                 last_typed = ''
                             elif active_btn == btn_clear_marked:
-                                do_clear(board.tiles, btn_clear_marked, board.multiplier)
-                                last_typed = ''
+                                if btn_clear_marked.enabled:
+                                    do_clear(board.tiles, btn_clear_marked, board.multiplier)
+                                    last_typed = ''
                             else:
                                 # If the clicked tile is already selected, and
                                 # the last tile in the snake, submit the word.
@@ -410,7 +458,7 @@ def main(dims):
 
 if __name__ == '__main__':
 
-    dims = (677, 504)
+    dims = (676, 564)
 
     global DICTIONARY
 
@@ -422,7 +470,6 @@ if __name__ == '__main__':
     main(dims)
 
     #TODO:
-        # Possible bug: Bomb tile that's part of a word, that then cycles into another bomb tile -- Counter not resetting?
         # Click-and-drag tiles to select; release to submit
         # Big refactor
             # Setup ui_btn and ui_display to inherit common attributes from single parent class
@@ -431,6 +478,8 @@ if __name__ == '__main__':
             # Save/load game
             # New game
         # Bonuses for making shapes with the tiles in a word would be neat
+        # Tie animation speed to delta
+        # Controller support!
     # Add
         #
     # Remove
