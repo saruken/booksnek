@@ -240,7 +240,7 @@ class UI_Btn():
             if self.tile_type == 'bomb':
                 if self.bomb_timer == 0:
                     self.tile_type = 'stone'
-                    self.letter = '_'
+                    self.letter = '__'
 
             self.update_multiplier()
             self.update_point_value(board_mult)

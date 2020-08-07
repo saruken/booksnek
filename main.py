@@ -471,7 +471,13 @@ if __name__ == '__main__':
 
     #TODO:
         # Click-and-drag tiles to select; release to submit
+        # The "progress" meter should be for "levels", which should act as separate multipliers. So a word is scored by sum(letters) * mult * lv
+            # Don't reset progress when mult increases
+            # Don't increase mult when lv increases
+            # Replace "bomb chance" with Lv display
+        # Redo bomb chance as piecewise fn
         # Big refactor
+            # "Game" class that stores all globals
             # Setup ui_btn and ui_display to inherit common attributes from single parent class
         # Top menu
             # Export score, longest, best & word list
@@ -480,6 +486,7 @@ if __name__ == '__main__':
         # Bonuses for making shapes with the tiles in a word would be neat
         # Tie animation speed to delta
         # Controller support!
+        # Add mult to "highest score" display, e.g. "JADES (+435 / x3)"
     # Add
         #
     # Remove

@@ -7897,6 +7897,8 @@ brewing
 brewpub
 brewpubs
 brews
+briar
+briars
 bribe
 bribed
 briber
@@ -16669,8 +16671,12 @@ dauntlessness
 daunts
 dauphin
 dauphins
+daven
+davened
+davening
 davenport
 davenports
+davens
 davit
 davits
 dawdle
@@ -21093,6 +21099,7 @@ dugout
 dugouts
 duh
 duke
+duked
 dukedom
 dukedoms
 dukes
@@ -31964,8 +31971,10 @@ hocks
 hockshop
 hockshops
 hod
+hodge
 hodgepodge
 hodgepodges
+hodges
 hods
 hoe
 hoecake
@@ -36862,8 +36871,11 @@ juicy
 jujitsu
 jujube
 jujubes
+juke
 jukebox
 jukeboxes
+juked
+jukes
 julep
 juleps
 julienne
@@ -39228,6 +39240,8 @@ lodgers
 lodges
 lodging
 lodgings
+loess
+loesses
 loft
 lofted
 loftier
@@ -47741,6 +47755,7 @@ panderers
 pandering
 panders
 pane
+paned
 panegyric
 panegyrics
 panel
@@ -77598,6 +77613,8 @@ zests
 zesty
 zeta
 zetas
+zig
+zigs
 zigzag
 zigzagged
 zigzagging
