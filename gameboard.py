@@ -1,59 +1,53 @@
 import pygame
-import random
 
-import ui_btn, ui_display
+import ui
 
 class Board():
-
-    def __init__(self, coords, dictionary):
-
+    def __init__(self, dims, coords, colors):
+        self.background = pygame.Surface(dims)
+        self.background.fill(colors['bg_back'])
         self.coords = coords
-        self.dims = (360, 448)
-        self.multiplier = 1
 
-        self.create_bonus_display()
+        self.menu_bg = ui.Display(dims=(348, 60), coords=(-2, -2), colors=colors)
+        coords = offset_from_element(self.menu_bg, corner=(0, 0), offset=(10, 10))
+        self.menu_new = ui.Interactive(dims=(52, 40), coords=coords, text='NEW', colors=colors, text_color='gray')
+        coords = offset_from_element(self.menu_new, corner=(1, 0), offset=(10, 0))
+        self.menu_open = ui.Interactive(dims=(63, 40), coords=coords, text='OPEN', text_color='gray', colors=colors)
+        coords = offset_from_element(self.menu_open, corner=(1, 0), offset=(10, 0))
+        self.menu_save = ui.Interactive(dims=(63, 40), coords=coords, text='SAVE', enabled=False, colors=colors)
+        coords = offset_from_element(self.menu_bg, corner=(0, 1), offset=(0, 10))
+        self.bonus_display = ui.Display(dims=(336, 40), coords=coords, colors=colors, text_color='gray', label='BONUS WORD', show_progress=True)
+        coords = offset_from_element(self.bonus_display, corner=(0, 1), offset=(0, 10))
+        self.level_display = ui.Display(dims=(120, 40), coords=coords, colors=colors, label='BOMB' ,text='--%', text_color='gray')
+        coords = offset_from_element(self.level_display, corner=(1, 0), offset=(10, 0))
+        self.multiplier_display = ui.Display(dims=(96, 40), coords=coords, colors=colors, label='MULT.', text='x1', text_color='gray')
+        coords = offset_from_element(self.multiplier_display, corner=(1, 0), offset=(10, 0))
+        self.btn_clear_marked = ui.Interactive(dims=(100, 40), coords=coords, text='UNMARK', enabled=False, colors=colors)
+        coords = offset_from_element(self.menu_save, corner=(1, 0), offset=(10, 0))
+        self.btn_scramble = ui.Interactive(dims=(120, 40), coords=coords, colors=colors, text='SCRAMBLE', text_color='gray')
+        coords = offset_from_element(self.btn_scramble, corner=(1, 0), offset=(20, 0))
+        self.score_display = ui.Display(dims=(310, 40), coords=coords, colors=colors, text='0', text_color='gray', label='SCORE')
+        coords = offset_from_element(self.score_display, corner=(0, 1), offset=(0, 10))
+        self.word_display = ui.Display(dims=(310, 40), coords=coords, colors=colors, text_color='gray', label="SELECTED")
+        coords = offset_from_element(self.word_display, corner=(0, 1), offset=(0, 10))
+        self.longest_display = ui.Display(dims=(310, 34), coords=coords, colors=colors, label='LONGEST WORD', text_color='beige')
+        coords = offset_from_element(self.longest_display, corner=(0, 1), offset=(0, 4))
+        self.best_display = ui.Display(dims=(310, 34), coords=coords, colors=colors, label='HIGHEST SCORE', text_color='beige', text_align='left', text_offset=(30, 2))
+        coords = offset_from_element(self.best_display, corner=(0, 1), offset=(0, 4))
+        self.history_display = ui.Display(dims=(310, 369), coords=coords, colors=colors, label='WORD LIST')
 
-        self.create_tiles()
+        self.ui_elements = [self.bonus_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.bonus_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
 
-        self.bonus_counter = 3
-        self.set_bonus(dictionary)
-
-    def animate(self):
-
-        to_animate = [t for t in self.tiles if t.target != t.coords]
-        if not to_animate:
-            return
-
-        for t in to_animate:
-            t.ay += .4
-            t.coords = (t.coords[0], min(t.coords[1] + t.ay, t.target[1]))
-            if t.coords[1] == t.target[1]:
-                t.ay = 0
-
-    def check_bonus_progress(self):
-
-        return bool(self.bonus_display.progress >= self.bonus_display.progress_max)
-
-    def create_bonus_display(self):
-
-        dims = (336, 40)
-        coords = self.coords
-
-        self.bonus_display = ui_display.UI_Display(dims=dims, coords=coords, text_color='gray', label='BONUS WORD', show_progress=True)
-
-    def create_tiles(self):
-
+    def create_tiles(self, colors):
         tiles = []
-
         # Every other column has 7 and 8 tiles, starting and ending with 7s
         for col in range(7):
             for row in range(7 + col % 2):
-                tiles.append(ui_btn.UI_Btn(btn_type='tile', col=col, row=row, can_mark=True))
+                tiles.append(ui.Tile(col=col, row=row, colors=colors))
 
-        self.tiles = tiles
+        return tiles
 
-    def highlight_tiles_from_letter(self, tiles, key, last_typed):
-
+    def highlight_tiles_from_letter(self, key):
         letter = pygame.key.name(key).upper()
         if letter == 'Q':
             letter = 'Qu'
@@ -73,8 +67,89 @@ class Board():
         # Return typed key to store as last_typed
         return letter
 
-    def lookup_point_value(self, letter):
+    def is_neighbor(new_tile, old_tile):
 
+        '''
+        There are 4 'false' neighbors, depending on which col old_tile
+        is in:
+            Even old_tile.cols:
+                new_c == old_c + 1 and new_r == old_r + 1
+                new_c == old_c - 1 and new_r == old_r + 1
+            Odd old_tile.cols:
+                new_c == old_c - 1 and new_r == old_r - 1
+                new_c == old_c + 1 and new_r == old_r - 1
+        These look good on paper, but looking at the actual arrangement
+        of tiles shows them to be erroneous:
+
+            E C
+            V O           O C
+            E L           D O
+            N             D L
+
+            B B       A A     C C
+        A A B B C C   A A 1 1 C C
+        A A 1 1 C C   0 0 1 1 2 2
+        0 0 1 1 2 2   0 0 X X 2 2
+        0 0 X X 2 2   5 5 X X 3 3
+        5 5 X X 3 3   5 5 4 4 3 3
+        5 5 4 4 3 3   F F 4 4 D D
+        F F 4 4 D D   F F E E D D
+        F F E E D D       E E
+            E E
+
+        'X' = old_tile
+        'D' and 'F' are false neighbors for even column 'X' tiles
+        'A' and 'C' are false neighbors for odd column 'X' tiles
+        '''
+
+        new_c, old_c = new_tile.col, old_tile.col
+        new_r, old_r = new_tile.row, old_tile.row
+
+        # Odd columns
+        if old_tile.col % 2:
+            # 2 o'clock
+            if new_c == old_c + 1 and new_r == old_r - 1:
+                return True
+            # 4 o'clock
+            elif new_c == old_c + 1 and new_r == old_r:
+                return True
+            # 8 o'clock
+            elif new_c == old_c - 1 and new_r == old_r:
+                return True
+            # 10 o'clock
+            elif new_c == old_c - 1 and new_r == old_r - 1:
+                return True
+
+        # Even columns
+        else:
+            # 2 o'clock
+            if new_c == old_c + 1 and new_r == old_r:
+                return True
+            # 4 o'clock
+            elif new_c == old_c + 1 and new_r == old_r + 1:
+                return True
+            # 8 o'clock
+            elif new_c == old_c - 1 and new_r == old_r + 1:
+                return True
+            # 10 o'clock
+            elif new_c == old_c - 1 and new_r == old_r:
+                return True
+
+        # Parity agnostic columns
+        # 12 o'clock
+        if new_c == old_c and new_r == old_r - 1:
+            return True
+        # 6 o'clock
+        elif new_c == old_c and new_r == old_r + 1:
+            return True
+
+        # Self
+        if old_tile  == new_tile:
+            return True
+
+        return False
+
+    def lookup_letter_value(self, letter):
         if letter in 'AEILNORSTU':
             return 1
         elif letter in 'DG':
@@ -90,52 +165,15 @@ class Board():
         else:
             return 10
 
-    def reset_rows(self):
-
-        for col in range(7):
-            col_tiles = [t for t in self.tiles if t.col == col]
-            # Check if col needs rearranging
-            if [x for x in col_tiles if x.row < 0]:
-                col_tiles.sort(key=lambda t: t.row)
-                for i in range(8):
-                    try:
-                        # Set row values back to 0-7
-                        col_tiles[i].row = i
-                        col_tiles[i].set_target(from_row_col=True)
-                    except IndexError:
-                        # Handle even (7 member) cols
-                        pass
-
-    def scramble(self):
-
-        try:
-            bomb = random.choice([t for t in self.tiles if (t.row == 0 and t.tile_type == 'normal')])
-            bomb.tile_type = 'bomb'
-            bomb.bomb_timer = 6
-        except IndexError: # No normal tiles on top row
-            pass
-        for tile in self.tiles:
-            if tile.tile_type == 'bomb':
-                tile.bomb_timer -= 1
-            elif tile.tile_type != 'stone':
-                tile.marked = False
-                tile.choose_letter()
-                tile.tile_type = 'normal'
-            tile.update(self.multiplier)
-
-    def set_bonus(self, dictionary, mult=1, score=0):
-
-        word_pool = [w for w in dictionary if len(w) == self.bonus_counter]
-        self.bonus = random.choice(word_pool).upper()
-
-        self.bonus_value = 0
-        for letter in self.bonus:
-            self.bonus_value += self.lookup_point_value(letter)
-        self.bonus_value *= self.bonus_counter * self.multiplier
-        self.bonus_value += self.bonus_counter * 10
-
-        self.bonus_display.text = f'{self.bonus} (+{self.bonus_value})'
-        self.bonus_display.update(mult=mult, progress_floor=score)
+    def update(self):
+        if self.tiles:
+            self.last = self.tiles[-1]
+            self.letters = ''.join([t.letter for t in self.tiles])
+            self.length = len(self.letters)
+        else:
+            self.last = None
+            self.letters = None
+            self.length = 0
 
     def update_bonus(self, snake, mult, score):
 
@@ -144,9 +182,6 @@ class Board():
         else:
             self.bonus_display.update(border_color='dark_gray', mult=mult, score=score)
 
-    def update_tiles(self):
-
-        for tile in self.tiles:
-            if tile.tile_type == 'bomb':
-                tile.bomb_timer -= 1
-            tile.update(self.multiplier)
+def offset_from_element(element, corner, offset):
+    point = [element.coords[i] + element.surf.get_size()[i] if corner[i] else element.coords[i] for i in range(len(corner))]
+    return tuple([point[i] + offset[i] for i in range(len(point))])
