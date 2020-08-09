@@ -62,7 +62,6 @@ class Display(BaseObj):
 
         if self.text:
             # Render text
-            print(f'Display build_image() sees self.text as "{self.text}"')
             surf = self.fonts['btn'].render(str(self.text), True, self.text_color, self.bg_color)
             # Horiz align
             if self.text_align == 'left':
@@ -81,6 +80,10 @@ class Display(BaseObj):
             surf.fill(self.bg_color)
             surf.blit(text, (10, 0))
             self.surf.blit(surf, (14, -2))
+
+    def set_border_color(self, color):
+        self.border_color = color
+        self.update()
 
     def set_colored_text(self, text_obj):
         self.surf.fill(self.border_color)
@@ -195,13 +198,11 @@ class Interactive(BaseObj):
 
     def mouse_out(self):
         self.hovered = False
-        self.set_colors()
-        self.build_image()
+        self.update()
 
     def mouse_over(self):
         self.hovered = True
-        self.set_colors()
-        self.build_image()
+        self.update()
 
     def set_colors(self):
         if self.enabled:
@@ -215,8 +216,8 @@ class Interactive(BaseObj):
             self.border_color = self.colors['ocean']
             self.text_color = self.colors['bomb']
 
-    def unselect(self):
-        self.selected = False
+    def update(self):
+        self.set_colors()
         self.build_image()
 
 class Tile():

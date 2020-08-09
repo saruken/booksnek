@@ -175,12 +175,11 @@ class Board():
             self.letters = None
             self.length = 0
 
-    def update_bonus(self, snake, mult, score):
-
-        if ''.join(snake.letters) == self.bonus:
-            self.bonus_display.update(border_color='green', mult=mult, score=score)
+    def update_bonus_color(self, bonus_word, snake_word, colors):
+        if bonus_word == snake_word:
+            self.bonus_display.set_border_color(colors['green'])
         else:
-            self.bonus_display.update(border_color='dark_gray', mult=mult, score=score)
+            self.bonus_display.set_border_color(colors['dark_gray'])
 
 def offset_from_element(element, corner, offset):
     point = [element.coords[i] + element.surf.get_size()[i] if corner[i] else element.coords[i] for i in range(len(corner))]

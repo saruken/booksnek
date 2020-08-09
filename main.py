@@ -138,7 +138,7 @@ def main():
                                 active_btn.toggle_mark()
                         btn_down_right = None
                     game.update_btn_clear_marked()
-                    board.update_bonus(snake, board.multiplier, score)
+                    game.update_bonus_color()
             elif event.type == pygame.KEYDOWN:
                 last_typed = game.board.highlight_tiles_from_letter(event.key, game.last_typed)
 

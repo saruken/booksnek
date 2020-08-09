@@ -268,8 +268,15 @@ class Game:
 
         self.snake.tiles = self.snake.tiles[:index]
 
+    def update_bonus_color(self):
+        self.board.update_bonus_color(self.bonus_word, self.snake.word, self.colors)
+
     def update_bonus_display(self):
         self.board.bonus_display.set_text(f'{self.bonus_word} (+{str(self.score_word())})')
+
+    def update_btn_clear_marked(self):
+        self.board.btn_clear_marked.enabled = bool(len([t for t in self.tiles if t.marked]))
+        self.board.btn_clear_marked.update()
 
     def update_history_display(self):
         self.board.history_display.set_colored_text(self.history)
