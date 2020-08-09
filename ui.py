@@ -7,51 +7,35 @@ class BaseObj:
         self.colors = colors
         self.fonts = {
             'btn': pygame.font.Font('VCR_OSD_MONO.ttf', 18),
-            'letter': pygame.font.Font('VCR_OSD_MONO.ttf', 36),
-            'point_value': pygame.font.Font('VCR_OSD_MONO.ttf', 12)
+            'small': pygame.font.Font('VCR_OSD_MONO.ttf', 12)
         }
 
         self.border_color = self.colors['mid_gray']
         self.coords = coords
         self.dims = dims
+        self.interactive = False
         self.surf = pygame.Surface(self.dims)
 
     def get_abs_rect(self):
         return pygame.Rect(self.coords, self.dims)
 
-    def mouse_out(self):
-        if self.can_hover:
-            self.hovered = False
-            self.build_image()
-
-    def mouse_over(self):
-        if self.can_hover:
-            self.hovered = True
-            self.build_image(border_color=self.colors['border_active'])
-
-    def set_coords(self, dy=0):
-        x = self.offset[0] + (self.dims[0] * self.col)
-        y = self.offset[1] + (self.dims[1] * self.row) + dy
-
-        self.coords = (x, y)
-
     def set_text_color(self):
         if self.btn_type == 'tile':
             if self.tile_type == 'bomb':
-                self.text_color = self.colors['gray']
+                self.text_color = self.colors['light_gray']
             else:
                 self.text_color = self.colors['black']
         else:
             if self.enabled:
-                self.text_color = self.colors['gray']
+                self.text_color = self.colors['light_gray']
             else:
                 self.text_color = self.colors['dark_gray']
 
 class Display(BaseObj):
-    def __init__(self, dims, coords, colors, text=None, text_color=None, label=None, show_progress=None, text_align=None, text_offset=[0, 0]):
+    def __init__(self, dims, coords, colors, text=None, text_color=None, text_prefix='', text_align=None, text_offset=[0, 0], label=None, show_progress=None):
         super(Display, self).__init__(dims=dims, coords=coords, colors=colors)
         self.bg_color = self.colors['bg_main']
-        self.border_color = self.colors['dark_gray']
+        self.border_color = self.colors['mid_gray']
         self.label = label
         self.letter_height = 19
         self.letter_width = 19
@@ -63,6 +47,7 @@ class Display(BaseObj):
         self.text_align = text_align
         self.text_color = self.colors[text_color] if text_color else None
         self.text_offset = text_offset
+        self.text_prefix = text_prefix
 
         self.update()
 
@@ -77,6 +62,7 @@ class Display(BaseObj):
 
         if self.text:
             # Render text
+            print(f'Display build_image() sees self.text as "{self.text}"')
             surf = self.fonts['btn'].render(str(self.text), True, self.text_color, self.bg_color)
             # Horiz align
             if self.text_align == 'left':
@@ -89,12 +75,12 @@ class Display(BaseObj):
             offset_y = floor((self.surf.get_size()[1] - surf.get_size()[1]) / 2) + self.text_offset[1]
             self.surf.blit(surf, dest=(offset_x, offset_y))
 
-            if self.label:
-                text = self.fonts['point_value'].render(str(self.label), True, self.colors['dark_gray'])
-                surf = pygame.Surface((text.get_size()[0] + 20, text.get_size()[1]))
-                surf.fill(self.bg_color)
-                surf.blit(text, (10, 0))
-                self.surf.blit(surf, (14, -2))
+        if self.label:
+            text = self.fonts['small'].render(str(self.label), True, self.colors['mid_gray'])
+            surf = pygame.Surface((text.get_size()[0] + 20, text.get_size()[1]))
+            surf.fill(self.bg_color)
+            surf.blit(text, (10, 0))
+            self.surf.blit(surf, (14, -2))
 
     def set_colored_text(self, text_obj):
         self.surf.fill(self.border_color)
@@ -126,7 +112,7 @@ class Display(BaseObj):
             self.set_label()
 
     def set_label(self):
-        text = self.fonts['point_value'].render(str(self.label), True, self.colors['dark_gray'], self.bg_color)
+        text = self.fonts['small'].render(str(self.label), True, self.colors['dark_gray'], self.bg_color)
         surf = pygame.Surface((text.get_size()[0] + 20, text.get_size()[1]))
         surf.fill(self.bg_color)
         surf.blit(text, (10, 0))
@@ -180,57 +166,72 @@ class Display(BaseObj):
 
     def update(self, text=None):
         if text:
-            self.text = text
+            self.text = self.text_prefix + str(text)
         self.build_image()
 
 class Interactive(BaseObj):
     def __init__(self, dims, coords, colors, text, text_color=None, enabled=True):
         super(Interactive, self).__init__(dims=dims, coords=coords, colors=colors)
+        self.bg_color = self.colors['ocean']
+        self.border_color = None
         self.enabled = enabled
         self.hovered = False
+        self.interactive = True
         self.selected = False
         self.text = text
-        self.text_color = self.colors[text_color] if text_color else self.colors['gray']
 
         self.build_image()
 
     def build_image(self):
-        if self.enabled:
-            bg_color = self.colors['ocean']
-        else:
-            bg_color = self.colors['gray']
-
-        if not self.border_color:
-            if self.enabled:
-                border_color = self.colors['gray']
-            else:
-                border_color = self.colors['ocean']
-
+        self.set_colors()
         self.surf.fill(self.border_color)
-        pygame.draw.rect(self.surf, bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
+        pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
         # Render text
-        surf = self.fonts['btn'].render(self.text, True, self.text_color, bg_color)
+        surf = self.fonts['btn'].render(self.text, True, self.text_color, self.bg_color)
         # Horiz/vert align center
         offset = tuple([floor((self.dims[i]) - surf.get_size()[i]) / 2 for i in range(2)])
 
         self.surf.blit(surf, dest=offset)
 
-    def select(self):
-        self.selected = True
+    def mouse_out(self):
+        self.hovered = False
+        self.set_colors()
         self.build_image()
+
+    def mouse_over(self):
+        self.hovered = True
+        self.set_colors()
+        self.build_image()
+
+    def set_colors(self):
+        if self.enabled:
+            self.text_color = self.colors['light_gray']
+            if self.hovered:
+                self.border_color = self.colors['light_gray']
+            else:
+                self.border_color = self.colors['mid_gray']
+
+        else:
+            self.border_color = self.colors['ocean']
+            self.text_color = self.colors['bomb']
 
     def unselect(self):
         self.selected = False
         self.build_image()
 
-class Tile(Interactive):
+class Tile():
     def __init__(self, colors, col, row):
-        super(Tile, self).__init__(dims=(48, 48), coords=(0, 0), text='', colors=colors)
         self.ay = 0
         self.bomb_timer = 5
-        self.border_color = self.colors['gray']
         self.col = col
+        self.colors = colors
         self.dims = (48, 48)
+        self.fonts = {
+            'letter': pygame.font.Font('VCR_OSD_MONO.ttf', 36),
+            'small': pygame.font.Font('VCR_OSD_MONO.ttf', 12)
+        }
+        self.hovered = False
+        self.interactive = True
         self.level = 1
         self.marked = False
         self.multiplier = 1
@@ -238,7 +239,12 @@ class Tile(Interactive):
         self.point_value = 0
         self.row = row
         self.selected = False
+        self.surf = pygame.Surface(self.dims)
+        self.text_color = self.colors['black']
         self.tile_type = 'normal'
+
+        self.bg_color = self.colors['beige']
+        self.border_color = self.colors['light_gray']
 
         self.set_coords()
         self.set_target()
@@ -254,7 +260,7 @@ class Tile(Interactive):
             self.tile_type = 'stone'
             self.letter = '__'
 
-    def build_tile_image(self):
+    def build_image(self):
         bg_color = self.colors[f'bg_{self.tile_type}{"_selected" if self.selected else ""}']
 
         self.surf.fill(self.border_color)
@@ -266,7 +272,7 @@ class Tile(Interactive):
             offset = (2, 2)
         else:
             # Render point value
-            surf_pts = self.fonts['point_value'].render(str(self.point_value), True, self.text_color, bg_color)
+            surf_pts = self.fonts['small'].render(str(self.point_value), True, self.text_color, bg_color)
             # Align bottom/right
             pts_offset = tuple([self.surf.get_size()[i] - surf_pts.get_size()[i] - 3 for i in range(2)])
             self.surf.blit(surf_pts, dest=pts_offset)
@@ -278,7 +284,7 @@ class Tile(Interactive):
             offset = tuple([offset[0], offset[1] - 4])
 
             if self.tile_type == 'bomb':
-                surf_timer = self.fonts['point_value'].render(str(self.bomb_timer), True, self.colors['red'], bg_color)
+                surf_timer = self.fonts['small'].render(str(self.bomb_timer), True, self.colors['red'], bg_color)
                 # Align bottom/left
                 timer_offset = (3, self.dims[1] - surf_timer.get_size()[1] - 3)
                 self.surf.blit(surf_timer, dest=timer_offset)
@@ -319,6 +325,33 @@ class Tile(Interactive):
         }
         self.letter = str(choice([key for key in letter_weights], 1, p=[letter_weights[key] for key in letter_weights])[0])
 
+    def get_abs_rect(self):
+        return pygame.Rect(self.coords, self.dims)
+
+    def mouse_out(self):
+        self.hovered = False
+        self.border_color = self.colors['light_gray']
+        self.build_image()
+
+    def mouse_over(self):
+        self.hovered = True
+        self.border_color = self.colors['gold']
+        self.build_image()
+
+    def select(self):
+        self.selected = True
+        self.build_image()
+
+    def set_coords(self, dy=0):
+        x = self.offset[0] + (self.dims[0] * self.col)
+        y = self.offset[1] + (self.dims[1] * self.row) + dy
+
+        self.coords = (x, y)
+
+    def unselect(self):
+        self.selected = False
+        self.build_image()
+
     def reset(self):
         self.bomb_timer = 5
         self.marked = False
@@ -357,7 +390,7 @@ class Tile(Interactive):
 
         self.update_point_value()
         self.set_text_color()
-        self.build_tile_image()
+        self.build_image()
 
     def update_point_value(self):
         value = 0

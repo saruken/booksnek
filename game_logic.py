@@ -21,13 +21,12 @@ class Game:
             'bg_silver_selected': pygame.Color('#d5e7e8'),
             'bg_stone': pygame.Color('#5f666b'),
             'black': pygame.Color('#000000'),
-            'border_active': pygame.Color('#0000ff'),
             'border_gold': pygame.Color('#d4c413'),
             'dark_gray': pygame.Color('#202d36'),
+            'light_gray': pygame.Color('#bfb9a8'),
             'mid_gray': pygame.Color('#546c7a'),
             'bomb': pygame.Color('#7c6e8a'),
             'gold': pygame.Color('#fce803'),
-            'gray': pygame.Color('#bfb9a8'),
             'green': pygame.Color('#65a669'),
             'ocean': pygame.Color('#244254'),
             'progress': pygame.Color('#c9c618'),
@@ -157,6 +156,7 @@ class Game:
         self.board.bonus_display.update(self.bonus_word)
         self.board.history_display.update(self.history)
         self.board.longest_display.update(self.word_longest)
+        self.board.level_display.update(self.level)
         self.board.multiplier_display.update(self.multiplier)
         self.board.score_display.update(self.score)
 

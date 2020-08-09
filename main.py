@@ -44,7 +44,7 @@ def main():
                 mouse_pos = pygame.mouse.get_pos()
                 active_btn = None
                 try: # Get targeted button
-                    for obj in game.ui_elements:
+                    for obj in [e for e in game.ui_elements if e.interactive]:
                         if obj.hovered:
                             obj.mouse_out()
                             game.last_typed = ''
