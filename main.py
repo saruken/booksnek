@@ -12,7 +12,7 @@ def load_dictionary():
     except FileNotFoundError:
         raise SystemExit('Error: Dictionary file not found\nExpexted file at "dictionary_en_US.txt"')
     if not words:
-        raise SystemExit('Error: Dictionary file at "dictionary_en_US.txt" empty or unreadable')
+        raise SystemExit('Error: Dictionary file at "dictionary_en_US.txt" is empty or unreadable')
 
     return words
 
