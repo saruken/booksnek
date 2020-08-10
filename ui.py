@@ -19,18 +19,6 @@ class BaseObj:
     def get_abs_rect(self):
         return pygame.Rect(self.coords, self.dims)
 
-    def set_text_color(self):
-        if self.btn_type == 'tile':
-            if self.tile_type == 'bomb':
-                self.text_color = self.colors['light_gray']
-            else:
-                self.text_color = self.colors['black']
-        else:
-            if self.enabled:
-                self.text_color = self.colors['light_gray']
-            else:
-                self.text_color = self.colors['dark_gray']
-
 class Display(BaseObj):
     def __init__(self, dims, coords, colors, text=None, text_color=None, text_prefix='', center=False, text_offset=[0, 0], label=None, show_progress=None):
         super(Display, self).__init__(dims=dims, coords=coords, colors=colors)
@@ -383,11 +371,15 @@ class Tile():
         self.target = (x, y)
 
     def set_text_color(self):
-        pass
+        if self.tile_type == 'bomb':
+            self.text_color = self.colors['light_gray']
+        else:
+            self.text_color = self.colors['black']
 
     def toggle_mark(self):
         self.marked = not self.marked
         self.update()
+        print(f'Tile "{self.letter}" -- row: {self.row}, col: {self.col}')
 
     def update(self, level=None, multiplier=None):
         if self.tile_type == 'bomb':
