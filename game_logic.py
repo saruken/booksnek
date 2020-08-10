@@ -189,6 +189,7 @@ class Game:
         for tile in self.snake.tiles:
             tile.choose_letter()
             tile.row = self.set_row(tile)
+            print(f'Tile "{tile.letter}" -- Set row to {tile.row}')
             # Push tiles with negative rows up off the top of the screen
             tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
 
@@ -311,7 +312,6 @@ class Game:
         for col in range(7):
             col_tiles = [t for t in self.tiles if t.col == col]
             # Check if col needs rearranging
-            print(f'Found {len([x for x in col_tiles if x.row < 0])} tiles in col {col} where row < 0')
             if [x for x in col_tiles if x.row < 0]:
                 col_tiles.sort(key=lambda t: t.row)
                 for i in range(8):
