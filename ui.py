@@ -37,6 +37,8 @@ class Display(BaseObj):
         self.text_offset = text_offset
         self.text_prefix = text_prefix
 
+        self.build_image()
+
     def build_image(self):
         self.surf.fill(self.border_color)
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))

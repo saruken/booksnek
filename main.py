@@ -106,7 +106,8 @@ def main():
                                                 game.check_update_best()
                                                 game.check_update_longest()
                                                 if game.snake.word == game.bonus_word:
-                                                    game.multiplier += 1
+                                                    game.mult_up()
+                                                    game.update_mult_display()
                                                     game.choose_bonus_word()
                                                     game.update_bonus_display()
                                                 else:

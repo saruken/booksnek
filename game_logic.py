@@ -165,6 +165,11 @@ class Game:
         self.level += 1
         self.board.bonus_display.progress = 0
 
+    def mult_up(self):
+        self.multiplier += 1
+        for t in self.tiles:
+            t.update(multiplier=self.multiplier)
+
     def new_game(self):
         self.bonus_counter = 3
         self.history = []
@@ -250,21 +255,19 @@ class Game:
         return value * self.snake.length
 
     def scramble(self, new_bomb=True):
+        self.update_bomb_tiles()
+
         if new_bomb:
             try:
                 bomb = random.choice([t for t in self.tiles if (t.row == 0 and t.tile_type == 'normal')])
                 bomb.tile_type = 'bomb'
-                bomb.bomb_timer = 6
+                bomb.bomb_timer = 5
             except IndexError: # No normal tiles on top row
                 pass
-        for tile in self.tiles:
-            if tile.tile_type == 'bomb':
-                tile.bomb_timer -= 1
-            elif tile.tile_type != 'stone':
-                tile.marked = False
-                tile.choose_letter()
-                tile.tile_type = 'normal'
-            tile.update(self.multiplier)
+        for tile in [t for t in self.tiles if t.tile_type not in ('bomb', 'stone')]:
+            tile.marked = False
+            tile.choose_letter()
+            tile.tile_type = 'normal'
 
     def set_row(self, tile):
         '''
@@ -320,6 +323,9 @@ class Game:
 
     def update_level_progress(self):
         self.board.bonus_display.update()
+
+    def update_mult_display(self):
+        self.board.multiplier_display.update(self.multiplier)
 
     def update_score_display(self):
         self.board.score_display.set_text(str(self.score))
