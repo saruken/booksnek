@@ -113,9 +113,10 @@ def main():
                                                 game.update_tile_rows()
                                                 game.last_typed = ''
                                             else:
-                                                print(f'Word "{word}" not in dictionary')
+                                                print(f'Word "{game.snake.word}" not in dictionary')
                                             game.empty_snake()
                                             game.update_word_display()
+                                            active_btn.mouse_out()
                                     # Player clicks on snake tile other than
                                     # the last one; trim back to this tile.
                                     else:
@@ -144,6 +145,8 @@ def main():
                     game.update_btn_clear_marked()
             elif event.type == pygame.KEYDOWN:
                 last_typed = game.highlight_tiles_from_letter(event.key, game.last_typed)
+
+            game.update_tiles()
 
         game.animate()
         window_surface.blit(game.board.background, (0, 0))

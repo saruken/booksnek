@@ -1,4 +1,5 @@
 import pygame, random
+from numpy.random import choice
 
 import gameboard, tile_snake
 
@@ -120,7 +121,7 @@ class Game:
         history_word = self.color_letters(history_word)
 
         self.history.append(history_word)
-        self.last_five_words = self.history[-5:]
+        self.last_five_words = [len(w['word']) for w in self.history[-5:]]
 
     def get_bomb_weight(self, avg):
         return -0.375 * avg + 1.975
@@ -196,17 +197,6 @@ class Game:
 
         tile_type = 'normal'
         special_index = 0
-        # Bomb tiles are created when your last 5 words have been on the
-        # short side. Generally, maintaining an average of 5 letters
-        # keeps you safe; anything below this and there's a better
-        # chance of a bomb tile spawning.
-        # avg = 5; bomb = 10%
-        # avg = 3; bomb = 85%
-        if len(self.last_five_words) == 5:
-            avg = round(sum(self.last_five_words) / len(self.last_five_words), 1)
-            bomb_weight = self.get_bomb_weight(avg)
-            normal_weight = 1 - bomb_weight
-            tile_type = choice(['normal', 'bomb'], 1, p=[normal_weight, bomb_weight])[0]
 
         if self.snake.length == 5:
             tile_type = 'silver'
@@ -214,16 +204,29 @@ class Game:
             tile_type = 'gold'
         elif self.snake.length > 6:
             tile_type = 'crystal'
+        else:
+        # Bomb tiles are created when your last 5 words have been on the
+        # short side. Generally, maintaining an average of 5 letters
+        # keeps you safe; anything below this and there's a better
+        # chance of a bomb tile spawning.
+        # avg = 5; bomb = 10%
+        # avg = 3; bomb = 85%
+            if len(self.last_five_words) == 5:
+                avg = round(sum(self.last_five_words) / len(self.last_five_words), 1)
+                bomb_weight = self.get_bomb_weight(avg)
+                normal_weight = 1 - bomb_weight
+                tile_type = choice(['normal', 'bomb'], 1, p=[normal_weight, bomb_weight])[0]
 
         if tile_type != 'normal':
             # Randomly choose which new tile will have special type
-            special_index = random.choice(range(len(self.tiles)))
+            special_index = random.choice(range(len(self.snake.tiles)))
 
         for i, tile in enumerate(self.snake.tiles):
             tile.marked = False
             tile.tile_type = tile_type if i == special_index else 'normal'
             tile.bomb_timer = 5
-            tile.update(level=self.level, multiplier=self.multiplier)
+            tile.level = self.level
+            tile.multiplier = self.multiplier
 
     def score_word(self, word=None):
         value = 0
@@ -324,6 +327,10 @@ class Game:
                     except IndexError:
                         # Handle even (7 member) cols
                         pass
+
+    def update_tiles(self):
+        for t in self.tiles:
+            t.update()
 
     def update_word_display(self):
         color = 'mid_gray'

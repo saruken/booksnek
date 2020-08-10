@@ -37,8 +37,6 @@ class Display(BaseObj):
         self.text_offset = text_offset
         self.text_prefix = text_prefix
 
-        self.update()
-
     def build_image(self):
         self.surf.fill(self.border_color)
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
@@ -195,11 +193,9 @@ class Interactive(BaseObj):
 
     def mouse_out(self):
         self.hovered = False
-        self.update()
 
     def mouse_over(self):
         self.hovered = True
-        self.update()
 
     def set_colors(self):
         if self.enabled:
@@ -249,8 +245,6 @@ class Tile():
         self.choose_letter()
         self.update_point_value()
         self.set_text_color()
-
-        self.update()
 
     def bomb_tick(self):
         self.bomb_timer -= 1
@@ -329,16 +323,13 @@ class Tile():
     def mouse_out(self):
         self.hovered = False
         self.border_color = self.colors['light_gray']
-        self.build_image()
 
     def mouse_over(self):
         self.hovered = True
         self.border_color = self.colors['gold']
-        self.build_image()
 
     def select(self):
         self.selected = True
-        self.build_image()
 
     def set_coords(self, dy=0):
         x = self.offset[0] + (self.dims[0] * self.col)
@@ -348,7 +339,6 @@ class Tile():
 
     def unselect(self):
         self.selected = False
-        self.build_image()
 
     def reset(self):
         self.bomb_timer = 5
@@ -359,7 +349,6 @@ class Tile():
         self.choose_letter()
         self.update_point_value()
         self.set_text_color()
-        self.update()
 
     def set_target(self, from_row_col=False):
         if from_row_col:
@@ -378,7 +367,6 @@ class Tile():
 
     def toggle_mark(self):
         self.marked = not self.marked
-        self.update()
 
     def update(self, level=None, multiplier=None):
         if self.tile_type == 'bomb':
