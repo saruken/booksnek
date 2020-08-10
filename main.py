@@ -1,6 +1,7 @@
 import pygame
 
 import game_logic
+from ui import Tile
 
 def load_dictionary():
     words = None
@@ -77,9 +78,9 @@ def main():
                                 game.scramble()
                                 game.last_typed = ''
                             elif active_btn == game.board.btn_clear_marked:
-                                if btn_clear_marked.enabled:
+                                if game.board.btn_clear_marked.enabled:
                                     game.clear_marked()
-                                    board.btn_clear_marked.update()
+                                    game.board.btn_clear_marked.update()
                                     game.last_typed = ''
                             else:
                                 # If the clicked tile is already selected, and
@@ -134,7 +135,7 @@ def main():
                         btn_down = None
                     elif event.__dict__['button'] == 3:
                         if btn_down_right and active_btn == btn_down_right:
-                            if active_btn.can_mark:
+                            if isinstance(active_btn, Tile):
                                 active_btn.toggle_mark()
                         btn_down_right = None
                     game.update_btn_clear_marked()

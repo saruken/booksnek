@@ -135,15 +135,11 @@ class Display(BaseObj):
         '''
         text = ''
         text_offset = (8, 10)
-
-        self.surf.fill(self.bg_color)
-
         max_lines = floor((self.surf.get_size()[1] - text_offset[1]) / self.letter_height)
         if len(history) > max_lines:
             history = history[-max_lines:]
 
-        container = pygame.Surface((self.dims[0], self.dims[1]))
-
+        container = pygame.Surface(self.dims)
         container.fill(self.bg_color)
 
         for index_hist, d in enumerate(history):
@@ -389,7 +385,7 @@ class Tile():
     def set_text_color(self):
         pass
 
-    def toggle_mark(self, board_mult):
+    def toggle_mark(self):
         self.marked = not self.marked
         self.update()
 

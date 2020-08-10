@@ -299,7 +299,7 @@ class Game:
         self.board.btn_clear_marked.update()
 
     def update_history_display(self):
-        self.board.history_display.set_colored_text(self.history)
+        self.board.history_display.set_multiline_text(self.history)
 
     def update_level_progress(self):
         pass
