@@ -109,12 +109,17 @@ def main():
                                                     game.multiplier += 1
                                                     game.choose_bonus_word()
                                                     game.update_bonus_display()
+                                                else:
+                                                    game.apply_level_progress()
+                                                if game.check_level_progress():
+                                                    game.level_up()
                                                 game.reroll_snake_tiles()
                                                 game.update_tile_rows()
                                                 game.last_typed = ''
                                             else:
                                                 print(f'Word "{game.snake.word}" not in dictionary')
                                             game.empty_snake()
+                                            game.update_bomb_tiles()
                                             game.update_word_display()
                                             active_btn.mouse_out()
                                     # Player clicks on snake tile other than
@@ -160,8 +165,6 @@ if __name__ == '__main__':
 
     #TODO:
         # Big refactor
-            # Add mult to "highest score" display
-                # JADES (+435 / Lv 2 / x3)
             # The "progress" meter should be for "levels", which should act as separate multipliers. So a word is scored by sum(letters) * mult * lv
                 # Don't reset progress when mult increases
                 # Don't increase mult when lv increases

@@ -193,9 +193,11 @@ class Interactive(BaseObj):
 
     def mouse_out(self):
         self.hovered = False
+        self.update()
 
     def mouse_over(self):
         self.hovered = True
+        self.update()
 
     def set_colors(self):
         if self.enabled:
@@ -369,9 +371,6 @@ class Tile():
         self.marked = not self.marked
 
     def update(self, level=None, multiplier=None):
-        if self.tile_type == 'bomb':
-            self.bomb_tick()
-
         if level:
             self.level = level
         if multiplier:

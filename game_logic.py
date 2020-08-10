@@ -58,11 +58,14 @@ class Game:
             if t.coords[1] == t.target[1]:
                 t.ay = 0
 
+    def apply_level_progress(self):
+        self.board.bonus_display.set_progress(self.score, self.multiplier)
+
     def check_dictionary(self):
         return bool(self.snake.word.lower() in self.dictionary)
 
     def check_level_progress(self):
-        return bool(self.bonus_display.progress >= self.bonus_display.progress_max)
+        return bool(self.board.bonus_display.progress >= self.board.bonus_display.progress_max)
 
     def check_update_best(self):
         if self.history[-1]['value'] > self.value_best:
@@ -157,6 +160,10 @@ class Game:
                     t.mouse_out()
         # Return typed key to store as last_typed
         return letter
+
+    def level_up(self):
+        self.level += 1
+        self.board.bonus_display.progress = 0
 
     def new_game(self):
         self.bonus_counter = 3
@@ -290,6 +297,10 @@ class Game:
         self.snake.tiles = self.snake.tiles[:index]
         self.snake.update()
 
+    def update_bomb_tiles(self):
+        for tile in [t for t in self.tiles if t.tile_type == 'bomb']:
+            tile.bomb_tick()
+
     def update_bonus_color(self):
         self.board.update_bonus_color(self.bonus_word, self.snake.word, self.colors)
 
@@ -308,7 +319,7 @@ class Game:
         self.board.history_display.set_multiline_text(self.history)
 
     def update_level_progress(self):
-        pass
+        self.board.bonus_display.update()
 
     def update_score_display(self):
         self.board.score_display.set_text(str(self.score))
