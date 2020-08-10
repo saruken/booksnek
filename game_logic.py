@@ -265,7 +265,7 @@ class Game:
         drawing the tiles.
         '''
 
-        index = self.tiles.index(tile)
+        index = self.snake.tiles.index(tile)
         least_row = 0
 
         if index:
