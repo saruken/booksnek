@@ -119,7 +119,7 @@ class Game:
         history_word = {
             'word': self.snake.word,
             'value': value,
-            'colors': [color for _ in range(len(self.tiles))]
+            'colors': [color for _ in range(len(self.snake.word))]
         }
         history_word = self.color_letters(history_word)
 
