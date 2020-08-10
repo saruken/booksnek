@@ -202,8 +202,10 @@ class Game:
 
     def reroll_snake_tiles(self):
         for tile in self.snake.tiles:
+            old_letter = tile.letter
+            old_row = tile.row
             tile.choose_letter()
-            tile.row = self.set_row(tile)
+            self.set_row(tile)
             # Push tiles with negative rows up off the top of the screen
             tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
 
@@ -278,16 +280,8 @@ class Game:
         This fn only returns a row value; it has no bearing on actually
         drawing the tiles.
         '''
-
-        index = self.snake.tiles.index(tile)
-        least_row = 0
-
-        if index:
-            prev_rows = [t.row for t in self.tiles[:index] if t.col == tile.col]
-            if prev_rows:
-                least_row = min(prev_rows)
-
-        return least_row - 1
+        least_row = min([t.row for t in self.tiles if t.col == tile.col])
+        tile.row = least_row - 1
 
     def trim_snake(self, tile):
         index = self.snake.length
