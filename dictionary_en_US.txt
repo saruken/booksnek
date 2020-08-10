@@ -5210,8 +5210,6 @@ bazillion
 bazillions
 bazooka
 bazookas
-bbl
-bdrm
 beach
 beachcomber
 beachcombers
@@ -6559,7 +6557,6 @@ blazon
 blazoned
 blazoning
 blazons
-bldg
 bleach
 bleached
 bleacher
@@ -6950,7 +6947,6 @@ blustering
 blusterous
 blusters
 blustery
-blvd
 boa
 boar
 board
@@ -7596,7 +7592,6 @@ boysenberries
 boysenberry
 bozo
 bozos
-bpm
 bra
 brace
 braced
@@ -8836,7 +8831,6 @@ buzzkill
 buzzkills
 buzzword
 buzzwords
-bxs
 bye
 byes
 bygone
@@ -11159,7 +11153,6 @@ chloroforms
 chlorophyll
 chloroplast
 chloroplasts
-chm
 choc
 chock
 chockablock
@@ -15218,8 +15211,6 @@ coziest
 cozily
 coziness
 cozy
-cpd
-cpl
 crab
 crabbed
 crabber
@@ -15948,7 +15939,6 @@ crystallizing
 crystallographic
 crystallography
 crystals
-ctn
 cub
 cubbyhole
 cubbyholes
@@ -16716,10 +16706,8 @@ dazzlers
 dazzles
 dazzling
 dazzlingly
-dbl
 dded
 dding
-dds
 deacon
 deaconess
 deaconesses
@@ -20661,7 +20649,6 @@ doziness
 dozing
 dozy
 dpi
-dpt
 drab
 drabber
 drabbest
@@ -21021,7 +21008,6 @@ dryers
 drying
 dryly
 dryness
-drys
 drywall
 dual
 dualism
@@ -24447,7 +24433,6 @@ eyetooth
 eyewash
 eyewitness
 eyewitnesses
-fMRI
 fab
 fable
 fabled
@@ -26260,7 +26245,6 @@ flowery
 flowing
 flown
 flows
-flt
 flu
 flub
 flubbed
@@ -27047,7 +27031,6 @@ foxtrotting
 foxy
 foyer
 foyers
-fps
 fracas
 fracases
 frack
@@ -27527,7 +27510,6 @@ fryers
 frying
 ftpers
 ftping
-ftps
 fuchsia
 fuchsias
 fuck
@@ -27804,7 +27786,6 @@ fuzzily
 fuzziness
 fuzzing
 fuzzy
-fwy
 gab
 gabardine
 gabardines
@@ -29001,6 +28982,7 @@ glycerol
 glycogen
 glycol
 glyph
+glyphs
 gnarl
 gnarled
 gnarlier
@@ -30292,6 +30274,7 @@ gynecological
 gynecologist
 gynecologists
 gynecology
+gyp
 gypped
 gypper
 gyppers
@@ -31070,7 +31053,6 @@ hazing
 hazings
 hazmat
 hazy
-hdqrs
 head
 headache
 headaches
@@ -31655,8 +31637,6 @@ hexing
 hey
 heyday
 heydays
-hgt
-hgwy
 hiatus
 hiatuses
 hibachi
@@ -32630,7 +32610,6 @@ howsoever
 hoyden
 hoydenish
 hoydens
-hrs
 huarache
 huaraches
 hub
@@ -36976,8 +36955,6 @@ juxtaposes
 juxtaposing
 juxtaposition
 juxtapositions
-kHz
-kWh
 kabbalah
 kaboom
 kabuki
@@ -37505,7 +37482,6 @@ kowtow
 kowtowed
 kowtowing
 kowtows
-kph
 kraal
 kraals
 kraut
@@ -38128,7 +38104,6 @@ lazing
 lazy
 lazybones
 lazying
-lbs
 lea
 leach
 leached
@@ -39582,7 +39557,6 @@ loyalties
 loyalty
 lozenge
 lozenges
-ltd
 luau
 luaus
 lubber
@@ -41602,8 +41576,6 @@ mezzanine
 mezzanines
 mezzo
 mezzos
-mfrs
-mgr
 miasma
 miasmas
 mic
@@ -43792,7 +43764,6 @@ myrmidons
 myrrh
 myrtle
 myrtles
-mys
 myself
 mysteries
 mysterious
@@ -45274,7 +45245,6 @@ nowt
 noxious
 nozzle
 nozzles
-nth
 nuance
 nuanced
 nuances
@@ -49693,7 +49663,6 @@ phylacteries
 phylactery
 phylogeny
 phylum
-phys
 physic
 physical
 physicality
@@ -50196,8 +50165,6 @@ pizzeria
 pizzerias
 pizzicati
 pizzicato
-pkt
-pkwy
 placard
 placarded
 placarding
@@ -50655,7 +50622,6 @@ plutocratic
 plutocrats
 plutonium
 pluvial
-ply
 plying
 plywood
 pneumatic
@@ -51484,8 +51450,6 @@ powwowing
 powwows
 pox
 poxes
-ppm
-ppr
 practicability
 practicable
 practicably
@@ -53081,7 +53045,6 @@ pruning
 prurience
 prurient
 pruriently
-pry
 prying
 psalm
 psalmist
@@ -53617,10 +53580,8 @@ puzzler
 puzzlers
 puzzles
 puzzling
-pvt
 pwned
 pwning
-pwns
 pyelonephritis
 pygmies
 pygmy
@@ -53653,8 +53614,6 @@ pythons
 pyx
 pyxes
 pzazz
-qts
-qty
 qua
 quack
 quacked
@@ -54651,7 +54610,6 @@ razzes
 razzing
 razzle
 razzmatazz
-rcpt
 reabsorb
 reabsorbed
 reabsorbing
@@ -58627,8 +58585,6 @@ royally
 royals
 royalties
 royalty
-rpm
-rps
 rub
 rubato
 rubatos
@@ -59721,7 +59677,6 @@ scentless
 scents
 scepter
 scepters
-sch
 schadenfreude
 schedule
 scheduled
@@ -61763,7 +61718,6 @@ showstoppers
 showstopping
 showtime
 showy
-shpt
 shrank
 shrapnel
 shred
@@ -65389,7 +65343,6 @@ stayer
 stayers
 staying
 stays
-std
 stdio
 stead
 steadfast
@@ -67800,7 +67753,6 @@ symptom
 symptomatic
 symptomatically
 symptoms
-syn
 synagogal
 synagogue
 synagogues
@@ -68454,8 +68406,6 @@ taxonomy
 taxpayer
 taxpayers
 taxpaying
-tbs
-tbsp
 tea
 teabag
 teabags
@@ -69880,7 +69830,6 @@ titular
 tizz
 tizzies
 tizzy
-tnpk
 toad
 toadied
 toadies
@@ -71398,10 +71347,8 @@ trysts
 tsarists
 tsetse
 tsetses
-tsp
 tsunami
 tsunamis
-ttys
 tub
 tuba
 tubal
@@ -71778,7 +71725,6 @@ twopenny
 twos
 twosome
 twosomes
-twp
 tycoon
 tycoons
 tying
@@ -73992,7 +73938,6 @@ usherettes
 ushering
 ushers
 using
-usu
 usual
 usually
 usurer
@@ -74613,7 +74558,6 @@ vexatiously
 vexed
 vexes
 vexing
-vhf
 via
 viability
 viable
@@ -74998,7 +74942,6 @@ vixens
 viz
 vizier
 viziers
-vlf
 vocab
 vocable
 vocables
@@ -76824,7 +76767,6 @@ wizardly
 wizardry
 wizards
 wizened
-wkly
 woad
 wobble
 wobbled
@@ -77159,7 +77101,6 @@ wow
 wowed
 wowing
 wows
-wpm
 wrack
 wracked
 wracking
@@ -77525,7 +77466,6 @@ yowl
 yowled
 yowling
 yowls
-yrs
 ytterbium
 yttrium
 yuan

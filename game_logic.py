@@ -45,7 +45,6 @@ class Game:
 
     def add_tile(self, tile):
         self.snake.add(tile)
-        self.set_current_word()
 
     def animate(self):
         to_animate = [t for t in self.tiles if t.target != t.coords]
@@ -58,13 +57,13 @@ class Game:
             if t.coords[1] == t.target[1]:
                 t.ay = 0
 
-    def check_dictionary():
-        return bool(self.current_word.lower() in self.dictionary)
+    def check_dictionary(self):
+        return bool(self.snake.word.lower() in self.dictionary)
 
     def check_level_progress(self):
         return bool(self.bonus_display.progress >= self.bonus_display.progress_max)
 
-    def check_update_best():
+    def check_update_best(self):
         if self.history[-1]['value'] > self.value_best:
             self.level_best = self.level
             self.mult_best = self.multiplier
@@ -78,8 +77,11 @@ class Game:
             }
             self.board.best_display.set_colored_text(obj)
 
-    def check_update_longest():
-        if len(self.history[-1]['word']) > len(self.word_longest):
+    def check_update_longest(self):
+        if self.word_longest:
+            if len(self.history[-1]['word']) > len(self.word_longest):
+                self.word_longest = self.history[-1]['word']
+        else:
             self.word_longest = self.history[-1]['word']
         self.board.longest_display.set_text(self.word_longest)
 
@@ -91,7 +93,7 @@ class Game:
         for tile in [t for t in self.tiles if t.marked]:
             tile.toggle_mark()
 
-    def color_letters(word):
+    def color_letters(self, word):
         for i, tile in enumerate(self.snake.tiles):
             if tile.tile_type == 'bomb':
                 word['colors'][i] = 'bomb'
@@ -105,18 +107,17 @@ class Game:
         return word
 
     def commit_word_to_history(self):
-        if self.current_word == self.bonus_word:
+        if self.snake.word == self.bonus_word:
             color = 'green'
-            value = score_word(bonus=True)
         else:
             color = 'beige'
-            value = score_word()
+        value = self.score_word()
         history_word = {
-            'word': self.current_word,
+            'word': self.snake.word,
             'value': value,
             'colors': [color for _ in range(len(self.tiles))]
         }
-        history_word = color_letters(history_word)
+        history_word = self.color_letters(history_word)
 
         self.history.append(history_word)
         self.last_five_words = self.history[-5:]
@@ -128,15 +129,34 @@ class Game:
         self.snake.tiles = []
         self.snake.update()
 
-    def highlight_selected_tiles():
+    def highlight_selected_tiles(self):
         for tile in [t for t in self.tiles if t.selected]:
             tile.unselect()
         for tile in self.snake.tiles:
             tile.select()
 
+    def highlight_tiles_from_letter(self, key, last_typed):
+        letter = pygame.key.name(key).upper()
+        if letter == 'Q':
+            letter = 'Qu'
+
+        # Type currently highlighted key to unhighlight all tiles
+        if letter in (last_typed, 'ESCAPE'):
+            for t in self.tiles:
+                t.mouse_out()
+            return ''
+        else:
+            # Otherwise, highlight all tiles with matching letters
+            for t in self.tiles:
+                if t.letter == letter:
+                    t.mouse_over()
+                else:
+                    t.mouse_out()
+        # Return typed key to store as last_typed
+        return letter
+
     def new_game(self):
         self.bonus_counter = 3
-        self.current_word = None
         self.history = []
         self.last_five_words = []
         self.last_typed = ''
@@ -180,9 +200,8 @@ class Game:
         # chance of a bomb tile spawning.
         # avg = 5; bomb = 10%
         # avg = 3; bomb = 85%
-        if len(last_five) == 5: #TODO: Fix this fn
-            avg = round(sum(last_five) / len(last_five), 1)
-            # Keep bomb_weight non-negative
+        if len(self.last_five_words) == 5:
+            avg = round(sum(self.last_five_words) / len(self.last_five_words), 1)
             bomb_weight = self.get_bomb_weight(avg)
             normal_weight = 1 - bomb_weight
             tile_type = choice(['normal', 'bomb'], 1, p=[normal_weight, bomb_weight])[0]
@@ -202,17 +221,17 @@ class Game:
             tile.marked = False
             tile.tile_type = tile_type if i == special_index else 'normal'
             tile.bomb_timer = 5
-            tile.set_value(self.level, self.multiplier)
+            tile.update(level=self.level, multiplier=self.multiplier)
 
-    def score_word(word=None):
+    def score_word(self, word=None):
         value = 0
         if word:
-            for l in self.word:
+            for l in word:
                 base_value += self.board.lookup_letter_value(l) * self.multiplier
         else:
             for t in self.snake.tiles:
                 value += t.point_value
-        if self.current_word == self.bonus_word:
+        if self.snake.word == self.bonus_word:
             value *= 3
 
         value *= self.level
@@ -234,9 +253,6 @@ class Game:
                 tile.choose_letter()
                 tile.tile_type = 'normal'
             tile.update(self.multiplier)
-
-    def set_current_word(self):
-        self.current_word = ''.join(self.snake.letters)
 
     def set_row(self, tile):
         '''
@@ -272,6 +288,10 @@ class Game:
         self.board.update_bonus_color(self.bonus_word, self.snake.word, self.colors)
 
     def update_bonus_display(self):
+        if self.board.bonus_display.text == self.bonus_word:
+            self.board.bonus_display.border_color = self.colors['teal']
+        else:
+            self.board.bonus_display.border_color = self.colors['mid_gray']
         self.board.bonus_display.set_text(f'{self.bonus_word} (+{str(self.score_word())})')
 
     def update_btn_clear_marked(self):
@@ -303,15 +323,15 @@ class Game:
                         pass
 
     def update_word_display(self):
-        color = 'dark_gray'
-        text = ''
+        color = 'mid_gray'
+        text = None
         value = 0
         word = self.snake.word
 
         if self.snake.length:
             if len(word) > 2:
-                if self.check_dictionary(word):
-                    value = score_word()
+                if self.check_dictionary():
+                    value = self.score_word()
                     if word == self.bonus_word:
                         color = 'green'
                     else:
@@ -321,5 +341,5 @@ class Game:
 
             text = f"{word} (+{value})"
 
-        word_display.set_border(color)
-        word_display.set_text(text)
+        self.board.word_display.border_color = self.colors[color]
+        self.board.word_display.set_text(text)

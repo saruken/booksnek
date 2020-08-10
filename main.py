@@ -56,28 +56,27 @@ def main():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_down = True
                     try:
-                        if active_btn.can_click:
-                            if event.__dict__['button'] == 1:
-                                btn_down = active_btn
-                            elif event.__dict__['button'] == 3:
-                                btn_down_right = active_btn
+                        if event.__dict__['button'] == 1:
+                            btn_down = active_btn
+                        elif event.__dict__['button'] == 3:
+                            btn_down_right = active_btn
                     except AttributeError: # Click outside UI elements
                         pass
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.__dict__['button'] == 1:
                         mouse_down = False
                         if btn_down and active_btn == btn_down:
-                            if active_btn == menu_new:
+                            if active_btn == game.board.menu_new:
                                 game.new_game()
-                            elif active_btn == menu_open:
+                            elif active_btn == game.board.menu_open:
                                 game.load_game()
-                            elif active_btn == menu_save:
+                            elif active_btn == game.board.menu_save:
                                 if menu_save.enabled:
                                     game.save_game()
-                            elif active_btn == btn_scramble:
+                            elif active_btn == game.board.btn_scramble:
                                 game.scramble()
                                 game.last_typed = ''
-                            elif active_btn == btn_clear_marked:
+                            elif active_btn == game.board.btn_clear_marked:
                                 if btn_clear_marked.enabled:
                                     game.clear_marked()
                                     board.btn_clear_marked.update()
@@ -92,7 +91,7 @@ def main():
                                     if active_btn == game.snake.last:
                                         # When only 1 tile is selected,
                                         # clicking it again deselects it.
-                                        if len(game.snake.length) == 1:
+                                        if game.snake.length == 1:
                                             game.empty_snake()
                                         # When 2 tiles are selected, clicking
                                         # the final tile does nothing; 3 is the
@@ -105,7 +104,7 @@ def main():
                                                 game.update_history_display()
                                                 game.check_update_best()
                                                 game.check_update_longest()
-                                                if game.current_word == game.bonus_word:
+                                                if game.snake.word == game.bonus_word:
                                                     game.multiplier += 1
                                                     game.choose_bonus_word()
                                                     game.update_bonus_display()
@@ -115,6 +114,7 @@ def main():
                                             else:
                                                 print(f'Word "{word}" not in dictionary')
                                             game.empty_snake()
+                                            game.update_word_display()
                                     # Player clicks on snake tile other than
                                     # the last one; trim back to this tile.
                                     else:
@@ -124,7 +124,7 @@ def main():
                                 # add it; if not, start a new snake.
                                 else:
                                     if game.snake.length:
-                                        if board.is_neighbor(active_btn, game.snake.last):
+                                        if game.board.is_neighbor(active_btn, game.snake.last):
                                             game.add_tile(active_btn)
                                     else:
                                         game.add_tile(active_btn)
@@ -138,9 +138,8 @@ def main():
                                 active_btn.toggle_mark()
                         btn_down_right = None
                     game.update_btn_clear_marked()
-                    game.update_bonus_color()
             elif event.type == pygame.KEYDOWN:
-                last_typed = game.board.highlight_tiles_from_letter(event.key, game.last_typed)
+                last_typed = game.highlight_tiles_from_letter(event.key, game.last_typed)
 
         game.animate()
         window_surface.blit(game.board.background, (0, 0))

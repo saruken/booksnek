@@ -32,7 +32,7 @@ class BaseObj:
                 self.text_color = self.colors['dark_gray']
 
 class Display(BaseObj):
-    def __init__(self, dims, coords, colors, text=None, text_color=None, text_prefix='', text_align=None, text_offset=[0, 0], label=None, show_progress=None):
+    def __init__(self, dims, coords, colors, text=None, text_color=None, text_prefix='', center=False, text_offset=[0, 0], label=None, show_progress=None):
         super(Display, self).__init__(dims=dims, coords=coords, colors=colors)
         self.bg_color = self.colors['bg_main']
         self.border_color = self.colors['mid_gray']
@@ -44,7 +44,7 @@ class Display(BaseObj):
         self.progress_max = 0
         self.show_progress = show_progress
         self.text = text
-        self.text_align = text_align
+        self.center = center
         self.text_color = self.colors[text_color] if text_color else None
         self.text_offset = text_offset
         self.text_prefix = text_prefix
@@ -64,26 +64,16 @@ class Display(BaseObj):
             # Render text
             surf = self.fonts['btn'].render(str(self.text), True, self.text_color, self.bg_color)
             # Horiz align
-            if self.text_align == 'left':
-                offset_x = self.text_offset[0]
-            elif self.text_align == 'center':
+            if self.center:
                 offset_x = floor((self.surf.get_size()[0] - surf.get_size()[0]) / 2) + self.text_offset[0]
             else:
-                offset_x = self.surf.get_size()[0] - surf.get_size()[0] + self.text_offset[0]
+                offset_x = self.text_offset[0]
             # Vert align
             offset_y = floor((self.surf.get_size()[1] - surf.get_size()[1]) / 2) + self.text_offset[1]
             self.surf.blit(surf, dest=(offset_x, offset_y))
 
         if self.label:
-            text = self.fonts['small'].render(str(self.label), True, self.colors['mid_gray'])
-            surf = pygame.Surface((text.get_size()[0] + 20, text.get_size()[1]))
-            surf.fill(self.bg_color)
-            surf.blit(text, (10, 0))
-            self.surf.blit(surf, (14, -2))
-
-    def set_border_color(self, color):
-        self.border_color = color
-        self.update()
+            self.set_label()
 
     def set_colored_text(self, text_obj):
         self.surf.fill(self.border_color)
@@ -93,21 +83,35 @@ class Display(BaseObj):
         letter_width = 0
         offset_x = 0
         offset_y = 0
-        for index, letter in enumerate(text_obj['word']):
-            color = text_obj['colors'][index]
-            surf = self.fonts['btn'].render(letter, True, self.colors[text_obj['colors'][index]], self.bg_color)
-            if not letter_width:
-                letter_width = surf.get_size()[0]
-            if not letter_height:
-                letter_height = surf.get_size()[1]
-            offset_x = floor((self.dims[0] - letter_width * (len(text_obj['word']) + len(str(text_obj["value"])) + 3)) / 2) + letter_width * index
-            if not offset_y:
-                offset_y = floor((self.dims[1] - letter_height) / 2)
-            self.surf.blit(surf, dest=(offset_x, offset_y))
+        if type(text_obj) is list:
+            for entry in text_obj:
+                for index, letter in enumerate(entry['word']):
+                    color = entry['colors'][index]
+                    surf = self.fonts['btn'].render(letter, True, self.colors[entry['colors'][index]], self.bg_color)
+                    if not letter_width:
+                        letter_width = surf.get_size()[0]
+                    if not letter_height:
+                        letter_height = surf.get_size()[1]
+                    offset_x = floor((self.dims[0] - letter_width * (len(entry['word']) + len(str(entry["value"])) + 3)) / 2) + letter_width * index
+                    if not offset_y:
+                        offset_y = floor((self.dims[1] - letter_height) / 2)
+                    self.surf.blit(surf, dest=(offset_x, offset_y))
 
-            surf = self.fonts['btn'].render(f' (+{text_obj["value"]})', True, self.colors['beige'], self.bg_color)
-            offset_x += letter_width
-            self.surf.blit(surf, dest=(offset_x, offset_y))
+                    surf = self.fonts['btn'].render(f' (+{entry["value"]})', True, self.colors['beige'], self.bg_color)
+                    offset_x += letter_width
+                    self.surf.blit(surf, dest=(offset_x, offset_y))
+        else:
+            for index, letter in enumerate(text_obj['word']):
+                color = text_obj['colors'][index]
+                surf = self.fonts['btn'].render(letter, True, self.colors[text_obj['colors'][index]], self.bg_color)
+                if not letter_width:
+                    letter_width = surf.get_size()[0]
+                if not letter_height:
+                    letter_height = surf.get_size()[1]
+                offset_x = floor((self.dims[0] - letter_width * (len(text_obj['word']))) / 2) + letter_width * index
+                if not offset_y:
+                    offset_y = floor((self.dims[1] - letter_height) / 2)
+                self.surf.blit(surf, dest=(offset_x, offset_y))
 
         self.text = ''
 
@@ -115,7 +119,7 @@ class Display(BaseObj):
             self.set_label()
 
     def set_label(self):
-        text = self.fonts['small'].render(str(self.label), True, self.colors['dark_gray'], self.bg_color)
+        text = self.fonts['small'].render(str(self.label), True, self.colors['mid_gray'], self.bg_color)
         surf = pygame.Surface((text.get_size()[0] + 20, text.get_size()[1]))
         surf.fill(self.bg_color)
         surf.blit(text, (10, 0))
@@ -167,9 +171,18 @@ class Display(BaseObj):
     def set_progress(self, score, mult):
         self.progress = floor((score - self.progress_floor) / (1000 * mult) * self.progress_max)
 
+    def set_text(self, text):
+        if text:
+            self.update(text=text)
+        else:
+            self.update(text='__clear__')
+
     def update(self, text=None):
         if text:
-            self.text = self.text_prefix + str(text)
+            if text == '__clear__':
+                self.text = None
+            else:
+                self.text = self.text_prefix + str(text)
         self.build_image()
 
 class Interactive(BaseObj):

@@ -15,24 +15,24 @@ class Board():
         self.menu_open = ui.Interactive(dims=(63, 40), coords=coords, text='OPEN', text_color='light_gray', colors=colors)
         coords = offset_from_element(self.menu_open, corner=(1, 0), offset=(10, 0))
         self.menu_save = ui.Interactive(dims=(63, 40), coords=coords, text='SAVE', enabled=False, colors=colors)
-        coords = offset_from_element(self.menu_bg, corner=(0, 1), offset=(0, 10))
-        self.bonus_display = ui.Display(dims=(336, 40), coords=coords, colors=colors, text_color='light_gray', label='BONUS WORD', text_align='center', show_progress=True)
+        coords = offset_from_element(self.menu_bg, corner=(0, 1), offset=(12, 10))
+        self.bonus_display = ui.Display(dims=(336, 40), coords=coords, colors=colors, text_color='light_gray', label='BONUS WORD', center=True, show_progress=True)
         coords = offset_from_element(self.bonus_display, corner=(0, 1), offset=(0, 10))
-        self.level_display = ui.Display(dims=(120, 40), coords=coords, colors=colors, label='LEVEL', text_prefix='Lv ', text_color='light_gray', text_align='center')
+        self.level_display = ui.Display(dims=(120, 40), coords=coords, colors=colors, label='LEVEL', text_prefix='Lv ', text_color='light_gray', center=True)
         coords = offset_from_element(self.level_display, corner=(1, 0), offset=(10, 0))
-        self.multiplier_display = ui.Display(dims=(96, 40), coords=coords, colors=colors, label='MULT.', text_prefix='x', text_color='light_gray', text_align='center')
+        self.multiplier_display = ui.Display(dims=(96, 40), coords=coords, colors=colors, label='MULT.', text_prefix='x', text_color='light_gray', center=True)
         coords = offset_from_element(self.multiplier_display, corner=(1, 0), offset=(10, 0))
         self.btn_clear_marked = ui.Interactive(dims=(100, 40), coords=coords, text='UNMARK', enabled=False, colors=colors)
         coords = offset_from_element(self.menu_save, corner=(1, 0), offset=(10, 0))
         self.btn_scramble = ui.Interactive(dims=(120, 40), coords=coords, colors=colors, text='SCRAMBLE', text_color='light_gray')
         coords = offset_from_element(self.btn_scramble, corner=(1, 0), offset=(20, 0))
-        self.score_display = ui.Display(dims=(310, 40), coords=coords, colors=colors, text='0', text_color='light_gray', label='SCORE', text_align='center')
+        self.score_display = ui.Display(dims=(310, 40), coords=coords, colors=colors, text='0', text_color='light_gray', label='SCORE', center=True)
         coords = offset_from_element(self.score_display, corner=(0, 1), offset=(0, 10))
-        self.word_display = ui.Display(dims=(310, 40), coords=coords, colors=colors, text_color='light_gray', label="SELECTED")
+        self.word_display = ui.Display(dims=(310, 40), coords=coords, colors=colors, text_color='light_gray', label="SELECTED", center=True)
         coords = offset_from_element(self.word_display, corner=(0, 1), offset=(0, 10))
-        self.longest_display = ui.Display(dims=(310, 34), coords=coords, colors=colors, label='LONGEST WORD', text_color='beige')
+        self.longest_display = ui.Display(dims=(310, 34), coords=coords, colors=colors, label='LONGEST WORD', text_color='beige', center=True)
         coords = offset_from_element(self.longest_display, corner=(0, 1), offset=(0, 4))
-        self.best_display = ui.Display(dims=(310, 34), coords=coords, colors=colors, label='HIGHEST SCORE', text_color='beige', text_align='left', text_offset=(30, 2))
+        self.best_display = ui.Display(dims=(310, 34), coords=coords, colors=colors, label='HIGHEST SCORE', text_color='beige', center=True, text_offset=(30, 2))
         coords = offset_from_element(self.best_display, corner=(0, 1), offset=(0, 4))
         self.history_display = ui.Display(dims=(310, 369), coords=coords, colors=colors, label='WORD LIST')
 
@@ -47,27 +47,7 @@ class Board():
 
         return tiles
 
-    def highlight_tiles_from_letter(self, key):
-        letter = pygame.key.name(key).upper()
-        if letter == 'Q':
-            letter = 'Qu'
-
-        # Type currently highlighted key to unhighlight all tiles
-        if letter in (last_typed, 'ESCAPE'):
-            for t in tiles:
-                t.mouse_out()
-            return ''
-        else:
-            # Otherwise, highlight all tiles with matching letters
-            for t in tiles:
-                if t.letter == letter:
-                    t.mouse_over()
-                else:
-                    t.mouse_out()
-        # Return typed key to store as last_typed
-        return letter
-
-    def is_neighbor(new_tile, old_tile):
+    def is_neighbor(self, new_tile, old_tile):
 
         '''
         There are 4 'false' neighbors, depending on which col old_tile
@@ -174,12 +154,6 @@ class Board():
             self.last = None
             self.letters = None
             self.length = 0
-
-    def update_bonus_color(self, bonus_word, snake_word, colors):
-        if bonus_word == snake_word:
-            self.bonus_display.set_border_color(colors['green'])
-        else:
-            self.bonus_display.set_border_color(colors['dark_gray'])
 
 def offset_from_element(element, corner, offset):
     point = [element.coords[i] + element.surf.get_size()[i] if corner[i] else element.coords[i] for i in range(len(corner))]
