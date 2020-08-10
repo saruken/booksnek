@@ -167,6 +167,7 @@ class Game:
 
     def mult_up(self):
         self.multiplier += 1
+        self.bonus_counter += 1
         for t in self.tiles:
             t.update(multiplier=self.multiplier)
 
@@ -238,9 +239,7 @@ class Game:
         for i, tile in enumerate(self.snake.tiles):
             tile.marked = False
             tile.tile_type = tile_type if i == special_index else 'normal'
-            tile.bomb_timer = 5
-            tile.level = self.level
-            tile.multiplier = self.multiplier
+            tile.bomb_timer = 6
 
     def score_word(self, word=None):
         value = 0
@@ -272,16 +271,7 @@ class Game:
             tile.tile_type = 'normal'
 
     def set_row(self, tile):
-        '''
-        Bumps tile rows "up" to a negative index while retaining their
-        col values. If there is more than 1 tile to be moved up in a
-        given column, stacks these tiles: row = -1, row = -2, etc.
-
-        This fn only returns a row value; it has no bearing on actually
-        drawing the tiles.
-        '''
-        least_row = min([t.row for t in self.tiles if t.col == tile.col])
-        tile.row = least_row - 1
+        tile.row = min([t.row for t in self.tiles if t.col == tile.col]) - 1
 
     def trim_snake(self, tile):
         index = self.snake.length
