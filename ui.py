@@ -379,7 +379,6 @@ class Tile():
     def toggle_mark(self):
         self.marked = not self.marked
         self.update()
-        print(f'Tile "{self.letter}" -- row: {self.row}, col: {self.col}')
 
     def update(self, level=None, multiplier=None):
         if self.tile_type == 'bomb':

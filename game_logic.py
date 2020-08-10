@@ -126,6 +126,8 @@ class Game:
         return -0.375 * avg + 1.975
 
     def empty_snake(self):
+        for tile in [t for t in self.snake.tiles]:
+            tile.unselect()
         self.snake.tiles = []
         self.snake.update()
 
@@ -189,7 +191,6 @@ class Game:
         for tile in self.snake.tiles:
             tile.choose_letter()
             tile.row = self.set_row(tile)
-            print(f'Tile "{tile.letter}" -- Set row to {tile.row}')
             # Push tiles with negative rows up off the top of the screen
             tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
 
@@ -276,7 +277,7 @@ class Game:
         return least_row - 1
 
     def trim_snake(self, tile):
-        index = len(self.snake.tiles)
+        index = self.snake.length
 
         for t in reversed(self.snake.tiles):
             if t == tile:
@@ -284,6 +285,7 @@ class Game:
             index -= 1
 
         self.snake.tiles = self.snake.tiles[:index]
+        self.snake.update()
 
     def update_bonus_color(self):
         self.board.update_bonus_color(self.bonus_word, self.snake.word, self.colors)

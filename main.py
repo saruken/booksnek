@@ -127,6 +127,9 @@ def main():
                                     if game.snake.length:
                                         if game.board.is_neighbor(active_btn, game.snake.last):
                                             game.add_tile(active_btn)
+                                        else:
+                                            game.empty_snake()
+                                            game.add_tile(active_btn)
                                     else:
                                         game.add_tile(active_btn)
                             game.update_word_display()
