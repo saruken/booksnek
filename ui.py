@@ -152,8 +152,8 @@ class Display(BaseObj):
         if self.label:
             self.set_label()
 
-    def set_progress(self, score, mult):
-        self.progress = floor((score - self.progress_floor) / (1000 * mult) * self.progress_max)
+    def set_progress(self, score, level):
+        self.progress = floor((score - self.progress_floor) / (1000 * level) * self.progress_max)
 
     def set_text(self, text):
         if text:
@@ -372,11 +372,9 @@ class Tile():
     def toggle_mark(self):
         self.marked = not self.marked
 
-    def update(self, level=None, multiplier=None):
-        if level:
-            self.level = level
-        if multiplier:
-            self.multiplier = multiplier
+    def update(self, level, multiplier):
+        self.level = level
+        self.multiplier = multiplier
 
         self.update_point_value()
         self.set_text_color()

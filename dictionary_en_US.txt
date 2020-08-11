@@ -333,6 +333,8 @@ academicians
 academics
 academies
 academy
+acai
+acais
 acanthus
 acanthuses
 accede
@@ -8061,6 +8063,11 @@ broadsides
 broadsiding
 broadsword
 broadswords
+broast
+broasted
+broaster
+broasting
+broasts
 brocade
 brocaded
 brocades
@@ -18662,7 +18669,6 @@ dickybirds
 dicotyledon
 dicotyledonous
 dicotyledons
-dict
 dicta
 dictate
 dictated
@@ -36368,6 +36374,9 @@ jangling
 janitor
 janitorial
 janitors
+jankier
+jankiest
+janky
 japan
 japanned
 japanning
@@ -38604,8 +38613,10 @@ licentiates
 licentious
 licentiously
 licentiousness
+lich
 lichen
 lichens
+liches
 licit
 licitly
 lick
@@ -42022,6 +42033,7 @@ minorities
 minority
 minors
 minoxidil
+mins
 minster
 minsters
 minstrel
@@ -48701,6 +48713,8 @@ peewees
 peewit
 peewits
 peg
+pegasi
+pegasus
 pegboard
 pegboards
 pegged
@@ -53045,6 +53059,7 @@ pruning
 prurience
 prurient
 pruriently
+pry
 prying
 psalm
 psalmist
@@ -68536,6 +68551,8 @@ teens
 teeny
 teenybopper
 teenyboppers
+teepee
+teepees
 tees
 teeter
 teetered
@@ -69731,6 +69748,8 @@ tintypes
 tinware
 tiny
 tip
+tipi
+tipis
 tipped
 tipper
 tippers
@@ -75088,6 +75107,8 @@ vowel
 vowels
 vowing
 vows
+vox
+voxes
 voyage
 voyaged
 voyager

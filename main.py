@@ -117,10 +117,10 @@ def main():
                                                 game.reroll_snake_tiles()
                                                 game.update_tile_rows()
                                                 game.last_typed = ''
+                                                game.update_bomb_tiles()
                                             else:
                                                 print(f'Word "{game.snake.word}" not in dictionary')
                                             game.empty_snake()
-                                            game.update_bomb_tiles()
                                             game.update_word_display()
                                             active_btn.mouse_out()
                                     # Player clicks on snake tile other than
@@ -134,6 +134,7 @@ def main():
                                     if game.snake.length:
                                         if game.board.is_neighbor(active_btn, game.snake.last):
                                             game.add_tile(active_btn)
+                                            game.update_bonus_display()
                                         else:
                                             game.empty_snake()
                                             game.add_tile(active_btn)
@@ -165,11 +166,6 @@ if __name__ == '__main__':
     main()
 
     #TODO:
-        # Big refactor
-            # The "progress" meter should be for "levels", which should act as separate multipliers. So a word is scored by sum(letters) * mult * lv
-                # Don't reset progress when mult increases
-                # Don't increase mult when lv increases
-                # Replace "bomb chance" with Lv display
         # Click-and-drag tiles to select; release to submit
         # Bonuses for making shapes with the tiles in a word would be neat
         # Tie animation speed to delta

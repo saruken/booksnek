@@ -59,13 +59,13 @@ class Game:
                 t.ay = 0
 
     def apply_level_progress(self):
-        self.board.bonus_display.set_progress(self.score, self.multiplier)
+        self.board.level_display.set_progress(self.score, self.level)
 
     def check_dictionary(self):
         return bool(self.snake.word.lower() in self.dictionary)
 
     def check_level_progress(self):
-        return bool(self.board.bonus_display.progress >= self.board.bonus_display.progress_max)
+        return bool(self.board.level_display.progress >= self.board.level_display.progress_max)
 
     def check_update_best(self):
         if self.history[-1]['value'] > self.value_best:
@@ -73,11 +73,11 @@ class Game:
             self.mult_best = self.multiplier
             self.value_best = self.history[-1]['value']
             self.word_best = self.history[-1]['word']
-            text = f"{self.history[-1]['word']} (+{self.history[-1]['value']} / Lv {self.level_best} / x{self.mult_best})"
+            text = f"{self.history[-1]['value']} - {self.history[-1]['word']}"
             filler = ['beige' for _ in range(len(text) - len(self.history[-1]['colors']))]
             obj = {
                 'word': text,
-                'colors': self.history[-1]['colors'] + filler
+                'colors': filler + self.history[-1]['colors']
             }
             self.board.best_display.set_colored_text(obj)
 
@@ -163,13 +163,15 @@ class Game:
 
     def level_up(self):
         self.level += 1
-        self.board.bonus_display.progress = 0
+        self.board.level_display.progress = 0
+        self.board.level_display.progress_floor = self.score
+        self.board.level_display.update(self.level)
+        self.board.level_display.update()
+        self.update_bonus_display()
 
     def mult_up(self):
         self.multiplier += 1
         self.bonus_counter += 1
-        for t in self.tiles:
-            t.update(multiplier=self.multiplier)
 
     def new_game(self):
         self.bonus_counter = 3
@@ -189,7 +191,7 @@ class Game:
         self.empty_snake()
 
         self.board.best_display.update(self.word_best)
-        self.board.bonus_display.update(self.bonus_word)
+        self.update_bonus_display()
         self.board.history_display.update(self.history)
         self.board.longest_display.update(self.word_longest)
         self.board.level_display.update(self.level)
@@ -228,7 +230,7 @@ class Game:
         # avg = 3; bomb = 85%
             if len(self.last_five_words) == 5:
                 avg = round(sum(self.last_five_words) / len(self.last_five_words), 1)
-                bomb_weight = self.get_bomb_weight(avg)
+                bomb_weight = max(self.get_bomb_weight(avg), 0)
                 normal_weight = 1 - bomb_weight
                 tile_type = choice(['normal', 'bomb'], 1, p=[normal_weight, bomb_weight])[0]
 
@@ -245,15 +247,15 @@ class Game:
         value = 0
         if word:
             for l in word:
-                base_value += self.board.lookup_letter_value(l) * self.multiplier
+                value += self.board.lookup_letter_value(l) * self.multiplier * self.level
         else:
             for t in self.snake.tiles:
                 value += t.point_value
-        if self.snake.word == self.bonus_word:
+            word = self.snake.word
+        if word == self.bonus_word:
             value *= 3
 
-        value *= self.level
-        return value * self.snake.length
+        return value * len(word)
 
     def scramble(self, new_bomb=True):
         self.update_bomb_tiles()
@@ -292,11 +294,12 @@ class Game:
         self.board.update_bonus_color(self.bonus_word, self.snake.word, self.colors)
 
     def update_bonus_display(self):
-        if self.board.bonus_display.text == self.bonus_word:
-            self.board.bonus_display.border_color = self.colors['teal']
-        else:
-            self.board.bonus_display.border_color = self.colors['mid_gray']
-        self.board.bonus_display.set_text(f'{self.bonus_word} (+{str(self.score_word())})')
+        if self.board.bonus_display.text:
+            if self.board.bonus_display.text.split(' ')[0] == self.bonus_word:
+                self.board.bonus_display.border_color = self.colors['teal']
+            else:
+                self.board.bonus_display.border_color = self.colors['mid_gray']
+        self.board.bonus_display.set_text(f'{self.bonus_word} (+{str(self.score_word(self.bonus_word))})')
 
     def update_btn_clear_marked(self):
         self.board.btn_clear_marked.enabled = bool(len([t for t in self.tiles if t.marked]))
@@ -306,7 +309,7 @@ class Game:
         self.board.history_display.set_multiline_text(self.history)
 
     def update_level_progress(self):
-        self.board.bonus_display.update()
+        self.board.level_display.update()
 
     def update_mult_display(self):
         self.board.multiplier_display.update(self.multiplier)
@@ -331,7 +334,7 @@ class Game:
 
     def update_tiles(self):
         for t in self.tiles:
-            t.update()
+            t.update(level=self.level, multiplier=self.multiplier)
 
     def update_word_display(self):
         color = 'mid_gray'
