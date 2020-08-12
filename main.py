@@ -89,11 +89,11 @@ def main():
                     game.try_add_tile(elem)
                     game.update_word_display()
                     game.highlight_selected_tiles()
-                    game.update_btn_clear_marked()
 
             elif event.type == pygame.KEYDOWN:
                 last_typed = game.highlight_tiles_from_letter(event.key, game.last_typed)
             game.update_tiles()
+            game.update_btn_clear_marked()
         game.animate()
         window_surface.blit(game.board.background, (0, 0))
         for element in game.ui_elements:
@@ -110,6 +110,9 @@ if __name__ == '__main__':
             # Carry over "extra" on LvUP into next lv progress
             # Animate bar
         # Bonuses for making shapes with the tiles in a word would be neat
+            # Could make a block/shape of tiles that need to be eliminated; if
+            # you get them all you get a bonus, or else they turn to stone or
+            # something.
         # Tie animation speed to delta
         # Controller support!
 

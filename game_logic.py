@@ -50,14 +50,15 @@ class Game:
 
     def animate(self):
         to_animate = [t for t in self.tiles if t.target != t.coords]
-        if not to_animate:
-            return
-
         for t in to_animate:
             t.ay += .4
             t.coords = (t.coords[0], min(t.coords[1] + t.ay, t.target[1]))
             if t.coords[1] == t.target[1]:
                 t.ay = 0
+        if not self.board.level_display.progress == self.board.level_display.progress_goal:
+            amt = 1
+            self.board.level_display.progress += amt
+            self.update_level_progress()
 
     def apply_level_progress(self):
         self.board.level_display.set_progress(self.score, self.level)
@@ -114,9 +115,10 @@ class Game:
     def commit_word_to_history(self):
         if self.snake.word == self.bonus_word:
             color = 'green'
+            value = 'Mult.'
         else:
             color = 'beige'
-        value = self.score_word()
+            value = self.score_word()
         history_word = {
             'word': self.snake.word,
             'value': value,
@@ -348,10 +350,6 @@ class Game:
         elif self.snake.length > 2:
             if self.check_dictionary():
                 self.commit_word_to_history()
-                self.score += self.score_word()
-                self.update_score_display()
-                self.update_history_display()
-                self.check_update_best()
                 self.check_update_longest()
                 if self.snake.word == self.bonus_word:
                     self.mult_up()
@@ -359,6 +357,10 @@ class Game:
                     self.choose_bonus_word()
                 else:
                     self.apply_level_progress()
+                    self.score += self.score_word()
+                    self.update_score_display()
+                    self.check_update_best()
+                self.update_history_display()
                 if self.check_level_progress():
                     self.level_up()
                 self.reroll_snake_tiles()
@@ -387,7 +389,7 @@ class Game:
         else:
             self.board.bonus_display.border_color = self.colors['mid_gray']
 
-        self.board.bonus_display.set_text(f'{self.bonus_word} (+{str(self.score_word(self.bonus_word))})')
+        self.board.bonus_display.set_text(self.bonus_word)
 
     def update_btn_clear_marked(self):
         self.board.btn_clear_marked.enabled = bool(len([t for t in self.tiles if t.marked]))
@@ -403,7 +405,7 @@ class Game:
         self.board.multiplier_display.update(self.multiplier)
 
     def update_score_display(self):
-        self.board.score_display.set_text(str(self.score))
+        self.board.score_display.set_text(format(self.score, ',d'))
 
     def update_tile_rows(self):
         for col in range(7):

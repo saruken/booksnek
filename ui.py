@@ -29,6 +29,7 @@ class Display(BaseObj):
         self.letter_width = 19
         self.progress = 0
         self.progress_floor = 0
+        self.progress_goal = 0
         self.progress_max = 0
         self.show_progress = show_progress
         self.text = text
@@ -153,7 +154,7 @@ class Display(BaseObj):
             self.set_label()
 
     def set_progress(self, score, level):
-        self.progress = floor((score - self.progress_floor) / (1000 * level) * self.progress_max)
+        self.progress_goal = floor((score - self.progress_floor) / (1000 * level) * self.progress_max)
 
     def set_text(self, text):
         if text:
