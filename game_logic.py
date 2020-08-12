@@ -1,4 +1,5 @@
 import pygame, random
+from math import ceil
 from numpy.random import choice
 
 import gameboard, tile_snake
@@ -49,6 +50,7 @@ class Game:
         self.snake.add(tile)
 
     def animate(self):
+        self.paused = True
         to_animate = [t for t in self.tiles if t.target != t.coords]
         for t in to_animate:
             t.ay += .4
@@ -56,9 +58,13 @@ class Game:
             if t.coords[1] == t.target[1]:
                 t.ay = 0
         if not self.board.level_display.progress == self.board.level_display.progress_goal:
-            amt = 1
+            amt = ceil((self.board.level_display.progress_goal - self.board.level_display.progress) / 2)
+            print(f'Progress += {amt}')
             self.board.level_display.progress += amt
+            if self.board.level_display.progress >= self.board.level_display.progress_max:
+                self.level_up()
             self.update_level_progress()
+        self.paused = False
 
     def apply_level_progress(self):
         self.board.level_display.set_progress(self.score, self.level)
@@ -75,7 +81,7 @@ class Game:
             self.mult_best = self.multiplier
             self.value_best = self.history[-1]['value']
             self.word_best = self.history[-1]['word']
-            text = f"{self.history[-1]['value']} - {self.history[-1]['word']}"
+            text = f"{self.history[-1]['value']} {self.history[-1]['word']}"
             filler = ['beige' for _ in range(len(text) - len(self.history[-1]['colors']))]
             obj = {
                 'word': text,
@@ -187,6 +193,7 @@ class Game:
         self.level += 1
         self.board.level_display.progress = 0
         self.board.level_display.progress_floor = self.score
+        self.board.level_display.set_progress(self.score, self.level)
         self.board.level_display.update(self.level)
         self.board.level_display.update()
         self.update_bonus_display()
@@ -207,6 +214,7 @@ class Game:
         self.level_best = 1
         self.mult_best = 1
         self.multiplier = 1
+        self.paused = False
         self.score = 0
         self.value_best = 0
         self.word_best = None
@@ -313,8 +321,8 @@ class Game:
             elem.toggle_mark()
 
     def trim_snake(self, tile):
-        index = self.snake.length
-
+        index = len(self.snake.tiles) # Must use this instead of snake.length
+                                      # due to 'Qu' tiles
         for t in reversed(self.snake.tiles):
             if t == tile:
                 break
@@ -345,8 +353,8 @@ class Game:
             elem.mouse_over()
 
     def try_submit_word(self):
-        if self.snake.length == 1:
-            self.empty_snake()
+        if len(self.snake.tiles) == 1: # Must use this instead of
+            self.empty_snake()         # snake.length due to 'Qu' tiles
         elif self.snake.length > 2:
             if self.check_dictionary():
                 self.commit_word_to_history()
@@ -356,10 +364,10 @@ class Game:
                     self.update_mult_display()
                     self.choose_bonus_word()
                 else:
-                    self.apply_level_progress()
                     self.score += self.score_word()
                     self.update_score_display()
                     self.check_update_best()
+                    self.apply_level_progress()
                 self.update_history_display()
                 if self.check_level_progress():
                     self.level_up()
@@ -435,11 +443,12 @@ class Game:
         if self.snake.length:
             if len(word) > 2:
                 if self.check_dictionary():
-                    value = self.score_word()
                     if word == self.bonus_word:
                         color = 'green'
+                        value = 'Mult.'
                     else:
                         color = 'teal'
+                        value = self.score_word()
                 else:
                     color = 'red'
 

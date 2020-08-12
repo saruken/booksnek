@@ -47,7 +47,11 @@ class Display(BaseObj):
             if not self.progress_max:
                 self.progress_max = self.dims[0] - 4
             pygame.draw.rect(self.surf, self.colors['bg_progress'], pygame.Rect((2, self.dims[1] - 6), (self.progress_max, 4)))
-            pygame.draw.rect(self.surf, self.colors['progress'], pygame.Rect((2, self.dims[1] - 6), (self.progress, 4)))
+            pygame.draw.rect(self.surf, self.colors['progress'], pygame.Rect((2, self.dims[1] - 7), (self.progress, 4)))
+            surf = self.fonts['small'].render(str(self.progress - self.progress_floor), True, self.colors['mid_gray'], self.bg_color)
+            self.surf.blit(surf, dest=(3, self.dims[1] - surf.get_size()[1] - 8))
+            surf = self.fonts['small'].render(str(self.progress_max - self.progress - self.progress_floor), True, self.colors['mid_gray'], self.bg_color)
+            self.surf.blit(surf, dest=(self.dims[0] - surf.get_size()[0] - 3, self.dims[1] - surf.get_size()[1] - 8))
 
         if self.text:
             # Render text
@@ -155,6 +159,7 @@ class Display(BaseObj):
 
     def set_progress(self, score, level):
         self.progress_goal = floor((score - self.progress_floor) / (1000 * level) * self.progress_max)
+        print(f'|-{self.progress_floor}--{self.progress}-->{self.progress_goal}--{self.progress_max}-|')
 
     def set_text(self, text):
         if text:
