@@ -10,11 +10,11 @@ class Board():
 
         self.menu_bg = ui.Display(dims=(348, 60), coords=(-2, -2), colors=colors)
         coords = offset_from_element(self.menu_bg, corner=(0, 0), offset=(10, 10))
-        self.menu_new = ui.Interactive(dims=(52, 40), coords=coords, text='NEW', colors=colors, text_color='light_gray')
+        self.menu_new = ui.Interactive(name='new', dims=(52, 40), coords=coords, text='NEW', colors=colors, text_color='light_gray')
         coords = offset_from_element(self.menu_new, corner=(1, 0), offset=(10, 0))
-        self.menu_open = ui.Interactive(dims=(63, 40), coords=coords, text='OPEN', text_color='light_gray', colors=colors)
+        self.menu_open = ui.Interactive(name='open', dims=(63, 40), coords=coords, text='OPEN', text_color='light_gray', colors=colors)
         coords = offset_from_element(self.menu_open, corner=(1, 0), offset=(10, 0))
-        self.menu_save = ui.Interactive(dims=(63, 40), coords=coords, text='SAVE', enabled=False, colors=colors)
+        self.menu_save = ui.Interactive(name='save', dims=(63, 40), coords=coords, text='SAVE', enabled=False, colors=colors)
         coords = offset_from_element(self.menu_bg, corner=(0, 1), offset=(12, 10))
         self.bonus_display = ui.Display(dims=(336, 40), coords=coords, colors=colors, text_color='light_gray', label='BONUS WORD', center=True)
         coords = offset_from_element(self.bonus_display, corner=(0, 1), offset=(0, 10))
@@ -22,9 +22,9 @@ class Board():
         coords = offset_from_element(self.level_display, corner=(1, 0), offset=(10, 0))
         self.multiplier_display = ui.Display(dims=(80, 40), coords=coords, colors=colors, label='MULT.', text_prefix='x', text_color='light_gray', center=True)
         coords = offset_from_element(self.multiplier_display, corner=(1, 0), offset=(10, 0))
-        self.btn_clear_marked = ui.Interactive(dims=(100, 40), coords=coords, text='UNMARK', enabled=False, colors=colors)
+        self.btn_clear_marked = ui.Interactive(name='clear', dims=(100, 40), coords=coords, text='UNMARK', enabled=False, colors=colors)
         coords = offset_from_element(self.menu_save, corner=(1, 0), offset=(10, 0))
-        self.btn_scramble = ui.Interactive(dims=(120, 40), coords=coords, colors=colors, text='SCRAMBLE', text_color='light_gray')
+        self.btn_scramble = ui.Interactive(name='scramble', dims=(120, 40), coords=coords, colors=colors, text='SCRAMBLE', text_color='light_gray')
         coords = offset_from_element(self.btn_scramble, corner=(1, 0), offset=(20, 0))
         self.score_display = ui.Display(dims=(310, 40), coords=coords, colors=colors, text='0', text_color='light_gray', label='SCORE', center=True)
         coords = offset_from_element(self.score_display, corner=(0, 1), offset=(0, 10))
@@ -36,6 +36,7 @@ class Board():
         coords = offset_from_element(self.best_display, corner=(0, 1), offset=(0, 4))
         self.history_display = ui.Display(dims=(310, 369), coords=coords, colors=colors, label='WORD LIST')
 
+        self.menu_btns = [self.btn_clear_marked, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
         self.ui_elements = [self.bonus_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.bonus_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
 
     def create_tiles(self, colors):
@@ -46,88 +47,6 @@ class Board():
                 tiles.append(ui.Tile(col=col, row=row, colors=colors))
 
         return tiles
-
-    def is_neighbor(self, new_tile, old_tile):
-
-        '''
-        There are 4 'false' neighbors, depending on which col old_tile
-        is in:
-            Even old_tile.cols:
-                new_c == old_c + 1 and new_r == old_r + 1
-                new_c == old_c - 1 and new_r == old_r + 1
-            Odd old_tile.cols:
-                new_c == old_c - 1 and new_r == old_r - 1
-                new_c == old_c + 1 and new_r == old_r - 1
-        These look good on paper, but looking at the actual arrangement
-        of tiles shows them to be erroneous:
-
-            E C
-            V O           O C
-            E L           D O
-            N             D L
-
-            B B       A A     C C
-        A A B B C C   A A 1 1 C C
-        A A 1 1 C C   0 0 1 1 2 2
-        0 0 1 1 2 2   0 0 X X 2 2
-        0 0 X X 2 2   5 5 X X 3 3
-        5 5 X X 3 3   5 5 4 4 3 3
-        5 5 4 4 3 3   F F 4 4 D D
-        F F 4 4 D D   F F E E D D
-        F F E E D D       E E
-            E E
-
-        'X' = old_tile
-        'D' and 'F' are false neighbors for even column 'X' tiles
-        'A' and 'C' are false neighbors for odd column 'X' tiles
-        '''
-
-        new_c, old_c = new_tile.col, old_tile.col
-        new_r, old_r = new_tile.row, old_tile.row
-
-        # Odd columns
-        if old_tile.col % 2:
-            # 2 o'clock
-            if new_c == old_c + 1 and new_r == old_r - 1:
-                return True
-            # 4 o'clock
-            elif new_c == old_c + 1 and new_r == old_r:
-                return True
-            # 8 o'clock
-            elif new_c == old_c - 1 and new_r == old_r:
-                return True
-            # 10 o'clock
-            elif new_c == old_c - 1 and new_r == old_r - 1:
-                return True
-
-        # Even columns
-        else:
-            # 2 o'clock
-            if new_c == old_c + 1 and new_r == old_r:
-                return True
-            # 4 o'clock
-            elif new_c == old_c + 1 and new_r == old_r + 1:
-                return True
-            # 8 o'clock
-            elif new_c == old_c - 1 and new_r == old_r + 1:
-                return True
-            # 10 o'clock
-            elif new_c == old_c - 1 and new_r == old_r:
-                return True
-
-        # Parity agnostic columns
-        # 12 o'clock
-        if new_c == old_c and new_r == old_r - 1:
-            return True
-        # 6 o'clock
-        elif new_c == old_c and new_r == old_r + 1:
-            return True
-
-        # Self
-        if old_tile  == new_tile:
-            return True
-
-        return False
 
     def lookup_letter_value(self, letter):
         if letter in 'AEILNORSTU':

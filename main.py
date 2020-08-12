@@ -3,6 +3,13 @@ import pygame
 import game_logic
 from ui import Tile
 
+def get_elem_under_mouse(game):
+    mouse_pos = pygame.mouse.get_pos()
+    for obj in [e for e in game.ui_elements if e.interactive]:
+        if obj.get_abs_rect().collidepoint(mouse_pos):
+            return obj
+    return None
+
 def load_dictionary():
     words = None
 
@@ -23,138 +30,70 @@ def main():
     window_surface = pygame.display.set_mode(dims)
     game = game_logic.Game(dims=dims, dictionary=load_dictionary())
 
-    mouse_events = [pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]
-    mouse_down = False
-    active_btn = None
-    btn_down = None
-    btn_down_right = None
-
+    mouse_down = pygame.MOUSEBUTTONDOWN
+    mouse_up = pygame.MOUSEBUTTONUP
+    mouse_motion = pygame.MOUSEMOTION
+    mouse_left = 1
+    mouse_right = 3
+    left_clicked_elem = None
+    right_clicked_elem = None
+    begin_submit = False
+    mode = 'click'
     clock = pygame.time.Clock()
     is_running = True
 
     while is_running:
-
         delta = clock.tick(60)/1000.0
 
         for event in pygame.event.get():
-
             if event.type == pygame.QUIT:
                 is_running = False
-
-            elif event.type in mouse_events:
-                mouse_pos = pygame.mouse.get_pos()
-                active_btn = None
-                try: # Get targeted button
-                    for obj in [e for e in game.ui_elements if e.interactive]:
-                        if obj.hovered:
-                            obj.mouse_out()
-                            game.last_typed = ''
-                        if obj.get_abs_rect().collidepoint(mouse_pos):
-                            active_btn = obj
-                            active_btn.mouse_over()
-                except StopIteration: # Didn't interact with a button
-                    pass
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_down = True
-                    try:
-                        if event.__dict__['button'] == 1:
-                            btn_down = active_btn
-                        elif event.__dict__['button'] == 3:
-                            btn_down_right = active_btn
-                    except AttributeError: # Click outside UI elements
-                        pass
-                elif event.type == pygame.MOUSEBUTTONUP:
-                    if event.__dict__['button'] == 1:
-                        mouse_down = False
-                        if btn_down and active_btn == btn_down:
-                            if active_btn == game.board.menu_new:
-                                game.new_game()
-                            elif active_btn == game.board.menu_open:
-                                game.load_game()
-                            elif active_btn == game.board.menu_save:
-                                if menu_save.enabled:
-                                    game.save_game()
-                            elif active_btn == game.board.btn_scramble:
-                                game.scramble()
-                                game.last_typed = ''
-                            elif active_btn == game.board.btn_clear_marked:
-                                if game.board.btn_clear_marked.enabled:
-                                    game.clear_marked()
-                                    game.board.btn_clear_marked.update()
-                                    game.last_typed = ''
+            elif event.type == mouse_down:
+                elem = get_elem_under_mouse(game)
+                if event.__dict__['button'] == mouse_left:
+                    left_clicked_elem = elem
+                    if isinstance(elem, Tile):
+                        mode = 'drag'
+                        begin_submit = bool(elem == game.snake.last)
+                        game.try_add_tile(elem)
+                        game.update_word_display()
+                        game.highlight_selected_tiles()
+                elif event.__dict__['button'] == mouse_right:
+                    right_clicked_elem = elem
+            elif event.type == mouse_up:
+                elem = get_elem_under_mouse(game)
+                if event.__dict__['button'] == mouse_left:
+                    if elem in game.board.menu_btns:
+                        if elem == left_clicked_elem:
+                            game.handle_menu_btn_click(elem)
+                    else:
+                        if elem == left_clicked_elem:
+                            if begin_submit:
+                                game.try_submit_word()
                             else:
-                                # If the clicked tile is already selected, and
-                                # the last tile in the snake, submit the word.
-                                # Otherwise, if it's selected but not the last,
-                                # unselect it and 'trim' the tile snake back to
-                                # that tile (leaving it selected).
-                                if active_btn.selected:
-                                    if active_btn == game.snake.last:
-                                        # When only 1 tile is selected,
-                                        # clicking it again deselects it.
-                                        if game.snake.length == 1:
-                                            game.empty_snake()
-                                        # When 2 tiles are selected, clicking
-                                        # the final tile does nothing; 3 is the
-                                        # minimum word length.
-                                        elif game.snake.length > 2:
-                                            if game.check_dictionary():
-                                                game.commit_word_to_history()
-                                                game.score += game.score_word()
-                                                game.update_score_display()
-                                                game.update_history_display()
-                                                game.check_update_best()
-                                                game.check_update_longest()
-                                                if game.snake.word == game.bonus_word:
-                                                    game.mult_up()
-                                                    game.update_mult_display()
-                                                    game.choose_bonus_word()
-                                                    game.update_bonus_display()
-                                                else:
-                                                    game.apply_level_progress()
-                                                if game.check_level_progress():
-                                                    game.level_up()
-                                                game.reroll_snake_tiles()
-                                                game.update_tile_rows()
-                                                game.last_typed = ''
-                                                game.update_bomb_tiles()
-                                            else:
-                                                print(f'Word "{game.snake.word}" not in dictionary')
-                                            game.empty_snake()
-                                            game.update_word_display()
-                                            active_btn.mouse_out()
-                                    # Player clicks on snake tile other than
-                                    # the last one; trim back to this tile.
-                                    else:
-                                        game.trim_snake(active_btn)
-                                # Otherwise, check if the new tile is a
-                                # neighbor of the last selected tile. If so,
-                                # add it; if not, start a new snake.
-                                else:
-                                    if game.snake.length:
-                                        if game.board.is_neighbor(active_btn, game.snake.last):
-                                            game.add_tile(active_btn)
-                                            game.update_bonus_display()
-                                        else:
-                                            game.empty_snake()
-                                            game.add_tile(active_btn)
-                                    else:
-                                        game.add_tile(active_btn)
-                            game.update_word_display()
-                            game.highlight_selected_tiles()
-                            game.update_level_progress()
-                        btn_down = None
-                    elif event.__dict__['button'] == 3:
-                        if btn_down_right and active_btn == btn_down_right:
-                            if isinstance(active_btn, Tile):
-                                active_btn.toggle_mark()
-                        btn_down_right = None
+                                game.try_add_tile(elem)
+                        else:
+                            game.try_submit_word()
+                        game.update_word_display()
+                        game.update_bonus_display()
+                        game.highlight_selected_tiles()
+                        game.update_level_progress()
+                        game.update_btn_clear_marked()
+                    mode = 'click'
+                elif event.__dict__['button'] == mouse_right:
+                    game.toggle_mark(elem, right_clicked_elem)
+            elif event.type == mouse_motion:
+                elem = get_elem_under_mouse(game)
+                game.try_mouse_over(elem)
+                if mode == 'drag':
+                    game.try_add_tile(elem)
+                    game.update_word_display()
+                    game.highlight_selected_tiles()
                     game.update_btn_clear_marked()
+
             elif event.type == pygame.KEYDOWN:
                 last_typed = game.highlight_tiles_from_letter(event.key, game.last_typed)
-
             game.update_tiles()
-
         game.animate()
         window_surface.blit(game.board.background, (0, 0))
         for element in game.ui_elements:
@@ -166,7 +105,10 @@ if __name__ == '__main__':
     main()
 
     #TODO:
-        # Click-and-drag tiles to select; release to submit
+        # Level progress updates
+            # Show how many points remaining before next lv
+            # Carry over "extra" on LvUP into next lv progress
+            # Animate bar
         # Bonuses for making shapes with the tiles in a word would be neat
         # Tie animation speed to delta
         # Controller support!

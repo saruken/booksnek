@@ -2,6 +2,7 @@ import pygame, random
 from numpy.random import choice
 
 import gameboard, tile_snake
+from ui import Interactive, Tile
 
 class Game:
     def __init__(self, dims, dictionary):
@@ -135,6 +136,25 @@ class Game:
         self.snake.tiles = []
         self.snake.update()
 
+    def handle_menu_btn_click(self, elem):
+        if not isinstance(elem, Interactive):
+            return
+        if elem.name == 'new':
+            self.new_game()
+        elif elem.name == 'open':
+            self.load_game()
+        elif elem.name == 'save':
+            if self.board.menu_save.enabled:
+                self.save_game()
+        elif elem.name == 'scramble':
+            self.scramble()
+            self.last_typed = ''
+        elif elem.name == 'clear':
+            if self.board.btn_clear_marked.enabled:
+                self.clear_marked()
+                self.board.btn_clear_marked.update()
+                self.last_typed = ''
+
     def highlight_selected_tiles(self):
         for tile in [t for t in self.tiles if t.selected]:
             tile.unselect()
@@ -168,6 +188,9 @@ class Game:
         self.board.level_display.update(self.level)
         self.board.level_display.update()
         self.update_bonus_display()
+
+    def load_game(self):
+        print('load_game() placeholder')
 
     def mult_up(self):
         self.multiplier += 1
@@ -243,6 +266,9 @@ class Game:
             tile.tile_type = tile_type if i == special_index else 'normal'
             tile.bomb_timer = 6
 
+    def save_game(self):
+        print('save_game() placeholder')
+
     def score_word(self, word=None):
         value = 0
         if word:
@@ -275,6 +301,15 @@ class Game:
     def set_row(self, tile):
         tile.row = min([t.row for t in self.tiles if t.col == tile.col]) - 1
 
+    def toggle_mark(self, end_click_elem, start_click_elem):
+        for elem in (start_click_elem, end_click_elem):
+            if not elem:
+                return
+            if not isinstance(elem, Tile):
+                return
+        if end_click_elem == start_click_elem:
+            elem.toggle_mark()
+
     def trim_snake(self, tile):
         index = self.snake.length
 
@@ -286,6 +321,56 @@ class Game:
         self.snake.tiles = self.snake.tiles[:index]
         self.snake.update()
 
+    def try_add_tile(self, elem):
+        if not isinstance(elem, Tile):
+            return
+        if elem in self.snake.tiles:
+            self.trim_snake(elem)
+        else:
+            if self.snake.length:
+                if self.snake.is_neighbor(elem):
+                    self.add_tile(elem)
+                else:
+                    self.empty_snake()
+                    self.add_tile(elem)
+            else:
+                self.add_tile(elem)
+
+    def try_mouse_over(self, elem):
+        for el in [e for e in self.board.menu_btns + self.tiles if e.hovered]:
+            el.mouse_out()
+        if isinstance(elem, Interactive) or isinstance(elem, Tile):
+            elem.mouse_over()
+
+    def try_submit_word(self):
+        if self.snake.length == 1:
+            self.empty_snake()
+        elif self.snake.length > 2:
+            if self.check_dictionary():
+                self.commit_word_to_history()
+                self.score += self.score_word()
+                self.update_score_display()
+                self.update_history_display()
+                self.check_update_best()
+                self.check_update_longest()
+                if self.snake.word == self.bonus_word:
+                    self.mult_up()
+                    self.update_mult_display()
+                    self.choose_bonus_word()
+                else:
+                    self.apply_level_progress()
+                if self.check_level_progress():
+                    self.level_up()
+                self.reroll_snake_tiles()
+                self.update_tile_rows()
+                self.last_typed = ''
+                self.update_bomb_tiles()
+            else:
+                print(f'Word "{self.snake.word}" not in dictionary')
+            self.snake.last.mouse_out()
+            self.empty_snake()
+            self.update_word_display()
+
     def update_bomb_tiles(self):
         for tile in [t for t in self.tiles if t.tile_type == 'bomb']:
             tile.bomb_tick()
@@ -294,11 +379,14 @@ class Game:
         self.board.update_bonus_color(self.bonus_word, self.snake.word, self.colors)
 
     def update_bonus_display(self):
-        if self.board.bonus_display.text:
-            if self.board.bonus_display.text.split(' ')[0] == self.bonus_word:
-                self.board.bonus_display.border_color = self.colors['teal']
+        if self.board.word_display.text:
+            if self.board.word_display.text.split(' ')[0] == self.bonus_word:
+                self.board.bonus_display.border_color = self.colors['green']
             else:
                 self.board.bonus_display.border_color = self.colors['mid_gray']
+        else:
+            self.board.bonus_display.border_color = self.colors['mid_gray']
+
         self.board.bonus_display.set_text(f'{self.bonus_word} (+{str(self.score_word(self.bonus_word))})')
 
     def update_btn_clear_marked(self):

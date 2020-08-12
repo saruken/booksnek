@@ -170,13 +170,14 @@ class Display(BaseObj):
         self.build_image()
 
 class Interactive(BaseObj):
-    def __init__(self, dims, coords, colors, text, text_color=None, enabled=True):
+    def __init__(self, name, dims, coords, colors, text, text_color=None, enabled=True):
         super(Interactive, self).__init__(dims=dims, coords=coords, colors=colors)
         self.bg_color = self.colors['ocean']
         self.border_color = None
         self.enabled = enabled
         self.hovered = False
         self.interactive = True
+        self.name = name
         self.selected = False
         self.text = text
 
