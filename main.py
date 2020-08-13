@@ -49,38 +49,40 @@ def main():
             if event.type == pygame.QUIT:
                 is_running = False
             elif event.type == mouse_down:
-                elem = get_elem_under_mouse(game)
-                if event.__dict__['button'] == mouse_left:
-                    left_clicked_elem = elem
-                    if isinstance(elem, Tile):
-                        mode = 'drag'
-                        begin_submit = bool(elem == game.snake.last)
-                        game.try_add_tile(elem)
-                        game.update_word_display()
-                        game.highlight_selected_tiles()
-                elif event.__dict__['button'] == mouse_right:
-                    right_clicked_elem = elem
+                if not game.paused:
+                    elem = get_elem_under_mouse(game)
+                    if event.__dict__['button'] == mouse_left:
+                        left_clicked_elem = elem
+                        if isinstance(elem, Tile):
+                            mode = 'drag'
+                            begin_submit = bool(elem == game.snake.last)
+                            game.try_add_tile(elem)
+                            game.update_word_display()
+                            game.highlight_selected_tiles()
+                    elif event.__dict__['button'] == mouse_right:
+                        right_clicked_elem = elem
             elif event.type == mouse_up:
-                elem = get_elem_under_mouse(game)
-                if event.__dict__['button'] == mouse_left:
-                    if elem in game.board.menu_btns:
-                        if elem == left_clicked_elem:
-                            game.handle_menu_btn_click(elem)
-                    else:
-                        if elem == left_clicked_elem:
-                            if begin_submit:
-                                game.try_submit_word()
-                            else:
-                                game.try_add_tile(elem)
+                if not game.paused:
+                    elem = get_elem_under_mouse(game)
+                    if event.__dict__['button'] == mouse_left:
+                        if elem in game.board.menu_btns:
+                            if elem == left_clicked_elem:
+                                game.handle_menu_btn_click(elem)
                         else:
-                            game.try_submit_word()
-                        game.update_word_display()
-                        game.update_bonus_display()
-                        game.highlight_selected_tiles()
-                        game.update_btn_clear_marked()
-                    mode = 'click'
-                elif event.__dict__['button'] == mouse_right:
-                    game.toggle_mark(elem, right_clicked_elem)
+                            if elem == left_clicked_elem:
+                                if begin_submit:
+                                    game.try_submit_word()
+                                else:
+                                    game.try_add_tile(elem)
+                            else:
+                                game.try_submit_word()
+                            game.update_word_display()
+                            game.update_bonus_display()
+                            game.highlight_selected_tiles()
+                            game.update_btn_clear_marked()
+                        mode = 'click'
+                    elif event.__dict__['button'] == mouse_right:
+                        game.toggle_mark(elem, right_clicked_elem)
             elif event.type == mouse_motion:
                 elem = get_elem_under_mouse(game)
                 game.try_mouse_over(elem)
@@ -89,7 +91,8 @@ def main():
                     game.update_word_display()
                     game.highlight_selected_tiles()
             elif event.type == pygame.KEYDOWN:
-                last_typed = game.highlight_tiles_from_letter(event.key, game.last_typed)
+                if not game.paused:
+                    last_typed = game.highlight_tiles_from_letter(event.key, game.last_typed)
             game.update_tiles()
             game.update_btn_clear_marked()
         game.animate()

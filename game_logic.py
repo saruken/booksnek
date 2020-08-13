@@ -50,14 +50,14 @@ class Game:
         self.snake.add(tile)
 
     def animate(self):
-        self.paused = True
         to_animate = [t for t in self.tiles if t.target != t.coords]
         for t in to_animate:
             t.ay += .4
             t.coords = (t.coords[0], min(t.coords[1] + t.ay, t.target[1]))
             if t.coords[1] == t.target[1]:
                 t.ay = 0
-        self.paused = False
+        if not to_animate:
+            self.paused = False
         d = self.board.level_display
         if d.progress > d.progress_actual:
             d.progress = 0
@@ -375,6 +375,7 @@ class Game:
                     self.check_update_best()
                     self.apply_level_progress(score)
                 self.update_history_display()
+                self.paused = True
                 self.reroll_snake_tiles()
                 self.update_tile_rows()
                 self.last_typed = ''
