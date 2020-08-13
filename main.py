@@ -77,7 +77,6 @@ def main():
                         game.update_word_display()
                         game.update_bonus_display()
                         game.highlight_selected_tiles()
-                        game.update_level_progress()
                         game.update_btn_clear_marked()
                     mode = 'click'
                 elif event.__dict__['button'] == mouse_right:
@@ -106,8 +105,11 @@ if __name__ == '__main__':
 
     #TODO:
         # Level progress updates
-            # Show how many points remaining before next lv
-            # Carry over "extra" on LvUP into next lv progress
+            # Flash and fade whole exp bar on LvUP
+            # Format exp like 4.1k instead of 4100
+        # Implement pause while updating progress bar
+        # Loss condition: HP
+            # Bomb tiles deal damage when they turn to stones
         # Bonuses for making shapes with the tiles in a word would be neat
             # Could make a block/shape of tiles that need to be eliminated; if
             # you get them all you get a bonus, or else they turn to stone or
@@ -116,6 +118,6 @@ if __name__ == '__main__':
         # Controller support!
 
     # Add
-        # yay/s
+        #
     # Remove
         #

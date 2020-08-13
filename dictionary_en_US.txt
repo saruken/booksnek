@@ -27924,6 +27924,7 @@ galvanizes
 galvanizing
 galvanometer
 galvanometers
+gam
 gambit
 gambits
 gamble
@@ -27965,6 +27966,7 @@ gamma
 gammas
 gammon
 gammy
+gams
 gamut
 gamuts
 gamy
@@ -41114,7 +41116,6 @@ meetings
 meets
 meetup
 meetups
-meg
 mega
 megabit
 megabits
@@ -41148,7 +41149,6 @@ megaton
 megatons
 megawatt
 megawatts
-megs
 meh
 meiosis
 meiotic
@@ -43525,6 +43525,7 @@ mummify
 mummifying
 mummy
 mumps
+mums
 mun
 munch
 munched
@@ -50746,7 +50747,6 @@ pokier
 pokiest
 poking
 poky
-pol
 polar
 polarities
 polarity
@@ -50857,7 +50857,6 @@ polo
 polonaise
 polonaises
 polonium
-pols
 poltergeist
 poltergeists
 poltroon
@@ -52228,6 +52227,7 @@ primly
 primmer
 primmest
 primness
+primo
 primogenitor
 primogenitors
 primogeniture
@@ -62789,6 +62789,8 @@ slightness
 slights
 slim
 slime
+slimed
+slimes
 slimier
 slimiest
 sliminess
@@ -70060,6 +70062,8 @@ toolkit
 toolmaker
 toolmakers
 tools
+toon
+toons
 toot
 tooted
 tooter
@@ -77354,6 +77358,8 @@ yawners
 yawning
 yawns
 yaws
+yay
+yays
 yea
 yeah
 yeahs
@@ -77517,6 +77523,8 @@ yuppifying
 yups
 yurt
 yurts
+zag
+zags
 zanier
 zanies
 zaniest

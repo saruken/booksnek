@@ -57,17 +57,25 @@ class Game:
             t.coords = (t.coords[0], min(t.coords[1] + t.ay, t.target[1]))
             if t.coords[1] == t.target[1]:
                 t.ay = 0
-        if not self.board.level_display.progress == self.board.level_display.progress_goal:
-            amt = ceil((self.board.level_display.progress_goal - self.board.level_display.progress) / 2)
-            print(f'Progress += {amt}')
-            self.board.level_display.progress += amt
-            if self.board.level_display.progress >= self.board.level_display.progress_max:
-                self.level_up()
-            self.update_level_progress()
+
+        d = self.board.level_display
+        if d.progress == d.progress_actual:
+            return
+        if d.progress > d.progress_actual:
+            d.progress = 0
+        if d.progress < d.progress_actual:
+            amt = ceil((d.progress_actual - d.progress) / 8)
+            d.progress += amt
+        if d.progress >= d.progress_max:
+            self.level_up()
+            d.progress = 0
+        d.update()
         self.paused = False
 
-    def apply_level_progress(self):
-        self.board.level_display.set_progress(self.score, self.level)
+    def apply_level_progress(self, exp):
+        d = self.board.level_display
+        d.progress_actual += exp
+        d.update()
 
     def check_dictionary(self):
         return bool(self.snake.word.lower() in self.dictionary)
@@ -121,7 +129,7 @@ class Game:
     def commit_word_to_history(self):
         if self.snake.word == self.bonus_word:
             color = 'green'
-            value = 'Mult.'
+            value = 'M'
         else:
             color = 'beige'
             value = self.score_word()
@@ -190,13 +198,13 @@ class Game:
         return letter
 
     def level_up(self):
+        d = self.board.level_display
+        d.progress_actual -= d.progress_max
+        d.progress_max += self.level * d.progress_lv_increment
         self.level += 1
-        self.board.level_display.progress = 0
-        self.board.level_display.progress_floor = self.score
-        self.board.level_display.set_progress(self.score, self.level)
-        self.board.level_display.update(self.level)
-        self.board.level_display.update()
+        d.update(self.level)
         self.update_bonus_display()
+        self.update_tiles()
 
     def load_game(self):
         print('load_game() placeholder')
@@ -227,14 +235,12 @@ class Game:
         self.update_bonus_display()
         self.board.history_display.update(self.history)
         self.board.longest_display.update(self.word_longest)
-        self.board.level_display.update(self.level)
         self.board.multiplier_display.update(self.multiplier)
         self.board.score_display.update(self.score)
+        self.board.level_display.update(self.level)
 
         for t in self.tiles:
             t.reset()
-
-        self.update_level_progress()
 
     def reroll_snake_tiles(self):
         for tile in self.snake.tiles:
@@ -364,13 +370,12 @@ class Game:
                     self.update_mult_display()
                     self.choose_bonus_word()
                 else:
-                    self.score += self.score_word()
+                    score = self.score_word()
+                    self.score += score
                     self.update_score_display()
                     self.check_update_best()
-                    self.apply_level_progress()
+                    self.apply_level_progress(score)
                 self.update_history_display()
-                if self.check_level_progress():
-                    self.level_up()
                 self.reroll_snake_tiles()
                 self.update_tile_rows()
                 self.last_typed = ''
@@ -405,9 +410,6 @@ class Game:
 
     def update_history_display(self):
         self.board.history_display.set_multiline_text(self.history)
-
-    def update_level_progress(self):
-        self.board.level_display.update()
 
     def update_mult_display(self):
         self.board.multiplier_display.update(self.multiplier)
@@ -445,7 +447,7 @@ class Game:
                 if self.check_dictionary():
                     if word == self.bonus_word:
                         color = 'green'
-                        value = 'Mult.'
+                        value = 'M'
                     else:
                         color = 'teal'
                         value = self.score_word()

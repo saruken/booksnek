@@ -28,10 +28,11 @@ class Display(BaseObj):
         self.letter_height = 19
         self.letter_width = 19
         self.progress = 0
-        self.progress_floor = 0
-        self.progress_goal = 0
-        self.progress_max = 0
+        self.progress_actual = 0
+        self.progress_lv_increment = 100
+        self.progress_max = self.progress_lv_increment
         self.show_progress = show_progress
+        self.progress_bar_max_width = None
         self.text = text
         self.center = center
         self.text_color = self.colors[text_color] if text_color else None
@@ -44,13 +45,16 @@ class Display(BaseObj):
         self.surf.fill(self.border_color)
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
         if self.show_progress:
-            if not self.progress_max:
-                self.progress_max = self.dims[0] - 4
-            pygame.draw.rect(self.surf, self.colors['bg_progress'], pygame.Rect((2, self.dims[1] - 6), (self.progress_max, 4)))
-            pygame.draw.rect(self.surf, self.colors['progress'], pygame.Rect((2, self.dims[1] - 7), (self.progress, 4)))
-            surf = self.fonts['small'].render(str(self.progress - self.progress_floor), True, self.colors['mid_gray'], self.bg_color)
+            if not self.progress_bar_max_width:
+                self.progress_bar_max_width = self.dims[0] - 4
+            pygame.draw.rect(self.surf, self.colors['bg_progress'], pygame.Rect((2, self.dims[1] - 6), (self.progress_bar_max_width, 4)))
+            bar_width = floor((self.progress / self.progress_max) * self.progress_bar_max_width)
+            pygame.draw.rect(self.surf, self.colors['progress'], pygame.Rect((2, self.dims[1] - 7), (bar_width, 4)))
+            formatted = format_num(self.progress)
+            surf = self.fonts['small'].render(formatted, True, self.colors['mid_gray'], self.bg_color)
             self.surf.blit(surf, dest=(3, self.dims[1] - surf.get_size()[1] - 8))
-            surf = self.fonts['small'].render(str(self.progress_max - self.progress - self.progress_floor), True, self.colors['mid_gray'], self.bg_color)
+            formatted = format_num(self.progress_max)
+            surf = self.fonts['small'].render(formatted, True, self.colors['mid_gray'], self.bg_color)
             self.surf.blit(surf, dest=(self.dims[0] - surf.get_size()[0] - 3, self.dims[1] - surf.get_size()[1] - 8))
 
         if self.text:
@@ -156,10 +160,6 @@ class Display(BaseObj):
 
         if self.label:
             self.set_label()
-
-    def set_progress(self, score, level):
-        self.progress_goal = floor((score - self.progress_floor) / (1000 * level) * self.progress_max)
-        print(f'|-{self.progress_floor}--{self.progress}-->{self.progress_goal}--{self.progress_max}-|')
 
     def set_text(self, text):
         if text:
@@ -414,3 +414,13 @@ class Tile():
             type_multiplier = 5
 
         self.point_value = value * self.level * self.multiplier * type_multiplier
+
+def format_num(num):
+    if num < 1000:
+        return str(num)
+    num = float('{:.3g}'.format(floor(num / 10) * 10))
+    magnitude = 0
+    while abs(num) >= 1000:
+        magnitude += 1
+        num /= 1000.0
+    return '{}{}'.format('{:f}'.format(num).rstrip('0').rstrip('.'), ['', 'K', 'M'][magnitude])

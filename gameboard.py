@@ -18,7 +18,7 @@ class Board():
         coords = offset_from_element(self.menu_bg, corner=(0, 1), offset=(12, 10))
         self.bonus_display = ui.Display(dims=(336, 40), coords=coords, colors=colors, text_color='light_gray', label='MULTIPLIER+', center=True)
         coords = offset_from_element(self.bonus_display, corner=(0, 1), offset=(0, 10))
-        self.level_display = ui.Display(dims=(136, 40), coords=coords, colors=colors, label='EXP.', text_prefix='Lv ', text_color='light_gray', center=True, show_progress=True)
+        self.level_display = ui.Display(dims=(136, 40), coords=coords, colors=colors, label='EXP.', text_prefix='Lv', text_color='light_gray', center=True, show_progress=True)
         coords = offset_from_element(self.level_display, corner=(1, 0), offset=(10, 0))
         self.multiplier_display = ui.Display(dims=(80, 40), coords=coords, colors=colors, label='MULT.', text_prefix='x', text_color='light_gray', center=True)
         coords = offset_from_element(self.multiplier_display, corner=(1, 0), offset=(10, 0))
