@@ -88,7 +88,6 @@ def main():
                     game.try_add_tile(elem)
                     game.update_word_display()
                     game.highlight_selected_tiles()
-
             elif event.type == pygame.KEYDOWN:
                 last_typed = game.highlight_tiles_from_letter(event.key, game.last_typed)
             game.update_tiles()
@@ -104,9 +103,6 @@ if __name__ == '__main__':
     main()
 
     #TODO:
-        # Level progress updates
-            # Flash and fade whole exp bar on LvUP
-            # Format exp like 4.1k instead of 4100
         # Implement pause while updating progress bar
         # Loss condition: HP
             # Bomb tiles deal damage when they turn to stones

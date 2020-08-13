@@ -23,12 +23,15 @@ class Display(BaseObj):
     def __init__(self, dims, coords, colors, text=None, text_color=None, text_prefix='', center=False, text_offset=[0, 0], label=None, show_progress=None):
         super(Display, self).__init__(dims=dims, coords=coords, colors=colors)
         self.bg_color = self.colors['bg_main']
+        self.bg_progress = self.colors['bg_progress']
         self.border_color = self.colors['mid_gray']
         self.label = label
         self.letter_height = 19
         self.letter_width = 19
         self.progress = 0
         self.progress_actual = 0
+        self.progress_fade_counter = 0
+        self.progress_fade_counter_speed = 1.2
         self.progress_lv_increment = 100
         self.progress_max = self.progress_lv_increment
         self.show_progress = show_progress
@@ -43,13 +46,19 @@ class Display(BaseObj):
 
     def build_image(self):
         self.surf.fill(self.border_color)
+        if self.progress_fade_counter:
+            try:
+                self.bg_color = self.colors['bg_crystal'].lerp(self.colors['bg_main'], self.progress_fade_counter / 100.0)
+                self.progress_fade_counter += self.progress_fade_counter_speed
+            except ValueError:
+                self.progress_fade_counter = 0
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
         if self.show_progress:
             if not self.progress_bar_max_width:
                 self.progress_bar_max_width = self.dims[0] - 4
             pygame.draw.rect(self.surf, self.colors['bg_progress'], pygame.Rect((2, self.dims[1] - 6), (self.progress_bar_max_width, 4)))
             bar_width = floor((self.progress / self.progress_max) * self.progress_bar_max_width)
-            pygame.draw.rect(self.surf, self.colors['progress'], pygame.Rect((2, self.dims[1] - 7), (bar_width, 4)))
+            pygame.draw.rect(self.surf, self.colors['progress'], pygame.Rect((2, self.dims[1] - 6), (bar_width, 4)))
             formatted = format_num(self.progress)
             surf = self.fonts['small'].render(formatted, True, self.colors['mid_gray'], self.bg_color)
             self.surf.blit(surf, dest=(3, self.dims[1] - surf.get_size()[1] - 8))
@@ -71,6 +80,9 @@ class Display(BaseObj):
 
         if self.label:
             self.set_label()
+
+    def flash_progress(self):
+        self.progress_fade_counter = 1
 
     def set_colored_text(self, text_obj):
         self.surf.fill(self.border_color)

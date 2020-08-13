@@ -57,10 +57,8 @@ class Game:
             t.coords = (t.coords[0], min(t.coords[1] + t.ay, t.target[1]))
             if t.coords[1] == t.target[1]:
                 t.ay = 0
-
+        self.paused = False
         d = self.board.level_display
-        if d.progress == d.progress_actual:
-            return
         if d.progress > d.progress_actual:
             d.progress = 0
         if d.progress < d.progress_actual:
@@ -70,7 +68,7 @@ class Game:
             self.level_up()
             d.progress = 0
         d.update()
-        self.paused = False
+
 
     def apply_level_progress(self, exp):
         d = self.board.level_display
@@ -202,6 +200,7 @@ class Game:
         d.progress_actual -= d.progress_max
         d.progress_max += self.level * d.progress_lv_increment
         self.level += 1
+        d.flash_progress()
         d.update(self.level)
         self.update_bonus_display()
         self.update_tiles()
