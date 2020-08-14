@@ -106,8 +106,7 @@ if __name__ == '__main__':
     main()
 
     #TODO:
-        # Loss condition: HP
-            # Bomb tiles deal damage when they turn to stones
+        # Bombs blow up neighboring tiles
         # Bonuses for making shapes with the tiles in a word would be neat
             # Could make a block/shape of tiles that need to be eliminated; if
             # you get them all you get a bonus, or else they turn to stone or
@@ -116,6 +115,6 @@ if __name__ == '__main__':
         # Controller support!
 
     # Add
-        # nerf/s/ed/ing
+        # nerf/s/ed/ing, yoyo/s/ed/ing
     # Remove
         #

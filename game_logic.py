@@ -266,8 +266,6 @@ class Game:
 
     def reroll_snake_tiles(self):
         for tile in self.snake.tiles:
-            old_letter = tile.letter
-            old_row = tile.row
             tile.choose_letter()
             self.set_row(tile)
             # Push tiles with negative rows up off the top of the screen
@@ -303,6 +301,17 @@ class Game:
             tile.marked = False
             tile.tile_type = tile_type if i == special_index else 'normal'
             tile.bomb_timer = 6
+
+    def reroll_tiles(self, bomb):
+        neighbors = [t for t in self.tiles if self.snake.is_neighbor(new_tile=t, old_tile=bomb)]
+        neighbors.pop(neighbors.index(bomb))
+        for tile in neighbors:
+            tile.choose_letter()
+            self.set_row(tile)
+            print(f'    now set to {tile.row}')
+            tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
+        bomb.row = min(bomb.row + 1, 6 + bomb.col % 2)
+        self.update_tile_rows()
 
     def save_game(self):
         print('save_game() placeholder')
@@ -413,6 +422,7 @@ class Game:
         for tile in [t for t in self.tiles if t.tile_type == 'bomb']:
             if tile.bomb_tick():
                 self.board.hp_display.hp -= 5
+                self.reroll_tiles(bomb=tile)
 
     def update_bonus_color(self):
         self.board.update_bonus_color(self.bonus_word, self.snake.word, self.colors)

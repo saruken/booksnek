@@ -11,7 +11,7 @@ class Snake():
             self.tiles.append(tile)
             self.update()
 
-    def is_neighbor(self, new_tile):
+    def is_neighbor(self, new_tile, old_tile=None):
 
         '''
         There are 4 'false' neighbors, depending on which col old_tile
@@ -46,7 +46,8 @@ class Snake():
         'A' and 'C' are false neighbors for odd column 'X' tiles
         '''
 
-        old_tile = self.last
+        if not old_tile:
+            old_tile = self.last
         new_c, old_c = new_tile.col, old_tile.col
         new_r, old_r = new_tile.row, old_tile.row
 
