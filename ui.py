@@ -20,7 +20,7 @@ class BaseObj:
         return pygame.Rect(self.coords, self.dims)
 
 class Display(BaseObj):
-    def __init__(self, dims, coords, colors, text=None, text_color=None, text_prefix='', center=False, text_offset=[0, 0], label=None, show_progress=None):
+    def __init__(self, dims, coords, colors, text=None, text_color=None, text_prefix='', center=False, text_offset=[0, 0], label=None, show_progress=None, multicolor=False):
         super(Display, self).__init__(dims=dims, coords=coords, colors=colors)
         self.bg_color = self.colors['bg_main']
         self.bg_progress = self.colors['bg_progress']
@@ -28,6 +28,7 @@ class Display(BaseObj):
         self.label = label
         self.letter_height = 19
         self.letter_width = 19
+        self.multicolor = multicolor
         self.progress = 0
         self.progress_actual = 0
         self.fade_counter = 0
@@ -39,6 +40,7 @@ class Display(BaseObj):
         self.text = text
         self.center = center
         self.text_color = self.colors[text_color] if text_color else None
+        self.text_obj = None
         self.text_offset = text_offset
         self.text_prefix = text_prefix
 
@@ -46,12 +48,6 @@ class Display(BaseObj):
 
     def build_image(self):
         self.surf.fill(self.border_color)
-        if self.fade_counter:
-            try:
-                self.bg_color = self.colors['bg_crystal'].lerp(self.colors['bg_main'], self.fade_counter / 100.0)
-                self.fade_counter += self.fade_counter_speed
-            except ValueError:
-                self.fade_counter = 0
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
         if self.show_progress:
             if not self.progress_bar_max_width:
@@ -81,10 +77,17 @@ class Display(BaseObj):
         if self.label:
             self.set_label()
 
-    def flash_progress(self):
+    def fade_bg(self):
+        try:
+            self.bg_color = self.colors['bg_crystal'].lerp(self.colors['bg_main'], self.fade_counter / 100.0)
+            self.fade_counter += self.fade_counter_speed
+        except ValueError:
+            self.fade_counter = 0
+
+    def flash(self):
         self.fade_counter = 1
 
-    def set_colored_text(self, text_obj):
+    def set_colored_text(self, text_obj=None):
         self.surf.fill(self.border_color)
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
 
@@ -92,35 +95,38 @@ class Display(BaseObj):
         letter_width = 0
         offset_x = 0
         offset_y = 0
-        if type(text_obj) is list:
-            for entry in text_obj:
-                for index, letter in enumerate(entry['word']):
-                    color = entry['colors'][index]
-                    surf = self.fonts['btn'].render(letter, True, self.colors[entry['colors'][index]], self.bg_color)
+        if text_obj:
+            self.text_obj = text_obj
+        if self.text_obj:
+            if type(self.text_obj) is list:
+                for entry in text_obj:
+                    for index, letter in enumerate(entry['word']):
+                        color = entry['colors'][index]
+                        surf = self.fonts['btn'].render(letter, True, self.colors[entry['colors'][index]], self.bg_color)
+                        if not letter_width:
+                            letter_width = surf.get_size()[0]
+                        if not letter_height:
+                            letter_height = surf.get_size()[1]
+                        offset_x = floor((self.dims[0] - letter_width * (len(entry['word']) + len(str(entry["value"])) + 3)) / 2) + letter_width * index
+                        if not offset_y:
+                            offset_y = floor((self.dims[1] - letter_height) / 2)
+                        self.surf.blit(surf, dest=(offset_x, offset_y))
+
+                        surf = self.fonts['btn'].render(f' (+{entry["value"]})', True, self.colors['beige'], self.bg_color)
+                        offset_x += letter_width
+                        self.surf.blit(surf, dest=(offset_x, offset_y))
+            else:
+                for index, letter in enumerate(self.text_obj['word']):
+                    color = self.text_obj['colors'][index]
+                    surf = self.fonts['btn'].render(letter, True, self.colors[self.text_obj['colors'][index]], self.bg_color)
                     if not letter_width:
                         letter_width = surf.get_size()[0]
                     if not letter_height:
                         letter_height = surf.get_size()[1]
-                    offset_x = floor((self.dims[0] - letter_width * (len(entry['word']) + len(str(entry["value"])) + 3)) / 2) + letter_width * index
+                    offset_x = floor((self.dims[0] - letter_width * (len(self.text_obj['word']))) / 2) + letter_width * index
                     if not offset_y:
                         offset_y = floor((self.dims[1] - letter_height) / 2)
                     self.surf.blit(surf, dest=(offset_x, offset_y))
-
-                    surf = self.fonts['btn'].render(f' (+{entry["value"]})', True, self.colors['beige'], self.bg_color)
-                    offset_x += letter_width
-                    self.surf.blit(surf, dest=(offset_x, offset_y))
-        else:
-            for index, letter in enumerate(text_obj['word']):
-                color = text_obj['colors'][index]
-                surf = self.fonts['btn'].render(letter, True, self.colors[text_obj['colors'][index]], self.bg_color)
-                if not letter_width:
-                    letter_width = surf.get_size()[0]
-                if not letter_height:
-                    letter_height = surf.get_size()[1]
-                offset_x = floor((self.dims[0] - letter_width * (len(text_obj['word']))) / 2) + letter_width * index
-                if not offset_y:
-                    offset_y = floor((self.dims[1] - letter_height) / 2)
-                self.surf.blit(surf, dest=(offset_x, offset_y))
 
         self.text = ''
 
@@ -185,7 +191,12 @@ class Display(BaseObj):
                 self.text = None
             else:
                 self.text = self.text_prefix + str(text)
-        self.build_image()
+        if self.fade_counter:
+            self.fade_bg()
+        if self.multicolor:
+            self.set_colored_text()
+        else:
+            self.build_image()
 
 class HPDisplay():
     def __init__(self, dims, coords, colors):

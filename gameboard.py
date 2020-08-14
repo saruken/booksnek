@@ -29,14 +29,14 @@ class Board():
         self.btn_scramble = ui.Interactive(name='scramble', dims=(120, 40), coords=coords, colors=colors, text='SCRAMBLE', text_color='light_gray')
         coords = offset_from_element(self.btn_scramble, corner=(1, 0), offset=(20, 0))
         self.score_display = ui.Display(dims=(310, 40), coords=coords, colors=colors, text='0', text_color='light_gray', label='SCORE', center=True)
-        coords = offset_from_element(self.score_display, corner=(0, 1), offset=(0, 10))
+        coords = offset_from_element(self.score_display, corner=(0, 1), offset=(0, 4))
         self.word_display = ui.Display(dims=(310, 40), coords=coords, colors=colors, text_color='light_gray', label="SELECTED", center=True)
-        coords = offset_from_element(self.word_display, corner=(0, 1), offset=(0, 10))
+        coords = offset_from_element(self.word_display, corner=(0, 1), offset=(0, 4))
         self.longest_display = ui.Display(dims=(310, 34), coords=coords, colors=colors, label='LONGEST WORD', text_color='beige', center=True)
         coords = offset_from_element(self.longest_display, corner=(0, 1), offset=(0, 4))
-        self.best_display = ui.Display(dims=(310, 34), coords=coords, colors=colors, label='HIGHEST SCORE', text_color='beige', center=True, text_offset=(30, 2))
+        self.best_display = ui.Display(dims=(310, 34), coords=coords, colors=colors, label='HIGHEST SCORE', text_color='beige', center=True, text_offset=(30, 2), multicolor=True)
         coords = offset_from_element(self.best_display, corner=(0, 1), offset=(0, 4))
-        self.history_display = ui.Display(dims=(310, 413), coords=coords, colors=colors, label='WORD LIST')
+        self.history_display = ui.Display(dims=(310, 425), coords=coords, colors=colors, label='WORD LIST')
 
         self.menu_btns = [self.btn_clear_marked, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
         self.ui_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]

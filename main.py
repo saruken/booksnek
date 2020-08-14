@@ -49,26 +49,25 @@ def main():
             if event.type == pygame.QUIT:
                 is_running = False
             elif event.type == mouse_down:
-                if not game.paused:
-                    elem = get_elem_under_mouse(game)
-                    if event.__dict__['button'] == mouse_left:
-                        left_clicked_elem = elem
-                        if isinstance(elem, Tile):
-                            mode = 'drag'
-                            begin_submit = bool(elem == game.snake.last)
-                            game.try_add_tile(elem)
-                            game.update_word_display()
-                            game.highlight_selected_tiles()
-                    elif event.__dict__['button'] == mouse_right:
-                        right_clicked_elem = elem
+                elem = get_elem_under_mouse(game)
+                if event.__dict__['button'] == mouse_left:
+                    left_clicked_elem = elem
+                    if isinstance(elem, Tile):
+                        mode = 'drag'
+                        begin_submit = bool(elem == game.snake.last)
+                        game.try_add_tile(elem)
+                        game.update_word_display()
+                        game.highlight_selected_tiles()
+                elif event.__dict__['button'] == mouse_right:
+                    right_clicked_elem = elem
             elif event.type == mouse_up:
-                if not game.paused:
-                    elem = get_elem_under_mouse(game)
-                    if event.__dict__['button'] == mouse_left:
-                        if elem in game.board.menu_btns:
-                            if elem == left_clicked_elem:
-                                game.handle_menu_btn_click(elem)
-                        else:
+                elem = get_elem_under_mouse(game)
+                if event.__dict__['button'] == mouse_left:
+                    if elem in game.board.menu_btns:
+                        if elem == left_clicked_elem:
+                            game.handle_menu_btn_click(elem)
+                    else:
+                        if not game.paused:
                             if elem == left_clicked_elem:
                                 if begin_submit:
                                     game.try_submit_word()
@@ -81,8 +80,8 @@ def main():
                             game.highlight_selected_tiles()
                             game.update_btn_clear_marked()
                         mode = 'click'
-                    elif event.__dict__['button'] == mouse_right:
-                        game.toggle_mark(elem, right_clicked_elem)
+                elif event.__dict__['button'] == mouse_right:
+                    game.toggle_mark(elem, right_clicked_elem)
             elif event.type == mouse_motion:
                 elem = get_elem_under_mouse(game)
                 game.try_mouse_over(elem)
@@ -114,6 +113,6 @@ if __name__ == '__main__':
         # Controller support!
 
     # Add
-        #
+        # frum
     # Remove
         #

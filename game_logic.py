@@ -84,9 +84,9 @@ class Game:
         if h.hp_displayed <= 0:
             self.game_over()
 
-        m = self.board.multiplier_display
-        if m.fade_counter:
-            m.update()
+        for elem in [self.board.multiplier_display, self.board.longest_display, self.board.best_display]:
+            if elem.fade_counter:
+                elem.update()
 
     def apply_level_progress(self, exp):
         d = self.board.level_display
@@ -112,13 +112,16 @@ class Game:
                 'colors': filler + self.history[-1]['colors']
             }
             self.board.best_display.set_colored_text(obj)
+            self.board.best_display.flash()
 
     def check_update_longest(self):
         if self.word_longest:
             if len(self.history[-1]['word']) > len(self.word_longest):
                 self.word_longest = self.history[-1]['word']
+                self.board.longest_display.flash()
         else:
             self.word_longest = self.history[-1]['word']
+            self.board.longest_display.flash()
         self.board.longest_display.set_text(self.word_longest)
 
     def choose_bonus_word(self):
@@ -221,7 +224,7 @@ class Game:
         d.progress_actual -= d.progress_max
         d.progress_max += self.level * d.progress_lv_increment
         self.level += 1
-        d.flash_progress()
+        d.flash()
         d.update(self.level)
         self.board.hp_display.level_up(self.level)
         self.update_bonus_display()
@@ -233,7 +236,7 @@ class Game:
     def mult_up(self):
         self.multiplier += 1
         self.bonus_counter += 1
-        self.board.multiplier_display.flash_progress()
+        self.board.multiplier_display.flash()
 
     def new_game(self):
         self.bonus_counter = 3

@@ -28564,6 +28564,7 @@ giant
 giantess
 giantesses
 giants
+gib
 gibber
 gibbered
 gibbering
@@ -28582,6 +28583,7 @@ gibes
 gibing
 giblet
 giblets
+gibs
 giddier
 giddiest
 giddily
@@ -45069,6 +45071,7 @@ nooks
 nooky
 noon
 noonday
+noons
 noontide
 noontime
 noose
