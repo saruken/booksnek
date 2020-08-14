@@ -17,6 +17,9 @@ class Board():
         self.menu_save = ui.Interactive(name='save', dims=(63, 40), coords=coords, text='SAVE', enabled=False, colors=colors)
         coords = offset_from_element(self.menu_bg, corner=(0, 1), offset=(12, 10))
         self.bonus_display = ui.Display(dims=(336, 40), coords=coords, colors=colors, text_color='light_gray', label='MULTIPLIER+', center=True)
+
+        self.hp_display = ui.HPDisplay(parent=self.bonus_display)
+
         coords = offset_from_element(self.bonus_display, corner=(0, 1), offset=(0, 10))
         self.level_display = ui.Display(dims=(136, 40), coords=coords, colors=colors, label='EXP.', text_prefix='Lv', text_color='light_gray', center=True, show_progress=True)
         coords = offset_from_element(self.level_display, corner=(1, 0), offset=(10, 0))
@@ -37,7 +40,7 @@ class Board():
         self.history_display = ui.Display(dims=(310, 369), coords=coords, colors=colors, label='WORD LIST')
 
         self.menu_btns = [self.btn_clear_marked, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
-        self.ui_elements = [self.bonus_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.bonus_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
+        self.ui_elements = [self.bonus_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
 
     def create_tiles(self, colors):
         tiles = []

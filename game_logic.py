@@ -58,6 +58,7 @@ class Game:
                 t.ay = 0
         if not to_animate:
             self.paused = False
+
         d = self.board.level_display
         if d.progress > d.progress_actual:
             d.progress = 0
@@ -69,6 +70,17 @@ class Game:
             d.progress = 0
         d.update()
 
+        h = self.board.hp_display
+        if h.hp_displayed < h.hp:
+            amt = ceil((h.hp - h.hp_displayed) / 8)
+            d.hp_displayed += amt
+        h.update()
+        if h.hp_displayed <= 0:
+            self.game_over()
+
+        m = self.board.multiplier_display
+        if m.fade_counter:
+            m.update()
 
     def apply_level_progress(self, exp):
         d = self.board.level_display
@@ -150,6 +162,9 @@ class Game:
         self.snake.tiles = []
         self.snake.update()
 
+    def game_over(self):
+        print('game_over() placeholder')
+
     def handle_menu_btn_click(self, elem):
         if not isinstance(elem, Interactive):
             return
@@ -211,6 +226,7 @@ class Game:
     def mult_up(self):
         self.multiplier += 1
         self.bonus_counter += 1
+        self.board.multiplier_display.flash_progress()
 
     def new_game(self):
         self.bonus_counter = 3

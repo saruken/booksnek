@@ -30,8 +30,8 @@ class Display(BaseObj):
         self.letter_width = 19
         self.progress = 0
         self.progress_actual = 0
-        self.progress_fade_counter = 0
-        self.progress_fade_counter_speed = 1.2
+        self.fade_counter = 0
+        self.fade_counter_speed = 1.2
         self.progress_lv_increment = 100
         self.progress_max = self.progress_lv_increment
         self.show_progress = show_progress
@@ -46,12 +46,12 @@ class Display(BaseObj):
 
     def build_image(self):
         self.surf.fill(self.border_color)
-        if self.progress_fade_counter:
+        if self.fade_counter:
             try:
-                self.bg_color = self.colors['bg_crystal'].lerp(self.colors['bg_main'], self.progress_fade_counter / 100.0)
-                self.progress_fade_counter += self.progress_fade_counter_speed
+                self.bg_color = self.colors['bg_crystal'].lerp(self.colors['bg_main'], self.fade_counter / 100.0)
+                self.fade_counter += self.fade_counter_speed
             except ValueError:
-                self.progress_fade_counter = 0
+                self.fade_counter = 0
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
         if self.show_progress:
             if not self.progress_bar_max_width:
@@ -82,7 +82,7 @@ class Display(BaseObj):
             self.set_label()
 
     def flash_progress(self):
-        self.progress_fade_counter = 1
+        self.fade_counter = 1
 
     def set_colored_text(self, text_obj):
         self.surf.fill(self.border_color)
@@ -234,6 +234,32 @@ class Interactive(BaseObj):
 
     def update(self):
         self.set_colors()
+        self.build_image()
+
+class HPDisplay():
+    def __init__(self, parent):
+        self.hp = 20
+        self.hp_displayed = 20
+        self.hp_max = 20
+        self.interactive = False
+        self.parent = parent
+
+        self.colors = self.parent.colors
+        self.bar_max_width = self.parent.dims[0] - 4
+        self.fonts = self.parent.fonts
+
+        self.build_image()
+
+    def build_image(self):
+        bar_area_topleft = (2, self.parent.surf.get_size()[1] - 6)
+        bar_area_botright = (self.parent.surf.get_size()[0] - 4, 4)
+        pygame.draw.rect(self.parent.surf, self.colors['bg_progress'], pygame.Rect(bar_area_topleft, bar_area_botright))
+        bar_width = floor((self.hp_displayed / self.hp_max) * self.bar_max_width)
+        pygame.draw.rect(self.parent.surf, self.colors['green'], pygame.Rect(bar_area_topleft, (bar_width, 4)))
+        surf = self.fonts['small'].render(f'{str(self.hp)} / {str(self.hp_max)}', True, self.colors['mid_gray'], self.parent.bg_color)
+        self.parent.surf.blit(surf, dest=(6, self.parent.surf.get_size()[1] - 20))
+
+    def update(self):
         self.build_image()
 
 class Tile():

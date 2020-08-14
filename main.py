@@ -1,7 +1,7 @@
 import pygame
 
 import game_logic
-from ui import Tile
+from ui import Tile, HPDisplay
 
 def get_elem_under_mouse(game):
     mouse_pos = pygame.mouse.get_pos()
@@ -106,7 +106,6 @@ if __name__ == '__main__':
     main()
 
     #TODO:
-        # Implement pause while updating progress bar
         # Loss condition: HP
             # Bomb tiles deal damage when they turn to stones
         # Bonuses for making shapes with the tiles in a word would be neat
