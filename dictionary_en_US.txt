@@ -22354,7 +22354,6 @@ enamor
 enamored
 enamoring
 enamors
-enc
 encamp
 encamped
 encamping
@@ -44264,6 +44263,10 @@ nerdier
 nerdiest
 nerds
 nerdy
+nerf
+nerfed
+nerfing
+nerfs
 nerve
 nerved
 nerveless
@@ -77493,6 +77496,10 @@ yowl
 yowled
 yowling
 yowls
+yoyo
+yoyoed
+yoyoing
+yoyos
 ytterbium
 yttrium
 yuan

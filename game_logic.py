@@ -306,9 +306,8 @@ class Game:
         neighbors = [t for t in self.tiles if self.snake.is_neighbor(new_tile=t, old_tile=bomb)]
         neighbors.pop(neighbors.index(bomb))
         for tile in neighbors:
-            tile.choose_letter()
+            tile.reset()
             self.set_row(tile)
-            print(f'    now set to {tile.row}')
             tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
         bomb.row = min(bomb.row + 1, 6 + bomb.col % 2)
         self.update_tile_rows()
