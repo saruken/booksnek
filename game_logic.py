@@ -1,5 +1,5 @@
 import pygame, random
-from math import ceil
+from math import ceil, floor
 from numpy.random import choice
 
 import gameboard, tile_snake
@@ -73,10 +73,14 @@ class Game:
         d.update()
 
         h = self.board.hp_display
-        if h.hp_displayed < h.hp:
-            amt = ceil((h.hp - h.hp_displayed) / 8)
-            d.hp_displayed += amt
-        h.update()
+        if h.hp_displayed > h.hp:
+            h.flash()
+            amt = floor((h.hp - h.hp_displayed) / 8)
+        else:
+            amt = ceil((h.hp - h.hp_displayed) / 20)
+        h.hp_displayed += amt
+        if not h.hp_displayed == h.hp or h.fade_counter:
+            h.update()
         if h.hp_displayed <= 0:
             self.game_over()
 
@@ -406,7 +410,8 @@ class Game:
 
     def update_bomb_tiles(self):
         for tile in [t for t in self.tiles if t.tile_type == 'bomb']:
-            tile.bomb_tick()
+            if tile.bomb_tick():
+                self.board.hp_display.hp -= 5
 
     def update_bonus_color(self):
         self.board.update_bonus_color(self.bonus_word, self.snake.word, self.colors)

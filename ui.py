@@ -192,6 +192,8 @@ class HPDisplay():
         self.dims = dims
         self.colors = colors
         self.coords = coords
+        self.fade_counter = 0
+        self.fade_counter_speed = 1.2
         self.fonts = {
             'btn': pygame.font.Font('VCR_OSD_MONO.ttf', 18),
             'small': pygame.font.Font('VCR_OSD_MONO.ttf', 12)
@@ -210,6 +212,12 @@ class HPDisplay():
 
     def build_image(self):
         self.surf.fill(self.border_color)
+        if self.fade_counter:
+            try:
+                self.bg_color = self.colors['red'].lerp(self.colors['bg_main'], self.fade_counter / 100.0)
+                self.fade_counter += self.fade_counter_speed
+            except ValueError:
+                self.fade_counter = 0
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
         bar_width = floor((self.hp_displayed / self.hp_max) * self.bar_max_width)
         pygame.draw.rect(self.surf, self.colors['bg_progress'], pygame.Rect((2, 10), (self.bar_max_width, self.dims[1] - 18)))
@@ -219,6 +227,10 @@ class HPDisplay():
         label = self.fonts['small'].render('HP', True, self.colors['mid_gray'])
         pygame.draw.line(self.surf, self.bg_color, (14, 0), (label.get_size()[0] + 14 + 20, 0), width=2)
         self.surf.blit(label, (24, -2))
+
+    def flash(self):
+        if not self.fade_counter:
+            self.fade_counter = 1
 
     def update(self):
         self.build_image()
@@ -310,6 +322,8 @@ class Tile():
         if self.bomb_timer == 0:
             self.tile_type = 'stone'
             self.letter = '__'
+            return True
+        return False
 
     def build_image(self):
         bg_color = self.colors[f'bg_{self.tile_type}{"_selected" if self.selected else ""}']
