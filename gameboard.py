@@ -17,10 +17,9 @@ class Board():
         self.menu_save = ui.Interactive(name='save', dims=(63, 40), coords=coords, text='SAVE', enabled=False, colors=colors)
         coords = offset_from_element(self.menu_bg, corner=(0, 1), offset=(12, 10))
         self.bonus_display = ui.Display(dims=(336, 40), coords=coords, colors=colors, text_color='light_gray', label='MULTIPLIER+', center=True)
-
-        self.hp_display = ui.HPDisplay(parent=self.bonus_display)
-
         coords = offset_from_element(self.bonus_display, corner=(0, 1), offset=(0, 10))
+        self.hp_display = ui.HPDisplay(dims=(336, 34), coords=coords, colors=colors)
+        coords = offset_from_element(self.hp_display, corner=(0, 1), offset=(0, 10))
         self.level_display = ui.Display(dims=(136, 40), coords=coords, colors=colors, label='EXP.', text_prefix='Lv', text_color='light_gray', center=True, show_progress=True)
         coords = offset_from_element(self.level_display, corner=(1, 0), offset=(10, 0))
         self.multiplier_display = ui.Display(dims=(80, 40), coords=coords, colors=colors, label='MULT.', text_prefix='x', text_color='light_gray', center=True)
@@ -37,17 +36,17 @@ class Board():
         coords = offset_from_element(self.longest_display, corner=(0, 1), offset=(0, 4))
         self.best_display = ui.Display(dims=(310, 34), coords=coords, colors=colors, label='HIGHEST SCORE', text_color='beige', center=True, text_offset=(30, 2))
         coords = offset_from_element(self.best_display, corner=(0, 1), offset=(0, 4))
-        self.history_display = ui.Display(dims=(310, 369), coords=coords, colors=colors, label='WORD LIST')
+        self.history_display = ui.Display(dims=(310, 413), coords=coords, colors=colors, label='WORD LIST')
 
         self.menu_btns = [self.btn_clear_marked, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
-        self.ui_elements = [self.bonus_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
+        self.ui_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
 
-    def create_tiles(self, colors):
+    def create_tiles(self, colors, offset):
         tiles = []
         # Every other column has 7 and 8 tiles, starting and ending with 7s
         for col in range(7):
             for row in range(7 + col % 2):
-                tiles.append(ui.Tile(col=col, row=row, colors=colors))
+                tiles.append(ui.Tile(col=col, row=row, colors=colors, offset=offset))
 
         return tiles
 

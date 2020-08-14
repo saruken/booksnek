@@ -24,7 +24,7 @@ def load_dictionary():
     return words
 
 def main():
-    dims = (676, 564)
+    dims = (676, 608)
     pygame.init()
     pygame.display.set_caption('Booksnake')
     window_surface = pygame.display.set_mode(dims)

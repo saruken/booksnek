@@ -26,6 +26,7 @@ class Game:
             'black': pygame.Color('#000000'),
             'border_gold': pygame.Color('#d4c413'),
             'dark_gray': pygame.Color('#202d36'),
+            'hp_green': pygame.Color('#305431'),
             'light_gray': pygame.Color('#bfb9a8'),
             'mid_gray': pygame.Color('#546c7a'),
             'bomb': pygame.Color('#7c6e8a'),
@@ -41,7 +42,8 @@ class Game:
         self.board = gameboard.Board(dims=dims, coords=(0, 0), colors=self.colors)
         self.dictionary = dictionary
         self.snake = tile_snake.Snake()
-        self.tiles = self.board.create_tiles(self.colors)
+        tile_offset = gameboard.offset_from_element(self.board.level_display, corner=(0, 1), offset=(0, 10))
+        self.tiles = self.board.create_tiles(self.colors, offset=tile_offset)
         self.ui_elements = self.tiles + self.board.ui_elements
 
         self.new_game()

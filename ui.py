@@ -187,6 +187,42 @@ class Display(BaseObj):
                 self.text = self.text_prefix + str(text)
         self.build_image()
 
+class HPDisplay():
+    def __init__(self, dims, coords, colors):
+        self.dims = dims
+        self.colors = colors
+        self.coords = coords
+        self.fonts = {
+            'btn': pygame.font.Font('VCR_OSD_MONO.ttf', 18),
+            'small': pygame.font.Font('VCR_OSD_MONO.ttf', 12)
+        }
+        self.hp = 20
+        self.hp_displayed = 20
+        self.hp_max = 20
+        self.interactive = False
+        self.surf = pygame.Surface(self.dims)
+
+        self.bar_max_width = self.dims[0] - 4
+        self.bg_color = self.colors['bg_main']
+        self.border_color = self.colors['mid_gray']
+
+        self.build_image()
+
+    def build_image(self):
+        self.surf.fill(self.border_color)
+        pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
+        bar_width = floor((self.hp_displayed / self.hp_max) * self.bar_max_width)
+        pygame.draw.rect(self.surf, self.colors['bg_progress'], pygame.Rect((2, 10), (self.bar_max_width, self.dims[1] - 18)))
+        pygame.draw.rect(self.surf, self.colors['hp_green'], pygame.Rect((2, 10), (bar_width, self.dims[1] - 18)))
+        surf = self.fonts['btn'].render(f'{str(self.hp)} / {str(self.hp_max)}', True, self.colors['light_gray'])
+        self.surf.blit(surf, dest=(floor((self.dims[0] - surf.get_size()[0]) / 2), floor((self.dims[1] - surf.get_size()[1]) / 2)))
+        label = self.fonts['small'].render('HP', True, self.colors['mid_gray'])
+        pygame.draw.line(self.surf, self.bg_color, (14, 0), (label.get_size()[0] + 14 + 20, 0), width=2)
+        self.surf.blit(label, (24, -2))
+
+    def update(self):
+        self.build_image()
+
 class Interactive(BaseObj):
     def __init__(self, name, dims, coords, colors, text, text_color=None, enabled=True):
         super(Interactive, self).__init__(dims=dims, coords=coords, colors=colors)
@@ -236,34 +272,8 @@ class Interactive(BaseObj):
         self.set_colors()
         self.build_image()
 
-class HPDisplay():
-    def __init__(self, parent):
-        self.hp = 20
-        self.hp_displayed = 20
-        self.hp_max = 20
-        self.interactive = False
-        self.parent = parent
-
-        self.colors = self.parent.colors
-        self.bar_max_width = self.parent.dims[0] - 4
-        self.fonts = self.parent.fonts
-
-        self.build_image()
-
-    def build_image(self):
-        bar_area_topleft = (2, self.parent.surf.get_size()[1] - 6)
-        bar_area_botright = (self.parent.surf.get_size()[0] - 4, 4)
-        pygame.draw.rect(self.parent.surf, self.colors['bg_progress'], pygame.Rect(bar_area_topleft, bar_area_botright))
-        bar_width = floor((self.hp_displayed / self.hp_max) * self.bar_max_width)
-        pygame.draw.rect(self.parent.surf, self.colors['green'], pygame.Rect(bar_area_topleft, (bar_width, 4)))
-        surf = self.fonts['small'].render(f'{str(self.hp)} / {str(self.hp_max)}', True, self.colors['mid_gray'], self.parent.bg_color)
-        self.parent.surf.blit(surf, dest=(6, self.parent.surf.get_size()[1] - 20))
-
-    def update(self):
-        self.build_image()
-
 class Tile():
-    def __init__(self, colors, col, row):
+    def __init__(self, colors, col, row, offset):
         self.ay = 0
         self.bomb_timer = 5
         self.col = col
@@ -278,7 +288,7 @@ class Tile():
         self.level = 1
         self.marked = False
         self.multiplier = 1
-        self.offset = (10, 168) if self.col % 2 else (10, 168 + (self.dims[0] / 2))
+        self.offset = offset if self.col % 2 else (offset[0], offset[1] + (self.dims[0] / 2))
         self.point_value = 0
         self.row = row
         self.selected = False
