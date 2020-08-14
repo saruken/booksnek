@@ -198,9 +198,9 @@ class HPDisplay():
             'btn': pygame.font.Font('VCR_OSD_MONO.ttf', 18),
             'small': pygame.font.Font('VCR_OSD_MONO.ttf', 12)
         }
-        self.hp = 20
-        self.hp_displayed = 20
-        self.hp_max = 20
+        self.hp = 1
+        self.hp_displayed = 1
+        self.hp_max = 1
         self.interactive = False
         self.surf = pygame.Surface(self.dims)
 
@@ -208,6 +208,7 @@ class HPDisplay():
         self.bg_color = self.colors['bg_main']
         self.border_color = self.colors['mid_gray']
 
+        self.level_up(lv=1)
         self.build_image()
 
     def build_image(self):
@@ -231,6 +232,13 @@ class HPDisplay():
     def flash(self):
         if not self.fade_counter:
             self.fade_counter = 1
+
+    def level_up(self, lv):
+        base = 108
+        new_hp_max = floor((2 * base * lv) / 100) + lv + 10
+        delta = new_hp_max - self.hp_max
+        self.hp_max = new_hp_max
+        self.hp += delta
 
     def update(self):
         self.build_image()

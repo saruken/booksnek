@@ -75,11 +75,11 @@ class Game:
         h = self.board.hp_display
         if h.hp_displayed > h.hp:
             h.flash()
-            amt = floor((h.hp - h.hp_displayed) / 8)
+            amt = floor((h.hp - h.hp_displayed) / 20)
         else:
             amt = ceil((h.hp - h.hp_displayed) / 20)
-        h.hp_displayed += amt
-        if not h.hp_displayed == h.hp or h.fade_counter:
+        if h.fade_counter or not h.hp_displayed == h.hp:
+            h.hp_displayed += amt
             h.update()
         if h.hp_displayed <= 0:
             self.game_over()
@@ -223,6 +223,7 @@ class Game:
         self.level += 1
         d.flash_progress()
         d.update(self.level)
+        self.board.hp_display.level_up(self.level)
         self.update_bonus_display()
         self.update_tiles()
 
