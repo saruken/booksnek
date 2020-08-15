@@ -488,11 +488,11 @@ class Game:
                         value = 'M'
                     else:
                         color = 'teal'
-                        value = self.score_word()
+                        value = format(self.score_word(), ',d')
                 else:
                     color = 'red'
 
-            text = f"{word} (+{format(value, ',d')})"
+            text = f"{word} (+{value})"
 
         self.board.word_display.border_color = self.colors[color]
         self.board.word_display.set_text(text)

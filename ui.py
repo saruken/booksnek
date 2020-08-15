@@ -258,7 +258,7 @@ class HPDisplay():
         ratio = self.hp_displayed / self.hp_max
         if ratio <= .25:
             self.hp_color = self.colors['hp_red']
-        elif ratio < .5:
+        elif ratio <= .4:
             self.hp_color = self.colors['hp_yellow']
         else:
             self.hp_color = self.colors['hp_green']
