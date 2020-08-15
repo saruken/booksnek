@@ -1076,6 +1076,8 @@ aerating
 aeration
 aerator
 aerators
+aereole
+aereoles
 aerial
 aerialist
 aerialists
@@ -27494,6 +27496,7 @@ fruitlessly
 fruitlessness
 fruits
 fruity
+frum
 frump
 frumpier
 frumpiest
@@ -45455,8 +45458,11 @@ oafishness
 oafs
 oak
 oaken
+oakier
+oakiest
 oaks
 oakum
+oaky
 oar
 oared
 oaring

@@ -210,6 +210,7 @@ class HPDisplay():
             'small': pygame.font.Font('VCR_OSD_MONO.ttf', 12)
         }
         self.hp = 1
+        self.hp_color = self.colors['hp_green']
         self.hp_displayed = 1
         self.hp_max = 1
         self.interactive = False
@@ -217,6 +218,7 @@ class HPDisplay():
 
         self.bar_max_width = self.dims[0] - 4
         self.bg_color = self.colors['bg_main']
+        self.bg_color_progress = self.colors['bg_progress']
         self.border_color = self.colors['mid_gray']
 
         self.level_up(lv=1)
@@ -228,12 +230,13 @@ class HPDisplay():
             try:
                 self.bg_color = self.colors['red'].lerp(self.colors['bg_main'], self.fade_counter / 100.0)
                 self.fade_counter += self.fade_counter_speed
+                self.bg_color_progress = self.colors['red'].lerp(self.colors['bg_progress'], self.fade_counter / 100.0)
             except ValueError:
                 self.fade_counter = 0
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
         bar_width = floor((self.hp_displayed / self.hp_max) * self.bar_max_width)
-        pygame.draw.rect(self.surf, self.colors['bg_progress'], pygame.Rect((2, 10), (self.bar_max_width, self.dims[1] - 18)))
-        pygame.draw.rect(self.surf, self.colors['hp_green'], pygame.Rect((2, 10), (bar_width, self.dims[1] - 18)))
+        pygame.draw.rect(self.surf, self.bg_color_progress, pygame.Rect((2, 10), (self.bar_max_width, self.dims[1] - 18)))
+        pygame.draw.rect(self.surf, self.hp_color, pygame.Rect((2, 10), (bar_width, self.dims[1] - 18)))
         surf = self.fonts['btn'].render(f'{str(self.hp)} / {str(self.hp_max)}', True, self.colors['light_gray'])
         self.surf.blit(surf, dest=(floor((self.dims[0] - surf.get_size()[0]) / 2), floor((self.dims[1] - surf.get_size()[1]) / 2)))
         label = self.fonts['small'].render('HP', True, self.colors['mid_gray'])
@@ -251,7 +254,17 @@ class HPDisplay():
         self.hp_max = new_hp_max
         self.hp += delta
 
+    def set_hp_color(self):
+        ratio = self.hp_displayed / self.hp_max
+        if ratio <= .25:
+            self.hp_color = self.colors['hp_red']
+        elif ratio < .5:
+            self.hp_color = self.colors['hp_yellow']
+        else:
+            self.hp_color = self.colors['hp_green']
+
     def update(self):
+        self.set_hp_color()
         self.build_image()
 
 class Interactive(BaseObj):
@@ -341,6 +354,7 @@ class Tile():
         if self.bomb_timer == 0:
             self.tile_type = 'stone'
             self.letter = '__'
+            self.marked = False
             return True
         return False
 
@@ -356,7 +370,7 @@ class Tile():
             offset = (2, 2)
         else:
             # Render point value
-            surf_pts = self.fonts['small'].render(str(self.point_value), True, self.text_color, bg_color)
+            surf_pts = self.fonts['small'].render(str(format_num(self.point_value)), True, self.text_color, bg_color)
             # Align bottom/right
             pts_offset = tuple([self.surf.get_size()[i] - surf_pts.get_size()[i] - 3 for i in range(2)])
             self.surf.blit(surf_pts, dest=pts_offset)

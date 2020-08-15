@@ -27,6 +27,8 @@ class Game:
             'border_gold': pygame.Color('#d4c413'),
             'dark_gray': pygame.Color('#202d36'),
             'hp_green': pygame.Color('#305431'),
+            'hp_red': pygame.Color('#b3281e'),
+            'hp_yellow': pygame.Color('#d16411'),
             'light_gray': pygame.Color('#bfb9a8'),
             'mid_gray': pygame.Color('#546c7a'),
             'bomb': pygame.Color('#7c6e8a'),
@@ -105,7 +107,7 @@ class Game:
             self.mult_best = self.multiplier
             self.value_best = self.history[-1]['value']
             self.word_best = self.history[-1]['word']
-            text = f"{self.history[-1]['value']} {self.history[-1]['word']}"
+            text = f"{format(self.history[-1]['value'], ',d')} {self.history[-1]['word']}"
             filler = ['beige' for _ in range(len(text) - len(self.history[-1]['colors']))]
             obj = {
                 'word': text,
@@ -490,7 +492,7 @@ class Game:
                 else:
                     color = 'red'
 
-            text = f"{word} (+{value})"
+            text = f"{word} (+{format(value, ',d')})"
 
         self.board.word_display.border_color = self.colors[color]
         self.board.word_display.set_text(text)
