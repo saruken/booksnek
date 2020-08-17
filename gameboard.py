@@ -12,7 +12,7 @@ class Board():
         coords = offset_from_element(self.menu_bg, corner=(0, 0), offset=(10, 10))
         self.menu_new = ui.Interactive(name='new', dims=(52, 40), coords=coords, text='NEW', colors=colors, text_color='light_gray')
         coords = offset_from_element(self.menu_new, corner=(1, 0), offset=(10, 0))
-        self.menu_open = ui.Interactive(name='open', dims=(63, 40), coords=coords, text='OPEN', text_color='light_gray', colors=colors)
+        self.menu_open = ui.Interactive(name='open', dims=(63, 40), coords=coords, text='LOAD', text_color='light_gray', colors=colors)
         coords = offset_from_element(self.menu_open, corner=(1, 0), offset=(10, 0))
         self.menu_save = ui.Interactive(name='save', dims=(63, 40), coords=coords, text='SAVE', enabled=False, colors=colors)
         coords = offset_from_element(self.menu_bg, corner=(0, 1), offset=(12, 10))

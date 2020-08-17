@@ -105,6 +105,16 @@ if __name__ == '__main__':
     main()
 
     #TODO:
+        # New tiles
+            # Top-left icons for tile types
+            # Bomb tiles -> red "attack" tiles, functionality is the same
+            # New purple "poison" tiles damage you every turn they're out
+            # Crystal -> "heal"; get removed on Scramble
+        # GFX
+            # Arc from attack/poison/heal tiles to HP meter
+            # Fade out matched tiles
+                # Blit onto 2nd surface, let other tiles fall behind
+                # Color of "wireframe" fade dictated by cause (attack, match)
         # Bonuses for making shapes with the tiles in a word would be neat
             # Could make a block/shape of tiles that need to be eliminated; if
             # you get them all you get a bonus, or else they turn to stone or

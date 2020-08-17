@@ -8,12 +8,15 @@ from ui import Interactive, Tile
 class Game:
     def __init__(self, dims, dictionary):
         self.colors = {
+            'attack': pygame.Color('#ad3e3e'),
             'beige': pygame.Color('#aaaa66'),
-            'bg_bomb': pygame.Color('#3b3245'),
-            'bg_bomb_selected': pygame.Color('#655775'),
+            'bg_attack': pygame.Color('#e05a41'),
+            'bg_attack_selected': pygame.Color('#e37c68'),
             'bg_crystal': pygame.Color('#349eeb'),
             'bg_crystal_selected': pygame.Color('#76bff5'),
             'bg_main': pygame.Color('#21282d'),
+            'bg_poison': pygame.Color('#3b3245'),
+            'bg_poison_selected': pygame.Color('#655775'),
             'bg_back': pygame.Color('#38424d'),
             'bg_gold': pygame.Color('#ebc334'),
             'bg_gold_selected': pygame.Color('#fcde72'),
@@ -31,7 +34,7 @@ class Game:
             'hp_yellow': pygame.Color('#d16411'),
             'light_gray': pygame.Color('#bfb9a8'),
             'mid_gray': pygame.Color('#546c7a'),
-            'bomb': pygame.Color('#7c6e8a'),
+            'poison': pygame.Color('#7c6e8a'),
             'gold': pygame.Color('#fce803'),
             'green': pygame.Color('#65a669'),
             'ocean': pygame.Color('#244254'),
@@ -136,12 +139,14 @@ class Game:
 
     def color_letters(self, word):
         for i, tile in enumerate(self.snake.tiles):
-            if tile.tile_type == 'bomb':
-                word['colors'][i] = 'bomb'
+            if tile.tile_type == 'attack':
+                word['colors'][i] = 'attack'
             elif tile.tile_type == 'crystal':
                 word['colors'][i] = 'teal'
             elif tile.tile_type == 'gold':
                 word['colors'][i] = 'gold'
+            elif tile.tile_type == 'poison':
+                word['colors'][i] = 'poison'
             elif tile.tile_type == 'silver':
                 word['colors'][i] = 'silver'
 
@@ -164,9 +169,6 @@ class Game:
         self.history.append(history_word)
         self.last_five_words = [len(w['word']) for w in self.history[-5:]]
 
-    def get_bomb_weight(self, avg):
-        return -0.375 * avg + 1.975
-
     def empty_snake(self):
         for tile in [t for t in self.snake.tiles]:
             tile.unselect()
@@ -175,6 +177,9 @@ class Game:
 
     def game_over(self):
         print('game_over() placeholder')
+
+    def get_enemy_weight(self, avg):
+        return -0.375 * avg + 1.975
 
     def handle_menu_btn_click(self, elem):
         if not isinstance(elem, Interactive):
@@ -286,17 +291,18 @@ class Game:
         elif self.snake.length > 6:
             tile_type = 'crystal'
         else:
-        # Bomb tiles are created when your last 5 words have been on the
-        # short side. Generally, maintaining an average of 5 letters
-        # keeps you safe; anything below this and there's a better
-        # chance of a bomb tile spawning.
-        # avg = 5; bomb = 10%
-        # avg = 3; bomb = 85%
+        # Based on len of last 5 words
+        # avg = 5; attack = 10%
+        # avg = 3; attack = 85%
             if len(self.last_five_words) == 5:
                 avg = round(sum(self.last_five_words) / len(self.last_five_words), 1)
-                bomb_weight = max(self.get_bomb_weight(avg), 0)
-                normal_weight = 1 - bomb_weight
-                tile_type = choice(['normal', 'bomb'], 1, p=[normal_weight, bomb_weight])[0]
+                enemy_weight = max(self.get_enemy_weight(avg), 0)
+                normal_weight = 1 - enemy_weight
+                enemy_tile = choice([True, False], 1, p=[enemy_weight, normal_weight])[0]
+                if enemy_tile:
+                    tile_type = choice(['attack', 'poison'], 1, p=[0.8, 0.2])[0]
+                else:
+                    tile_type = 'normal'
 
         if tile_type != 'normal':
             # Randomly choose which new tile will have special type
@@ -305,16 +311,16 @@ class Game:
         for i, tile in enumerate(self.snake.tiles):
             tile.marked = False
             tile.tile_type = tile_type if i == special_index else 'normal'
-            tile.bomb_timer = 6
+            tile.attack_timer = 6
 
-    def reroll_tiles(self, bomb):
-        neighbors = [t for t in self.tiles if self.snake.is_neighbor(new_tile=t, old_tile=bomb)]
-        neighbors.pop(neighbors.index(bomb))
+    def reroll_tiles(self, atk):
+        neighbors = [t for t in self.tiles if self.snake.is_neighbor(new_tile=t, old_tile=atk)]
+        neighbors.pop(neighbors.index(atk))
         for tile in neighbors:
             tile.reset()
             self.set_row(tile)
             tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
-        bomb.row = min(bomb.row + 1, 6 + bomb.col % 2)
+        atk.row = min(atk.row + 1, 6 + atk.col % 2)
         self.update_tile_rows()
 
     def save_game(self):
@@ -334,17 +340,17 @@ class Game:
 
         return value * len(word)
 
-    def scramble(self, new_bomb=True):
-        self.update_bomb_tiles()
+    def scramble(self, new_atk=True):
+        self.update_enemy_tiles()
 
-        if new_bomb:
+        if new_atk:
             try:
-                bomb = random.choice([t for t in self.tiles if (t.row == 0 and t.tile_type == 'normal')])
-                bomb.tile_type = 'bomb'
-                bomb.bomb_timer = 5
+                atk = random.choice([t for t in self.tiles if (t.row == 0 and t.tile_type == 'normal')])
+                atk.tile_type = 'attack'
+                atk.attack_timer = 5
             except IndexError: # No normal tiles on top row
                 pass
-        for tile in [t for t in self.tiles if t.tile_type not in ('bomb', 'stone')]:
+        for tile in [t for t in self.tiles if t.tile_type not in ('attack', 'poison', 'stone')]:
             tile.marked = False
             tile.choose_letter()
             tile.tile_type = 'normal'
@@ -415,18 +421,12 @@ class Game:
                 self.reroll_snake_tiles()
                 self.update_tile_rows()
                 self.last_typed = ''
-                self.update_bomb_tiles()
+                self.update_enemy_tiles()
             else:
                 print(f'Word "{self.snake.word}" not in dictionary')
             self.snake.last.mouse_out()
             self.empty_snake()
             self.update_word_display()
-
-    def update_bomb_tiles(self):
-        for tile in [t for t in self.tiles if t.tile_type == 'bomb']:
-            if tile.bomb_tick():
-                self.board.hp_display.hp -= 5
-                self.reroll_tiles(bomb=tile)
 
     def update_bonus_color(self):
         self.board.update_bonus_color(self.bonus_word, self.snake.word, self.colors)
@@ -445,6 +445,14 @@ class Game:
     def update_btn_clear_marked(self):
         self.board.btn_clear_marked.enabled = bool(len([t for t in self.tiles if t.marked]))
         self.board.btn_clear_marked.update()
+
+    def update_enemy_tiles(self):
+        for tile in [t for t in self.tiles if t.tile_type == 'attack']:
+            if tile.attack_tick():
+                self.board.hp_display.hp -= 5
+                self.reroll_tiles(atk=tile)
+        for tile in [t for t in self.tiles if t.tile_type == 'poison']:
+            self.board.hp_display.hp -= 1
 
     def update_history_display(self):
         self.board.history_display.set_multiline_text(self.history)

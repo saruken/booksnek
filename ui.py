@@ -310,7 +310,7 @@ class Interactive(BaseObj):
 
         else:
             self.border_color = self.colors['ocean']
-            self.text_color = self.colors['bomb']
+            self.text_color = self.colors['poison']
 
     def update(self):
         self.set_colors()
@@ -319,7 +319,7 @@ class Interactive(BaseObj):
 class Tile():
     def __init__(self, colors, col, row, offset):
         self.ay = 0
-        self.bomb_timer = 5
+        self.attack_timer = 5
         self.col = col
         self.colors = colors
         self.dims = (48, 48)
@@ -349,9 +349,9 @@ class Tile():
         self.update_point_value()
         self.set_text_color()
 
-    def bomb_tick(self):
-        self.bomb_timer -= 1
-        if self.bomb_timer == 0:
+    def attack_tick(self):
+        self.attack_timer -= 1
+        if self.attack_timer == 0:
             self.tile_type = 'stone'
             self.letter = '__'
             self.marked = False
@@ -380,9 +380,9 @@ class Tile():
             offset = [floor((self.surf.get_size()[i]) - surf.get_size()[i]) / 2 for i in range(2)]
             # Bump (-1px, -4px); convert offset
             offset = tuple([offset[0], offset[1] - 4])
-
-            if self.tile_type == 'bomb':
-                surf_timer = self.fonts['small'].render(str(self.bomb_timer), True, self.colors['red'], bg_color)
+            # Countdown timer
+            if self.tile_type == 'attack':
+                surf_timer = self.fonts['small'].render(str(self.attack_timer), True, self.colors['black'], bg_color)
                 # Align bottom/left
                 timer_offset = (3, self.dims[1] - surf_timer.get_size()[1] - 3)
                 self.surf.blit(surf_timer, dest=timer_offset)
@@ -447,7 +447,7 @@ class Tile():
         self.selected = False
 
     def reset(self):
-        self.bomb_timer = 5
+        self.attack_timer = 5
         self.marked = False
         self.selected = False
         self.tile_type = 'normal'
@@ -466,7 +466,7 @@ class Tile():
         self.target = (x, y)
 
     def set_text_color(self):
-        if self.tile_type == 'bomb':
+        if self.tile_type in ('attack', 'poison'):
             self.text_color = self.colors['light_gray']
         else:
             self.text_color = self.colors['black']
@@ -501,7 +501,7 @@ class Tile():
             value = 10
 
         type_multiplier = 1
-        if self.tile_type in ('bomb', 'silver'):
+        if self.tile_type in ('attack', 'poison', 'silver'):
             type_multiplier = 2
         elif self.tile_type == 'gold':
             type_multiplier = 3
