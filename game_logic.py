@@ -41,7 +41,8 @@ class Game:
             'progress': pygame.Color('#c9c618'),
             'red': pygame.Color('#e05a41'),
             'silver': pygame.Color('#d5e7e8'),
-            'teal': pygame.Color('#50aef2')
+            'teal': pygame.Color('#50aef2'),
+            'transparent': pygame.Color('#ff00ff')
         }
 
         self.board = gameboard.Board(dims=dims, coords=(0, 0), colors=self.colors)
@@ -78,13 +79,15 @@ class Game:
         d.update()
 
         h = self.board.hp_display
+        if abs(h.hp - h.hp_displayed) < 1:
+            h.hp_displayed = h.hp
         if h.hp_displayed > h.hp:
             h.flash()
-            amt = floor((h.hp - h.hp_displayed) / 20)
+            amt = (h.hp - h.hp_displayed) / 20
         else:
             if h.hp_displayed < h.hp:
                 h.flash(color='green')
-            amt = ceil((h.hp - h.hp_displayed) / 20)
+            amt = (h.hp - h.hp_displayed) / 20
         if h.fade_counter or not h.hp_displayed == h.hp:
             h.hp_displayed += amt
             h.update()
@@ -404,7 +407,7 @@ class Game:
                 self.add_tile(elem)
 
     def try_heal(self):
-        for tile in [t for t in self.snake.tiles if t.tile_type == 'heal']:
+        for tile in [t for t in self.snake.tiles if t.tile_type == 'silver']:
             self.heal(tile)
 
     def try_mouse_over(self, elem):
@@ -474,9 +477,9 @@ class Game:
                 tile.first_turn = False # damage the turn they come into play
             else:
                 h = self.board.hp_display
-                amt = ceil(self.board.hp_display.hp_max / 16)
+                amt = ceil(self.board.hp_display.hp_max / 16) * -1
                 self.board.deltas.add(amt)
-                h.hp -= amt
+                h.hp += amt
 
     def update_history_display(self):
         self.board.history_display.set_multiline_text(self.history)

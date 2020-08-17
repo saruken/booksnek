@@ -98,6 +98,7 @@ def main():
         window_surface.blit(game.board.background, (0, 0))
         for element in game.ui_elements:
             window_surface.blit(element.surf, element.coords)
+        game.board.deltas.blit_deltas(window_surface)
         pygame.display.update()
 
 if __name__ == '__main__':

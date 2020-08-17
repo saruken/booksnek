@@ -1,4 +1,4 @@
-import pygame
+import pygame, random
 
 import ui
 
@@ -8,7 +8,8 @@ class Board():
         self.background.fill(colors['bg_back'])
         self.coords = coords
         self.fonts = {
-            'large': pygame.font.Font('VCR_OSD_MONO.ttf', 18),
+            'large': pygame.font.Font('VCR_OSD_MONO.ttf', 36),
+            'medium': pygame.font.Font('VCR_OSD_MONO.ttf', 18),
             'small': pygame.font.Font('VCR_OSD_MONO.ttf', 12)
         }
 
@@ -42,10 +43,10 @@ class Board():
         coords = offset_from_element(self.best_display, corner=(0, 1), offset=(0, 4))
         self.history_display = ui.Display(dims=(310, 425), coords=coords, fonts=self.fonts, colors=colors, label='WORD LIST')
 
-        self.deltas = DeltaSurf(self.fonts)
+        self.deltas = DeltaSurf(self.fonts, colors)
 
         self.menu_btns = [self.btn_clear_marked, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
-        self.ui_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble, self.deltas]
+        self.ui_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
 
     def create_tiles(self, colors, offset):
         tiles = []
@@ -73,13 +74,12 @@ class Board():
             return 10
 
 class DeltaSurf:
-    def __init__(self, fonts):
-        self.dims = (336, 80)
-        self.coords = (10, 70)
+    def __init__(self, fonts, colors):
+        self.colors = colors
+        self.coords = (30, 150)
         self.deltas = []
         self.fonts = fonts
         self.interactive = False
-        self.surf = pygame.Surface(self.dims)
 
     def add(self, amt):
         if amt < 0:
@@ -88,27 +88,27 @@ class DeltaSurf:
         else:
             color = self.colors['green']
             prefix = '+'
-        surf = self.fonts['btn'].render(prefix + str(amt), True, color)
-        offset_x = 5
-        offset_y = 5
+        surf = self.fonts['large'].render(prefix + str(amt), True, color)
+        offset_x = random.choice(range(250))
+        offset_y = 0
         delta = {
-            'fade_counter': 255,
+            'color': color,
+            'dims': surf.get_size(),
+            'fade_counter': 255 + random.choice(range(100)),
             'offset_x': offset_x,
             'offset_y': offset_y,
             'surf': surf
         }
         self.deltas.append(delta)
 
-    def update(self):
-        self.surf.fill(self.colors['beige'])
+    def blit_deltas(self, window_surface):
         for i, d in enumerate(self.deltas):
             d['fade_counter'] -= 1
-            d['offset_y'] -= 0.1
             if d['fade_counter'] > 0:
+                d['offset_y'] -= 20 / d['fade_counter']
                 d['surf'].set_alpha(d['fade_counter'])
-                # TODO: Fix offsets (x should be random)
-                dest = (10, self.dims[1] - 20 + d['offset_y'])
-                self.surf.blit(d['surf'], dest=dest)
+                dest = (self.coords[0] + d['offset_x'], self.coords[1] - d['dims'][1] + d['offset_y'])
+                window_surface.blit(d['surf'], dest=dest)
             else:
                 self.deltas.pop(i)
 

@@ -61,7 +61,7 @@ class Display(BaseObj):
 
         if self.text:
             # Render text
-            surf = self.fonts['large'].render(str(self.text), True, self.text_color, self.bg_color)
+            surf = self.fonts['medium'].render(str(self.text), True, self.text_color, self.bg_color)
             # Horiz align
             if self.center:
                 offset_x = floor((self.surf.get_size()[0] - surf.get_size()[0]) / 2) + self.text_offset[0]
@@ -99,7 +99,7 @@ class Display(BaseObj):
                 for entry in text_obj:
                     for index, letter in enumerate(entry['word']):
                         color = entry['colors'][index]
-                        surf = self.fonts['large'].render(letter, True, self.colors[entry['colors'][index]], self.bg_color)
+                        surf = self.fonts['medium'].render(letter, True, self.colors[entry['colors'][index]], self.bg_color)
                         if not letter_width:
                             letter_width = surf.get_size()[0]
                         if not letter_height:
@@ -109,13 +109,13 @@ class Display(BaseObj):
                             offset_y = floor((self.dims[1] - letter_height) / 2)
                         self.surf.blit(surf, dest=(offset_x, offset_y))
 
-                        surf = self.fonts['large'].render(f' (+{entry["value"]})', True, self.colors['beige'], self.bg_color)
+                        surf = self.fonts['medium'].render(f' (+{entry["value"]})', True, self.colors['beige'], self.bg_color)
                         offset_x += letter_width
                         self.surf.blit(surf, dest=(offset_x, offset_y))
             else:
                 for index, letter in enumerate(self.text_obj['word']):
                     color = self.text_obj['colors'][index]
-                    surf = self.fonts['large'].render(letter, True, self.colors[self.text_obj['colors'][index]], self.bg_color)
+                    surf = self.fonts['medium'].render(letter, True, self.colors[self.text_obj['colors'][index]], self.bg_color)
                     if not letter_width:
                         letter_width = surf.get_size()[0]
                     if not letter_height:
@@ -156,7 +156,7 @@ class Display(BaseObj):
 
         for index_hist, d in enumerate(history):
             for index_letter, letter in enumerate(d['word']):
-                surf = self.fonts['large'].render(letter, True, self.colors[d['colors'][index_letter]], self.bg_color)
+                surf = self.fonts['medium'].render(letter, True, self.colors[d['colors'][index_letter]], self.bg_color)
                 if self.letter_width == 19:
                     self.letter_width = surf.get_size()[0]
                 if self.letter_height == 19:
@@ -165,7 +165,7 @@ class Display(BaseObj):
                 container.blit(surf, dest=offset)
 
                 if index_letter == len(d['word']) - 1:
-                    surf = self.fonts['large'].render(f' (+{d["value"]})', True, self.colors['beige'], self.bg_color)
+                    surf = self.fonts['medium'].render(f' (+{d["value"]})', True, self.colors['beige'], self.bg_color)
                     offset = (text_offset[0] + self.letter_width * (index_letter + 1), text_offset[1] + self.letter_height * index_hist)
                     container.blit(surf, dest=offset)
 
@@ -232,7 +232,8 @@ class HPDisplay():
         bar_width = floor((self.hp_displayed / self.hp_max) * self.bar_max_width)
         pygame.draw.rect(self.surf, self.bg_color_progress, pygame.Rect((2, 10), (self.bar_max_width, self.dims[1] - 18)))
         pygame.draw.rect(self.surf, self.hp_color, pygame.Rect((2, 10), (bar_width, self.dims[1] - 18)))
-        surf = self.fonts['large'].render(f'{str(self.hp)} / {str(self.hp_max)}', True, self.colors['light_gray'])
+        hp_display = str(round(self.hp_displayed))
+        surf = self.fonts['medium'].render(f'{hp_display} / {str(self.hp_max)}', True, self.colors['light_gray'])
         self.surf.blit(surf, dest=(floor((self.dims[0] - surf.get_size()[0]) / 2), floor((self.dims[1] - surf.get_size()[1]) / 2)))
         label = self.fonts['small'].render('HP', True, self.colors['mid_gray'])
         pygame.draw.line(self.surf, self.bg_color, (14, 0), (label.get_size()[0] + 14 + 20, 0), width=2)
@@ -285,7 +286,7 @@ class Interactive(BaseObj):
         self.surf.fill(self.border_color)
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
         # Render text
-        surf = self.fonts['large'].render(self.text, True, self.text_color, self.bg_color)
+        surf = self.fonts['medium'].render(self.text, True, self.text_color, self.bg_color)
         # Horiz/vert align center
         offset = tuple([floor((self.dims[i]) - surf.get_size()[i]) / 2 for i in range(2)])
 
