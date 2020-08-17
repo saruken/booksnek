@@ -206,7 +206,6 @@ class Game:
                 self.last_typed = ''
 
     def heal(self, tile):
-        print(f'Healing from tile "{tile.letter}"')
         h = self.board.hp_display
         amt = ceil(h.hp_max / 10)
         self.board.deltas.add(amt)

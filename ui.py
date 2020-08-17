@@ -74,9 +74,9 @@ class Display(BaseObj):
         if self.label:
             self.set_label()
 
-    def fade_bg(self):
+    def fade_border(self):
         try:
-            self.bg_color = self.colors['bg_heal'].lerp(self.colors['bg_main'], self.fade_counter / 100.0)
+            self.border_color = self.colors['bg_heal'].lerp(self.colors['mid_gray'], self.fade_counter / 100.0)
             self.fade_counter += self.fade_counter_speed
         except ValueError:
             self.fade_counter = 0
@@ -189,7 +189,7 @@ class Display(BaseObj):
             else:
                 self.text = self.text_prefix + str(text)
         if self.fade_counter:
-            self.fade_bg()
+            self.fade_border()
         if self.multicolor:
             self.set_colored_text()
         else:
@@ -220,14 +220,13 @@ class HPDisplay():
         self.build_image()
 
     def build_image(self):
-        self.surf.fill(self.border_color)
         if self.fade_counter:
             try:
-                self.bg_color = self.fade_color.lerp(self.colors['bg_main'], self.fade_counter / 100.0)
+                self.border_color = self.fade_color.lerp(self.colors['mid_gray'], self.fade_counter / 100.0)
                 self.fade_counter += self.fade_counter_speed
-                self.bg_color_progress = self.fade_color.lerp(self.colors['bg_progress'], self.fade_counter / 100.0)
             except ValueError:
                 self.fade_counter = 0
+        self.surf.fill(self.border_color)
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
         bar_width = floor((self.hp_displayed / self.hp_max) * self.bar_max_width)
         pygame.draw.rect(self.surf, self.bg_color_progress, pygame.Rect((2, 10), (self.bar_max_width, self.dims[1] - 18)))
