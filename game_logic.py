@@ -79,16 +79,10 @@ class Game:
         d.update()
 
         h = self.board.hp_display
-        if abs(h.hp - h.hp_displayed) < 1:
-            h.hp_displayed = h.hp
-        if h.hp_displayed > h.hp:
-            h.flash()
-            amt = (h.hp - h.hp_displayed) / 20
-        else:
-            if h.hp_displayed < h.hp:
-                h.flash(color='green')
-            amt = (h.hp - h.hp_displayed) / 20
+        amt = (h.hp - h.hp_displayed) / 20
         if h.fade_counter or not h.hp_displayed == h.hp:
+            if abs(h.hp - h.hp_displayed) < .03:
+                amt = h.hp - h.hp_displayed
             h.hp_displayed += amt
             h.update()
         if h.hp_displayed <= 0:
@@ -210,6 +204,7 @@ class Game:
         amt = ceil(h.hp_max / 10)
         self.board.deltas.add(amt)
         h.hp = min(h.hp + amt, h.hp_max)
+        h.flash(color='green')
         # TODO: Create arc from tile to HP display
 
     def highlight_selected_tiles(self):
@@ -250,7 +245,8 @@ class Game:
         self.update_tiles()
 
     def load_game(self):
-        print('load_game() placeholder')
+        h = self.board.hp_display
+        print(f'hp: {h.hp}; hp_displayed: {h.hp_displayed}; hp_max: {h.hp_max}')
 
     def mult_up(self):
         self.multiplier += 1
@@ -470,6 +466,7 @@ class Game:
                 amt = ceil(self.board.hp_display.hp_max / 8) * -1
                 self.board.deltas.add(amt)
                 h.hp += amt
+                h.flash(color='red')
                 self.reroll_tiles(tile=tile)
         for tile in [t for t in self.tiles if t.tile_type == 'poison']:
             if tile.first_turn:         # Prevent poison tiles from dealing
@@ -479,6 +476,7 @@ class Game:
                 amt = ceil(self.board.hp_display.hp_max / 16) * -1
                 self.board.deltas.add(amt)
                 h.hp += amt
+                h.flash(color='red')
 
     def update_history_display(self):
         self.board.history_display.set_multiline_text(self.history)

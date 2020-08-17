@@ -225,7 +225,10 @@ class HPDisplay():
                 self.border_color = self.fade_color.lerp(self.colors['mid_gray'], self.fade_counter / 100.0)
                 self.fade_counter += self.fade_counter_speed
             except ValueError:
-                self.fade_counter = 0
+                if self.hp_displayed == self.hp:
+                    self.fade_counter = 0
+                else:
+                    self.fade_counter = -1
         self.surf.fill(self.border_color)
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
         bar_width = floor((self.hp_displayed / self.hp_max) * self.bar_max_width)
@@ -252,6 +255,8 @@ class HPDisplay():
         delta = new_hp_max - self.hp_max
         self.hp_max = new_hp_max
         self.hp += delta
+        self.hp_displayed += delta
+        self.update()
 
     def set_hp_color(self):
         ratio = self.hp_displayed / self.hp_max
@@ -263,6 +268,9 @@ class HPDisplay():
             self.hp_color = self.colors['hp_green']
 
     def update(self):
+        if self.fade_counter == -1:
+            if self.hp_displayed == self.hp:
+                self.fade_counter = 0
         self.set_hp_color()
         self.build_image()
 
