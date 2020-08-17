@@ -3,12 +3,9 @@ from math import floor
 from numpy.random import choice
 
 class BaseObj:
-    def __init__(self, dims, coords, colors):
+    def __init__(self, dims, coords, fonts, colors):
         self.colors = colors
-        self.fonts = {
-            'btn': pygame.font.Font('VCR_OSD_MONO.ttf', 18),
-            'small': pygame.font.Font('VCR_OSD_MONO.ttf', 12)
-        }
+        self.fonts = fonts
 
         self.border_color = self.colors['mid_gray']
         self.coords = coords
@@ -20,8 +17,8 @@ class BaseObj:
         return pygame.Rect(self.coords, self.dims)
 
 class Display(BaseObj):
-    def __init__(self, dims, coords, colors, text=None, text_color=None, text_prefix='', center=False, text_offset=[0, 0], label=None, show_progress=None, multicolor=False):
-        super(Display, self).__init__(dims=dims, coords=coords, colors=colors)
+    def __init__(self, dims, coords, fonts, colors, text=None, text_color=None, text_prefix='', center=False, text_offset=[0, 0], label=None, show_progress=None, multicolor=False):
+        super(Display, self).__init__(dims=dims, coords=coords, fonts=fonts, colors=colors)
         self.bg_color = self.colors['bg_main']
         self.bg_progress = self.colors['bg_progress']
         self.border_color = self.colors['mid_gray']
@@ -64,7 +61,7 @@ class Display(BaseObj):
 
         if self.text:
             # Render text
-            surf = self.fonts['btn'].render(str(self.text), True, self.text_color, self.bg_color)
+            surf = self.fonts['large'].render(str(self.text), True, self.text_color, self.bg_color)
             # Horiz align
             if self.center:
                 offset_x = floor((self.surf.get_size()[0] - surf.get_size()[0]) / 2) + self.text_offset[0]
@@ -79,7 +76,7 @@ class Display(BaseObj):
 
     def fade_bg(self):
         try:
-            self.bg_color = self.colors['bg_crystal'].lerp(self.colors['bg_main'], self.fade_counter / 100.0)
+            self.bg_color = self.colors['bg_heal'].lerp(self.colors['bg_main'], self.fade_counter / 100.0)
             self.fade_counter += self.fade_counter_speed
         except ValueError:
             self.fade_counter = 0
@@ -102,7 +99,7 @@ class Display(BaseObj):
                 for entry in text_obj:
                     for index, letter in enumerate(entry['word']):
                         color = entry['colors'][index]
-                        surf = self.fonts['btn'].render(letter, True, self.colors[entry['colors'][index]], self.bg_color)
+                        surf = self.fonts['large'].render(letter, True, self.colors[entry['colors'][index]], self.bg_color)
                         if not letter_width:
                             letter_width = surf.get_size()[0]
                         if not letter_height:
@@ -112,13 +109,13 @@ class Display(BaseObj):
                             offset_y = floor((self.dims[1] - letter_height) / 2)
                         self.surf.blit(surf, dest=(offset_x, offset_y))
 
-                        surf = self.fonts['btn'].render(f' (+{entry["value"]})', True, self.colors['beige'], self.bg_color)
+                        surf = self.fonts['large'].render(f' (+{entry["value"]})', True, self.colors['beige'], self.bg_color)
                         offset_x += letter_width
                         self.surf.blit(surf, dest=(offset_x, offset_y))
             else:
                 for index, letter in enumerate(self.text_obj['word']):
                     color = self.text_obj['colors'][index]
-                    surf = self.fonts['btn'].render(letter, True, self.colors[self.text_obj['colors'][index]], self.bg_color)
+                    surf = self.fonts['large'].render(letter, True, self.colors[self.text_obj['colors'][index]], self.bg_color)
                     if not letter_width:
                         letter_width = surf.get_size()[0]
                     if not letter_height:
@@ -159,7 +156,7 @@ class Display(BaseObj):
 
         for index_hist, d in enumerate(history):
             for index_letter, letter in enumerate(d['word']):
-                surf = self.fonts['btn'].render(letter, True, self.colors[d['colors'][index_letter]], self.bg_color)
+                surf = self.fonts['large'].render(letter, True, self.colors[d['colors'][index_letter]], self.bg_color)
                 if self.letter_width == 19:
                     self.letter_width = surf.get_size()[0]
                 if self.letter_height == 19:
@@ -168,7 +165,7 @@ class Display(BaseObj):
                 container.blit(surf, dest=offset)
 
                 if index_letter == len(d['word']) - 1:
-                    surf = self.fonts['btn'].render(f' (+{d["value"]})', True, self.colors['beige'], self.bg_color)
+                    surf = self.fonts['large'].render(f' (+{d["value"]})', True, self.colors['beige'], self.bg_color)
                     offset = (text_offset[0] + self.letter_width * (index_letter + 1), text_offset[1] + self.letter_height * index_hist)
                     container.blit(surf, dest=offset)
 
@@ -199,16 +196,14 @@ class Display(BaseObj):
             self.build_image()
 
 class HPDisplay():
-    def __init__(self, dims, coords, colors):
+    def __init__(self, dims, coords, fonts, colors):
         self.dims = dims
         self.colors = colors
         self.coords = coords
+        self.fade_color = self.colors['red']
         self.fade_counter = 0
         self.fade_counter_speed = 1.2
-        self.fonts = {
-            'btn': pygame.font.Font('VCR_OSD_MONO.ttf', 18),
-            'small': pygame.font.Font('VCR_OSD_MONO.ttf', 12)
-        }
+        self.fonts = fonts
         self.hp = 1
         self.hp_color = self.colors['hp_green']
         self.hp_displayed = 1
@@ -228,24 +223,28 @@ class HPDisplay():
         self.surf.fill(self.border_color)
         if self.fade_counter:
             try:
-                self.bg_color = self.colors['red'].lerp(self.colors['bg_main'], self.fade_counter / 100.0)
+                self.bg_color = self.fade_color.lerp(self.colors['bg_main'], self.fade_counter / 100.0)
                 self.fade_counter += self.fade_counter_speed
-                self.bg_color_progress = self.colors['red'].lerp(self.colors['bg_progress'], self.fade_counter / 100.0)
+                self.bg_color_progress = self.fade_color.lerp(self.colors['bg_progress'], self.fade_counter / 100.0)
             except ValueError:
                 self.fade_counter = 0
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
         bar_width = floor((self.hp_displayed / self.hp_max) * self.bar_max_width)
         pygame.draw.rect(self.surf, self.bg_color_progress, pygame.Rect((2, 10), (self.bar_max_width, self.dims[1] - 18)))
         pygame.draw.rect(self.surf, self.hp_color, pygame.Rect((2, 10), (bar_width, self.dims[1] - 18)))
-        surf = self.fonts['btn'].render(f'{str(self.hp)} / {str(self.hp_max)}', True, self.colors['light_gray'])
+        surf = self.fonts['large'].render(f'{str(self.hp)} / {str(self.hp_max)}', True, self.colors['light_gray'])
         self.surf.blit(surf, dest=(floor((self.dims[0] - surf.get_size()[0]) / 2), floor((self.dims[1] - surf.get_size()[1]) / 2)))
         label = self.fonts['small'].render('HP', True, self.colors['mid_gray'])
         pygame.draw.line(self.surf, self.bg_color, (14, 0), (label.get_size()[0] + 14 + 20, 0), width=2)
         self.surf.blit(label, (24, -2))
 
-    def flash(self):
+    def flash(self, color=None):
         if not self.fade_counter:
             self.fade_counter = 1
+        if color:
+            self.fade_color = self.colors[color]
+        else:
+            self.fade_color = self.colors['red']
 
     def level_up(self, lv):
         base = 108
@@ -268,8 +267,8 @@ class HPDisplay():
         self.build_image()
 
 class Interactive(BaseObj):
-    def __init__(self, name, dims, coords, colors, text, text_color=None, enabled=True):
-        super(Interactive, self).__init__(dims=dims, coords=coords, colors=colors)
+    def __init__(self, name, dims, coords, fonts, colors, text, text_color=None, enabled=True):
+        super(Interactive, self).__init__(dims=dims, coords=coords, fonts=fonts, colors=colors)
         self.bg_color = self.colors['ocean']
         self.border_color = None
         self.enabled = enabled
@@ -286,7 +285,7 @@ class Interactive(BaseObj):
         self.surf.fill(self.border_color)
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
         # Render text
-        surf = self.fonts['btn'].render(self.text, True, self.text_color, self.bg_color)
+        surf = self.fonts['large'].render(self.text, True, self.text_color, self.bg_color)
         # Horiz/vert align center
         offset = tuple([floor((self.dims[i]) - surf.get_size()[i]) / 2 for i in range(2)])
 
@@ -317,16 +316,14 @@ class Interactive(BaseObj):
         self.build_image()
 
 class Tile():
-    def __init__(self, colors, col, row, offset):
+    def __init__(self, fonts,  colors, col, row, offset):
         self.ay = 0
         self.attack_timer = 5
         self.col = col
         self.colors = colors
         self.dims = (48, 48)
-        self.fonts = {
-            'letter': pygame.font.Font('VCR_OSD_MONO.ttf', 36),
-            'small': pygame.font.Font('VCR_OSD_MONO.ttf', 12)
-        }
+        self.first_turn = True
+        self.fonts = fonts
         self.hovered = False
         self.interactive = True
         self.level = 1
@@ -375,7 +372,7 @@ class Tile():
             pts_offset = tuple([self.surf.get_size()[i] - surf_pts.get_size()[i] - 3 for i in range(2)])
             self.surf.blit(surf_pts, dest=pts_offset)
             # Render letter
-            surf = self.fonts['letter'].render(self.letter, True, self.text_color, bg_color)
+            surf = self.fonts['large'].render(self.letter, True, self.text_color, bg_color)
             # Horiz/vert align center
             offset = [floor((self.surf.get_size()[i]) - surf.get_size()[i]) / 2 for i in range(2)]
             # Bump (-1px, -4px); convert offset
@@ -448,6 +445,7 @@ class Tile():
 
     def reset(self):
         self.attack_timer = 5
+        self.first_turn = True
         self.marked = False
         self.selected = False
         self.tile_type = 'normal'
@@ -503,10 +501,8 @@ class Tile():
         type_multiplier = 1
         if self.tile_type in ('attack', 'poison', 'silver'):
             type_multiplier = 2
-        elif self.tile_type == 'gold':
+        elif self.tile_type in ('gold', 'heal'):
             type_multiplier = 3
-        elif self.tile_type == 'crystal':
-            type_multiplier = 5
 
         self.point_value = value * self.level * self.multiplier * type_multiplier
 

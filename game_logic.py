@@ -12,8 +12,8 @@ class Game:
             'beige': pygame.Color('#aaaa66'),
             'bg_attack': pygame.Color('#e05a41'),
             'bg_attack_selected': pygame.Color('#e37c68'),
-            'bg_crystal': pygame.Color('#349eeb'),
-            'bg_crystal_selected': pygame.Color('#76bff5'),
+            'bg_heal': pygame.Color('#349eeb'),
+            'bg_heal_selected': pygame.Color('#76bff5'),
             'bg_main': pygame.Color('#21282d'),
             'bg_poison': pygame.Color('#3b3245'),
             'bg_poison_selected': pygame.Color('#655775'),
@@ -82,6 +82,8 @@ class Game:
             h.flash()
             amt = floor((h.hp - h.hp_displayed) / 20)
         else:
+            if h.hp_displayed < h.hp:
+                h.flash(color='green')
             amt = ceil((h.hp - h.hp_displayed) / 20)
         if h.fade_counter or not h.hp_displayed == h.hp:
             h.hp_displayed += amt
@@ -141,7 +143,7 @@ class Game:
         for i, tile in enumerate(self.snake.tiles):
             if tile.tile_type == 'attack':
                 word['colors'][i] = 'attack'
-            elif tile.tile_type == 'crystal':
+            elif tile.tile_type == 'heal':
                 word['colors'][i] = 'teal'
             elif tile.tile_type == 'gold':
                 word['colors'][i] = 'gold'
@@ -199,6 +201,14 @@ class Game:
                 self.clear_marked()
                 self.board.btn_clear_marked.update()
                 self.last_typed = ''
+
+    def heal(self, tile):
+        print(f'Healing from tile "{tile.letter}"')
+        h = self.board.hp_display
+        amt = ceil(h.hp_max / 10)
+        self.board.deltas.add(amt)
+        h.hp = min(h.hp + amt, h.hp_max)
+        # TODO: Create arc from tile to HP display
 
     def highlight_selected_tiles(self):
         for tile in [t for t in self.tiles if t.selected]:
@@ -289,7 +299,7 @@ class Game:
         elif self.snake.length == 6:
             tile_type = 'gold'
         elif self.snake.length > 6:
-            tile_type = 'crystal'
+            tile_type = 'heal'
         else:
         # Based on len of last 5 words
         # avg = 5; attack = 10%
@@ -313,14 +323,14 @@ class Game:
             tile.tile_type = tile_type if i == special_index else 'normal'
             tile.attack_timer = 6
 
-    def reroll_tiles(self, atk):
-        neighbors = [t for t in self.tiles if self.snake.is_neighbor(new_tile=t, old_tile=atk)]
-        neighbors.pop(neighbors.index(atk))
+    def reroll_tiles(self, tile):
+        neighbors = [t for t in self.tiles if self.snake.is_neighbor(new_tile=t, old_tile=tile)]
+        neighbors.pop(neighbors.index(tile))
         for tile in neighbors:
             tile.reset()
             self.set_row(tile)
             tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
-        atk.row = min(atk.row + 1, 6 + atk.col % 2)
+        tile.row = min(tile.row + 1, 6 + tile.col % 2)
         self.update_tile_rows()
 
     def save_game(self):
@@ -393,6 +403,10 @@ class Game:
             else:
                 self.add_tile(elem)
 
+    def try_heal(self):
+        for tile in [t for t in self.snake.tiles if t.tile_type == 'heal']:
+            self.heal(tile)
+
     def try_mouse_over(self, elem):
         for el in [e for e in self.board.menu_btns + self.tiles if e.hovered]:
             el.mouse_out()
@@ -418,6 +432,7 @@ class Game:
                     self.apply_level_progress(score)
                 self.update_history_display()
                 self.paused = True
+                self.try_heal()
                 self.reroll_snake_tiles()
                 self.update_tile_rows()
                 self.last_typed = ''
@@ -449,10 +464,19 @@ class Game:
     def update_enemy_tiles(self):
         for tile in [t for t in self.tiles if t.tile_type == 'attack']:
             if tile.attack_tick():
-                self.board.hp_display.hp -= 5
-                self.reroll_tiles(atk=tile)
+                h = self.board.hp_display
+                amt = ceil(self.board.hp_display.hp_max / 8) * -1
+                self.board.deltas.add(amt)
+                h.hp += amt
+                self.reroll_tiles(tile=tile)
         for tile in [t for t in self.tiles if t.tile_type == 'poison']:
-            self.board.hp_display.hp -= 1
+            if tile.first_turn:         # Prevent poison tiles from dealing
+                tile.first_turn = False # damage the turn they come into play
+            else:
+                h = self.board.hp_display
+                amt = ceil(self.board.hp_display.hp_max / 16)
+                self.board.deltas.add(amt)
+                h.hp -= amt
 
     def update_history_display(self):
         self.board.history_display.set_multiline_text(self.history)

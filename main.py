@@ -107,8 +107,6 @@ if __name__ == '__main__':
     #TODO:
         # New tiles
             # Top-left icons for tile types
-            # Bomb tiles -> red "attack" tiles, functionality is the same
-            # New purple "poison" tiles damage you every turn they're out
             # Crystal -> "heal"; get removed on Scramble
         # GFX
             # Arc from attack/poison/heal tiles to HP meter

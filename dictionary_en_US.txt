@@ -3138,6 +3138,9 @@ areal
 areas
 arena
 arenas
+areola
+areolae
+areolas
 ares
 argent
 arginine
@@ -3967,6 +3970,9 @@ aura
 aural
 aurally
 auras
+aureola
+aureolae
+aureolas
 aureole
 aureoles
 aureus
@@ -28965,6 +28971,10 @@ glue
 glued
 glues
 gluey
+glug
+glugged
+glugging
+glugs
 gluier
 gluiest
 gluing
