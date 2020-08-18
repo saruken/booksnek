@@ -1,4 +1,4 @@
-import pygame
+import os, pygame
 from math import floor
 from numpy.random import choice
 
@@ -333,6 +333,7 @@ class Tile():
         self.first_turn = True
         self.fonts = fonts
         self.hovered = False
+        self.images = {}
         self.interactive = True
         self.level = 1
         self.marked = False
@@ -354,6 +355,7 @@ class Tile():
         self.choose_letter()
         self.update_point_value()
         self.set_text_color()
+        self.load_images()
 
     def attack_tick(self):
         self.attack_timer -= 1
@@ -369,7 +371,6 @@ class Tile():
 
     def build_image(self):
         bg_color = self.colors[f'bg_{self.tile_type}{"_selected" if self.selected else ""}']
-
         self.surf.fill(self.border_color)
         pygame.draw.rect(self.surf, bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
 
@@ -397,9 +398,13 @@ class Tile():
                 self.surf.blit(surf_timer, dest=timer_offset)
 
         self.surf.blit(surf, dest=offset)
+
+        if self.tile_type in ('attack', 'heal', 'poison'):
+            self.surf.blit(self.images[self.tile_type], dest=(2, 2))
+
         if self.marked:
-            pygame.draw.circle(self.surf, self.colors['mid_gray'], (8, 8), 4)
-            pygame.draw.circle(self.surf, self.colors['teal'], (8, 8), 2)
+            pygame.draw.circle(self.surf, self.colors['mid_gray'], (self.dims[0] - 8, 8), 4)
+            pygame.draw.circle(self.surf, self.colors['teal'], (self.dims[0] - 8, 8), 2)
 
     def choose_letter(self):
         letter_weights = {
@@ -434,6 +439,11 @@ class Tile():
 
     def get_abs_rect(self):
         return pygame.Rect(self.coords, self.dims)
+
+    def load_images(self):
+        for img_name in ('attack', 'heal', 'poison'):
+            self.images[img_name] = pygame.image.load(os.path.join('img', img_name + '.png'))
+            self.images[img_name].set_colorkey(self.colors['transparent'])
 
     def mouse_out(self):
         self.hovered = False
@@ -517,10 +527,12 @@ class Tile():
             value = 10
 
         type_multiplier = 1
-        if self.tile_type in ('attack', 'poison', 'silver'):
+        if self.tile_type in ('attack', 'heal', 'poison'):
             type_multiplier = 2
-        elif self.tile_type in ('gold', 'heal'):
+        elif self.tile_type == 'silver':
             type_multiplier = 3
+        elif self.tile_type == 'gold':
+            type_multiplier = 4
 
         self.point_value = value * self.level * self.multiplier * type_multiplier
 

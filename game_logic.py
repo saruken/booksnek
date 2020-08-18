@@ -338,11 +338,11 @@ class Game:
         special_index = 0
 
         if self.snake.length == 5:
-            tile_type = 'silver'
-        elif self.snake.length == 6:
-            tile_type = 'gold'
-        elif self.snake.length > 6:
             tile_type = 'heal'
+        elif self.snake.length == 6:
+            tile_type = 'silver'
+        elif self.snake.length > 6:
+            tile_type = 'gold'
         else:
         # Based on len of last 5 words
         # avg = 5; attack = 10%
