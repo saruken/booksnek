@@ -98,6 +98,7 @@ def main():
         window_surface.blit(game.board.background, (0, 0))
         for element in game.ui_elements:
             window_surface.blit(element.surf, element.coords)
+        game.board.gfx.blit_gfx(window_surface)
         game.board.deltas.blit_deltas(window_surface)
         pygame.display.update()
 
@@ -108,9 +109,7 @@ if __name__ == '__main__':
     #TODO:
         # New tiles
             # Top-left icons for tile types
-            # Crystal -> "heal"; get removed on Scramble
         # GFX
-            # Arc from attack/poison/heal tiles to HP meter
             # Fade out matched tiles
                 # Blit onto 2nd surface, let other tiles fall behind
                 # Color of "wireframe" fade dictated by cause (attack, match)

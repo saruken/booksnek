@@ -336,6 +336,7 @@ class Tile():
         self.interactive = True
         self.level = 1
         self.marked = False
+        self.middle = (0, 0)
         self.multiplier = 1
         self.offset = offset if self.col % 2 else (offset[0], offset[1] + (self.dims[0] / 2))
         self.point_value = 0
@@ -356,11 +357,14 @@ class Tile():
 
     def attack_tick(self):
         self.attack_timer -= 1
-        if self.attack_timer == 0:
-            self.tile_type = 'stone'
-            self.letter = '__'
-            self.marked = False
-            return True
+        if self.first_turn:
+            self.first_turn = False
+        else:
+            if self.attack_timer == 0:
+                self.tile_type = 'stone'
+                self.letter = '__'
+                self.marked = False
+                return True
         return False
 
     def build_image(self):
@@ -447,6 +451,12 @@ class Tile():
         y = self.offset[1] + (self.dims[1] * self.row) + dy
 
         self.coords = (x, y)
+        self.set_middle()
+
+    def set_middle(self):
+        x = self.offset[0] + (self.dims[0] * self.col)
+        y = self.offset[1] + (self.dims[1] * self.row)
+        self.middle = (x + (self.dims[0] / 2), y + (self.dims[1] / 2))
 
     def unselect(self):
         self.selected = False

@@ -12,16 +12,16 @@ class Game:
             'beige': pygame.Color('#aaaa66'),
             'bg_attack': pygame.Color('#e05a41'),
             'bg_attack_selected': pygame.Color('#e37c68'),
-            'bg_heal': pygame.Color('#349eeb'),
-            'bg_heal_selected': pygame.Color('#76bff5'),
-            'bg_main': pygame.Color('#21282d'),
-            'bg_poison': pygame.Color('#3b3245'),
-            'bg_poison_selected': pygame.Color('#655775'),
             'bg_back': pygame.Color('#38424d'),
             'bg_gold': pygame.Color('#ebc334'),
             'bg_gold_selected': pygame.Color('#fcde72'),
+            'bg_heal': pygame.Color('#349eeb'),
+            'bg_heal_selected': pygame.Color('#76bff5'),
+            'bg_main': pygame.Color('#21282d'),
             'bg_normal': pygame.Color('#c1a663'),
             'bg_normal_selected': pygame.Color('#f0d081'),
+            'bg_poison': pygame.Color('#3b3245'),
+            'bg_poison_selected': pygame.Color('#655775'),
             'bg_progress': pygame.Color('#161a1c'),
             'bg_silver': pygame.Color('#9eadad'),
             'bg_silver_selected': pygame.Color('#d5e7e8'),
@@ -53,6 +53,51 @@ class Game:
         self.ui_elements = self.tiles + self.board.ui_elements
 
         self.new_game()
+
+    def activate_tile_effects(self):
+        arc_sources = []
+        hp_effect = 0
+        h = self.board.hp_display
+        for tile in self.snake.tiles:
+            if tile.tile_type == 'silver':
+                arc_sources.append([tile.middle, 'teal'])
+                amt = ceil(h.hp_max / 10)
+                self.board.deltas.add(amt)
+                hp_effect += amt
+                print(f'Healed {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
+
+        self.reroll_snake_tiles()
+
+        for tile in [t for t in self.tiles if t.tile_type == 'attack']:
+            if tile.attack_tick():
+                arc_sources.append([tile.middle, 'bg_attack'])
+                amt = ceil(self.board.hp_display.hp_max / 8) * -1
+                hp_effect += amt
+                print(f'Damaged {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
+                self.board.deltas.add(amt)
+                self.reroll_tiles(tile=tile)
+
+        for tile in [t for t in self.tiles if t.tile_type == 'poison']:
+            if tile.first_turn:         # Prevent poison tiles from dealing
+                tile.first_turn = False # damage the turn they come into play
+            else:
+                arc_sources.append([tile.middle, 'bg_poison'])
+                amt = ceil(h.hp_max / 16) * -1
+                hp_effect += amt
+                print(f'Poisoned {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
+                self.board.deltas.add(amt)
+
+        self.update_tile_rows()
+
+        if hp_effect > 0:
+            h.flash(color='green')
+        elif hp_effect < 0:
+            h.flash(color='red')
+        new_hp = h.hp + hp_effect
+        h.hp = max(0, min(new_hp, h.hp_max))
+
+        if arc_sources:
+            self.board.gfx.draw_arcs(arc_sources) # Move up before reroll
 
     def add_tile(self, tile):
         self.snake.add(tile)
@@ -319,7 +364,8 @@ class Game:
         for i, tile in enumerate(self.snake.tiles):
             tile.marked = False
             tile.tile_type = tile_type if i == special_index else 'normal'
-            tile.attack_timer = 6
+            tile.attack_timer = 5
+            tile.first_turn = True
 
     def reroll_tiles(self, tile):
         neighbors = [t for t in self.tiles if self.snake.is_neighbor(new_tile=t, old_tile=tile)]
@@ -349,7 +395,8 @@ class Game:
         return value * len(word)
 
     def scramble(self, new_atk=True):
-        self.update_enemy_tiles()
+        self.empty_snake()
+        self.activate_tile_effects()
 
         if new_atk:
             try:
@@ -416,27 +463,28 @@ class Game:
             self.empty_snake()         # snake.length due to 'Qu' tiles
         elif self.snake.length > 2:
             if self.check_dictionary():
+                print(f'Committed word "{self.snake.word}"')
+                self.paused = True
+                self.last_typed = ''
                 self.commit_word_to_history()
                 self.check_update_longest()
                 if self.snake.word == self.bonus_word:
+                    print(f'This is the bonus word')
                     self.mult_up()
                     self.update_mult_display()
                     self.choose_bonus_word()
                 else:
                     score = self.score_word()
+                    print(f'Added {score} to score')
                     self.score += score
                     self.update_score_display()
                     self.check_update_best()
                     self.apply_level_progress(score)
                 self.update_history_display()
-                self.paused = True
-                self.try_heal()
-                self.reroll_snake_tiles()
-                self.update_tile_rows()
-                self.last_typed = ''
-                self.update_enemy_tiles()
+                self.activate_tile_effects()
             else:
                 print(f'Word "{self.snake.word}" not in dictionary')
+
             self.snake.last.mouse_out()
             self.empty_snake()
             self.update_word_display()
@@ -459,25 +507,6 @@ class Game:
         self.board.btn_clear_marked.enabled = bool(len([t for t in self.tiles if t.marked]))
         self.board.btn_clear_marked.update()
 
-    def update_enemy_tiles(self):
-        for tile in [t for t in self.tiles if t.tile_type == 'attack']:
-            if tile.attack_tick():
-                h = self.board.hp_display
-                amt = ceil(self.board.hp_display.hp_max / 8) * -1
-                self.board.deltas.add(amt)
-                h.hp += amt
-                h.flash(color='red')
-                self.reroll_tiles(tile=tile)
-        for tile in [t for t in self.tiles if t.tile_type == 'poison']:
-            if tile.first_turn:         # Prevent poison tiles from dealing
-                tile.first_turn = False # damage the turn they come into play
-            else:
-                h = self.board.hp_display
-                amt = ceil(self.board.hp_display.hp_max / 16) * -1
-                self.board.deltas.add(amt)
-                h.hp += amt
-                h.flash(color='red')
-
     def update_history_display(self):
         self.board.history_display.set_multiline_text(self.history)
 
@@ -498,6 +527,7 @@ class Game:
                         # Set row values back to 0-7
                         col_tiles[i].row = i
                         col_tiles[i].set_target(from_row_col=True)
+                        col_tiles[i].set_middle()
                     except IndexError:
                         # Handle even (7 member) cols
                         pass

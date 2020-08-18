@@ -1,4 +1,6 @@
 import pygame, random
+from math import pi
+from time import sleep
 
 import ui
 
@@ -44,6 +46,7 @@ class Board():
         self.history_display = ui.Display(dims=(310, 425), coords=coords, fonts=self.fonts, colors=colors, label='WORD LIST')
 
         self.deltas = DeltaSurf(self.fonts, colors)
+        self.gfx = GFXSurf(colors)
 
         self.menu_btns = [self.btn_clear_marked, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
         self.ui_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
@@ -111,6 +114,54 @@ class DeltaSurf:
                 window_surface.blit(d['surf'], dest=dest)
             else:
                 self.deltas.pop(i)
+
+class GFXSurf:
+    def __init__(self, colors):
+        self.colors = colors
+        self.gfx = []
+        self.interactive = False
+
+    def blit_gfx(self, window_surface):
+        for i, g in enumerate(self.gfx):
+            g['fade_counter'] -= 1
+            if g['fade_counter'] > 0:
+                g['surf'].set_alpha(g['fade_counter'])
+                dest = (g['offset_x'], g['offset_y'])
+                window_surface.blit(g['surf'], dest=dest)
+            else:
+                self.gfx.pop(i)
+
+    def draw_arcs(self, arc_sources):
+        for source in arc_sources:
+            arc_start = source[0]
+            arc_end = (100 + random.choice(range(100)), 136)
+            pts = [arc_start, arc_end]
+            left = min(pts[0][0], pts[1][0])
+            top = min(pts[0][1], pts[1][1])
+            width = (max(pts[0][0], pts[1][0]) - min(pts[0][0], pts[1][0])) * 2
+            height = (max(pts[0][1], pts[1][1]) - min(pts[0][1], pts[1][1])) * 2
+            if pts[0][0] < pts[1][0]:
+                start_angle = pi/2
+                stop_angle = pi
+            else:
+                left -= width / 2
+                start_angle = 0
+                stop_angle = pi/2
+            color = self.colors[source[1]]
+
+            surf = pygame.Surface((700, 700))
+            surf.fill(self.colors['transparent'])
+            surf.set_colorkey(self.colors['transparent'])
+            arc = {
+                'color': color,
+                'dims': surf.get_size(),
+                'fade_counter': 255 + random.choice(range(100)),
+                'offset_x': 0,
+                'offset_y': 0,
+                'surf': surf
+            }
+            pygame.draw.arc(surf, color, pygame.Rect(left, top, width, height), start_angle, stop_angle, width=3)
+            self.gfx.append(arc)
 
 def offset_from_element(element, corner, offset):
     point = [element.coords[i] + element.surf.get_size()[i] if corner[i] else element.coords[i] for i in range(len(corner))]

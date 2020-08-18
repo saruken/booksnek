@@ -3856,7 +3856,6 @@ attitudinize
 attitudinized
 attitudinizes
 attitudinizing
-attn
 attorney
 attorneys
 attract
@@ -34602,7 +34601,6 @@ inexpressive
 inextinguishable
 inextricable
 inextricably
-inf
 infallibility
 infallible
 infallibly
@@ -41725,6 +41723,7 @@ midrib
 midribs
 midriff
 midriffs
+mids
 midsection
 midsections
 midshipman
@@ -45762,7 +45761,6 @@ oceanology
 oceans
 ocelot
 ocelots
-och
 ocher
 ocker
 ockers
@@ -50718,6 +50716,10 @@ poetically
 poetics
 poetry
 poets
+pogo
+pogoed
+pogoing
+pogos
 pogrom
 pogroms
 poi
