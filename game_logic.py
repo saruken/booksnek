@@ -334,7 +334,18 @@ class Game:
 
     def reroll_snake_tiles(self):
         for tile in self.snake.tiles:
-            self.board.gfx.create_ghost(tile, self.colors['light_gray'])
+            if tile.tile_type == 'attack':
+                self.board.gfx.create_ghost(tile, self.colors['bg_attack'])
+            elif tile.tile_type == 'gold':
+                self.board.gfx.create_ghost(tile, self.colors['gold'])
+            elif tile.tile_type == 'heal':
+                self.board.gfx.create_ghost(tile, self.colors['teal'])
+            elif tile.tile_type == 'poison':
+                self.board.gfx.create_ghost(tile, self.colors['poison'])
+            elif tile.tile_type == 'silver':
+                self.board.gfx.create_ghost(tile, self.colors['silver'])
+            else:
+                self.board.gfx.create_ghost(tile, self.colors['light_gray'])
             tile.choose_letter()
             self.set_row(tile)
             # Push tiles with negative rows up off the top of the screen
