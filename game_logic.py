@@ -372,6 +372,7 @@ class Game:
         neighbors = [t for t in self.tiles if self.snake.is_neighbor(new_tile=t, old_tile=tile)]
         neighbors.pop(neighbors.index(tile))
         for tile in neighbors:
+            self.board.gfx.create_ghost(tile, self.colors['red'])
             tile.reset()
             self.set_row(tile)
             tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
