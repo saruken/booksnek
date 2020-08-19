@@ -108,15 +108,11 @@ if __name__ == '__main__':
     main()
 
     #TODO:
-        # GFX
-            # Fade out matched tiles
-                # Blit onto 2nd surface, let other tiles fall behind
-                # Color of "wireframe" fade dictated by cause (attack, match)
+        # Only run Tile.update() if there's something to update
         # Bonuses for making shapes with the tiles in a word would be neat
             # Could make a block/shape of tiles that need to be eliminated; if
             # you get them all you get a bonus, or else they turn to stone or
             # something.
-        # Tie animation speed to delta
         # Controller support!
 
     # Add

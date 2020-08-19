@@ -144,7 +144,6 @@ class Game:
         d.update()
 
     def check_dictionary(self):
-        return True # TODO: Remove, obviously
         return bool(self.snake.word.lower() in self.dictionary)
 
     def check_level_progress(self):
@@ -245,10 +244,6 @@ class Game:
                 self.clear_marked()
                 self.board.btn_clear_marked.update()
                 self.last_typed = ''
-            else:
-                # TODO: Remove
-                print('Reset worst FPS to 60')
-                self.board.gfx.slowest = 60
 
     def heal(self, tile):
         h = self.board.hp_display
@@ -345,7 +340,10 @@ class Game:
             elif tile.tile_type == 'silver':
                 self.board.gfx.create_ghost(tile, self.colors['silver'])
             else:
-                self.board.gfx.create_ghost(tile, self.colors['light_gray'])
+                if self.snake.word == self.bonus_word:
+                    self.board.gfx.create_ghost(tile, self.colors['progress'])
+                else:
+                    self.board.gfx.create_ghost(tile, self.colors['light_gray'])
             tile.choose_letter()
             self.set_row(tile)
             # Push tiles with negative rows up off the top of the screen

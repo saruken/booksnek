@@ -121,13 +121,9 @@ class GFXSurf:
         self.fps = 0
         self.gfx = []
         self.interactive = False
-        self.slowest = 60
 
     def blit_gfx(self, window_surface):
         step = (self.fps / 60)
-        if (step * 60) < self.slowest:
-            self.slowest = (step * 60)
-            print(f'new worst FPS: {self.slowest}')
 
         for g in self.gfx:
             g['fade_counter'] = max(0, g['fade_counter'] - g['fade_step'] * step)
