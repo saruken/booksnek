@@ -1,5 +1,5 @@
 import os, pygame
-from math import floor
+from math import floor, sqrt
 from numpy.random import choice
 
 class BaseObj:
@@ -205,10 +205,13 @@ class HPDisplay():
         self.fade_counter_speed = 1.2
         self.fonts = fonts
         self.hp = 1
+        self.hp_base = 108
+        self.hp_buff = 0
         self.hp_color = self.colors['hp_green']
         self.hp_displayed = 1
         self.hp_max = 1
         self.interactive = False
+        self.lv = 1
         self.surf = pygame.Surface(self.dims)
 
         self.bar_max_width = self.dims[0] - 4
@@ -218,6 +221,9 @@ class HPDisplay():
 
         self.level_up(lv=1)
         self.build_image()
+
+    def buff(self):
+        self.hp_buff += 10
 
     def build_image(self):
         if self.fade_counter:
@@ -241,6 +247,10 @@ class HPDisplay():
         pygame.draw.line(self.surf, self.bg_color, (14, 0), (label.get_size()[0] + 14 + 20, 0), width=2)
         self.surf.blit(label, (24, -2))
 
+    def calculate_hp_max(self):
+        self.hp_max = floor(((2 * self.hp_base + (self.hp_buff / 4)) * self.lv) / 100) + self.lv + 10
+        print(f'calculate_hp_max(): hp_max set to {self.hp_max}')
+
     def flash(self, color=None):
         if not self.fade_counter:
             self.fade_counter = 1
@@ -250,10 +260,10 @@ class HPDisplay():
             self.fade_color = self.colors['red']
 
     def level_up(self, lv):
-        base = 108
-        new_hp_max = floor((2 * base * lv) / 100) + lv + 10
-        delta = new_hp_max - self.hp_max
-        self.hp_max = new_hp_max
+        self.lv = lv
+        old_max = self.hp_max
+        self.calculate_hp_max()
+        delta = self.hp_max - old_max
         self.hp += delta
         self.hp_displayed += delta
         self.update()

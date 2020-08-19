@@ -54,7 +54,7 @@ class Game:
 
         self.new_game()
 
-    def activate_tile_effects(self):
+    def activate_tile_effects(self, old_bonus='____'):
         arc_sources = []
         hp_effect = 0
         h = self.board.hp_display
@@ -64,10 +64,15 @@ class Game:
                 amt = ceil(h.hp_max / 10)
                 self.board.deltas.add(amt)
                 hp_effect += amt
-                print(f'Healed {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
+                if self.try_heal():
+                    print(f'Healed {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
+                    h.hp = min(h.hp + amt, h.hp_max)
+                else:
+                    print('+HP growth!')
+                    h.buff()
 
         if self.snake.length:
-            self.reroll_snake_tiles()
+            self.reroll_snake_tiles(old_bonus)
 
         for tile in [t for t in self.tiles if t.tile_type == 'attack']:
             if tile.attack_tick():
@@ -95,6 +100,7 @@ class Game:
         elif hp_effect < 0:
             h.flash(color='red')
         new_hp = h.hp + hp_effect
+        print(f'new_hp={new_hp}; h.hp={h.hp}; hp_effect={hp_effect}')
         h.hp = max(0, min(new_hp, h.hp_max))
 
         if arc_sources:
@@ -245,13 +251,6 @@ class Game:
                 self.board.btn_clear_marked.update()
                 self.last_typed = ''
 
-    def heal(self, tile):
-        h = self.board.hp_display
-        amt = ceil(h.hp_max / 10)
-        self.board.deltas.add(amt)
-        h.hp = min(h.hp + amt, h.hp_max)
-        h.flash(color='green')
-
     def highlight_selected_tiles(self):
         for tile in [t for t in self.tiles if t.selected]:
             tile.unselect()
@@ -327,7 +326,7 @@ class Game:
         for t in self.tiles:
             t.reset()
 
-    def reroll_snake_tiles(self):
+    def reroll_snake_tiles(self, old_bonus):
         for tile in self.snake.tiles:
             if tile.tile_type == 'attack':
                 self.board.gfx.create_ghost(tile, self.colors['bg_attack'])
@@ -340,10 +339,11 @@ class Game:
             elif tile.tile_type == 'silver':
                 self.board.gfx.create_ghost(tile, self.colors['silver'])
             else:
-                if self.snake.word == self.bonus_word:
-                    self.board.gfx.create_ghost(tile, self.colors['progress'])
-                else:
-                    self.board.gfx.create_ghost(tile, self.colors['light_gray'])
+                self.board.gfx.create_ghost(tile, self.colors['light_gray'])
+            # Overwrite other colors if bonus word
+            if self.snake.word == old_bonus:
+                self.board.gfx.create_ghost(tile, self.colors['progress'])
+
             tile.choose_letter()
             self.set_row(tile)
             # Push tiles with negative rows up off the top of the screen
@@ -421,10 +421,9 @@ class Game:
                 atk.attack_timer = 5
             except IndexError: # No normal tiles on top row
                 pass
-        for tile in [t for t in self.tiles if t.tile_type not in ('attack', 'poison', 'stone')]:
+        for tile in [t for t in self.tiles if t.tile_type == 'normal']:
             tile.marked = False
             tile.choose_letter()
-            tile.tile_type = 'normal'
 
     def set_row(self, tile):
         tile.row = min([t.row for t in self.tiles if t.col == tile.col]) - 1
@@ -465,8 +464,8 @@ class Game:
                 self.add_tile(elem)
 
     def try_heal(self):
-        for tile in [t for t in self.snake.tiles if t.tile_type == 'heal']:
-            self.heal(tile)
+        h = self.board.hp_display
+        return bool(h.hp < h.hp_max)
 
     def try_mouse_over(self, elem):
         for el in [e for e in self.board.menu_btns + self.tiles if e.hovered]:
@@ -480,6 +479,7 @@ class Game:
         elif self.snake.length > 2:
             if self.check_dictionary():
                 print(f'Committed word "{self.snake.word}"')
+                old_bonus = self.bonus_word
                 self.paused = True
                 self.last_typed = ''
                 self.commit_word_to_history()
@@ -497,7 +497,7 @@ class Game:
                     self.check_update_best()
                     self.apply_level_progress(score)
                 self.update_history_display()
-                self.activate_tile_effects()
+                self.activate_tile_effects(old_bonus=old_bonus)
             else:
                 print(f'Word "{self.snake.word}" not in dictionary')
 
