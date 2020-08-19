@@ -66,7 +66,8 @@ class Game:
                 hp_effect += amt
                 print(f'Healed {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
 
-        self.reroll_snake_tiles()
+        if self.snake.length:
+            self.reroll_snake_tiles()
 
         for tile in [t for t in self.tiles if t.tile_type == 'attack']:
             if tile.attack_tick():
@@ -143,6 +144,7 @@ class Game:
         d.update()
 
     def check_dictionary(self):
+        return True # TODO: Remove, obviously
         return bool(self.snake.word.lower() in self.dictionary)
 
     def check_level_progress(self):
@@ -243,6 +245,10 @@ class Game:
                 self.clear_marked()
                 self.board.btn_clear_marked.update()
                 self.last_typed = ''
+            else:
+                # TODO: Remove
+                print('Reset worst FPS to 60')
+                self.board.gfx.slowest = 60
 
     def heal(self, tile):
         h = self.board.hp_display
@@ -250,7 +256,6 @@ class Game:
         self.board.deltas.add(amt)
         h.hp = min(h.hp + amt, h.hp_max)
         h.flash(color='green')
-        # TODO: Create arc from tile to HP display
 
     def highlight_selected_tiles(self):
         for tile in [t for t in self.tiles if t.selected]:

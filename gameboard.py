@@ -121,9 +121,13 @@ class GFXSurf:
         self.fps = 0
         self.gfx = []
         self.interactive = False
+        self.slowest = 60
 
     def blit_gfx(self, window_surface):
         step = (self.fps / 60)
+        if (step * 60) < self.slowest:
+            self.slowest = (step * 60)
+            print(f'new worst FPS: {self.slowest}')
 
         for g in self.gfx:
             g['fade_counter'] = max(0, g['fade_counter'] - g['fade_step'] * step)
@@ -141,17 +145,13 @@ class GFXSurf:
 
     def create_ghost(self, tile, ghost_color):
         surf = pygame.Surface(tile.dims)
-        surfarray = pygame.surfarray.array3d(tile.surf)
-        masked = surfarray.copy()
-        bg_color = [tile.bg_color.r, tile.bg_color.g, tile.bg_color.b]
-        ghost_color_array = [ghost_color.r, ghost_color.g, ghost_color.b]
-        for r, row in enumerate(masked):
-            for p, px in enumerate(row):
-                if (px == bg_color).all():
-                    masked[r][p] = [255, 0, 255] # Set px to purple
-                else:
-                    masked[r][p] = ghost_color_array
-        pygame.surfarray.blit_array(surf, masked)
+        surfarray = pygame.surfarray.array2d(tile.surf)
+        transparent_c = surf.map_rgb(pygame.Color('#ff00ff'))
+        wireframe = numpy.full_like(surfarray, transparent_c)
+        bg_c = surf.map_rgb(tile.bg_color)
+        wireframe_c = surf.map_rgb(ghost_color)
+        wireframe = numpy.array([[transparent_c if c == bg_c else wireframe_c for c in row] for row in surfarray])
+        pygame.surfarray.blit_array(surf, wireframe)
         surf.set_colorkey(self.colors['transparent'])
         ghost = {
             'fade_counter': 200 + random.choice(range(155)),
