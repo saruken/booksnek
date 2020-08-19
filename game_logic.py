@@ -59,7 +59,7 @@ class Game:
         hp_effect = 0
         h = self.board.hp_display
         for tile in self.snake.tiles:
-            if tile.tile_type == 'silver':
+            if tile.tile_type == 'heal':
                 arc_sources.append([tile.middle, 'teal'])
                 amt = ceil(h.hp_max / 10)
                 self.board.deltas.add(amt)
@@ -329,6 +329,7 @@ class Game:
 
     def reroll_snake_tiles(self):
         for tile in self.snake.tiles:
+            self.board.gfx.create_ghost(tile, self.colors['light_gray'])
             tile.choose_letter()
             self.set_row(tile)
             # Push tiles with negative rows up off the top of the screen
@@ -449,7 +450,7 @@ class Game:
                 self.add_tile(elem)
 
     def try_heal(self):
-        for tile in [t for t in self.snake.tiles if t.tile_type == 'silver']:
+        for tile in [t for t in self.snake.tiles if t.tile_type == 'heal']:
             self.heal(tile)
 
     def try_mouse_over(self, elem):

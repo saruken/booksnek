@@ -1,4 +1,4 @@
-import pygame, random
+import numpy, pygame, random
 from math import pi
 from time import sleep
 
@@ -118,18 +118,54 @@ class DeltaSurf:
 class GFXSurf:
     def __init__(self, colors):
         self.colors = colors
+        self.fps = 0
         self.gfx = []
         self.interactive = False
 
     def blit_gfx(self, window_surface):
-        for i, g in enumerate(self.gfx):
-            g['fade_counter'] -= 1
+        step = (self.fps / 60)
+
+        for g in self.gfx:
+            g['fade_counter'] = max(0, g['fade_counter'] - g['fade_step'] * step)
             if g['fade_counter'] > 0:
+                if g['rise']:
+                    g['vx'] += g['vx_accel']
+                    g['vy'] -= g['vy_accel']
+                    g['offset_x'] += g['vx'] * step
+                    g['offset_y'] += g['vy'] * step
                 g['surf'].set_alpha(g['fade_counter'])
                 dest = (g['offset_x'], g['offset_y'])
                 window_surface.blit(g['surf'], dest=dest)
-            else:
-                self.gfx.pop(i)
+        if not [g for g in self.gfx if g['fade_counter'] > 0]:
+            self.gfx = []
+
+    def create_ghost(self, tile, ghost_color):
+        surf = pygame.Surface(tile.dims)
+        surfarray = pygame.surfarray.array3d(tile.surf)
+        masked = surfarray.copy()
+        bg_color = [tile.bg_color.r, tile.bg_color.g, tile.bg_color.b]
+        ghost_color_array = [ghost_color.r, ghost_color.g, ghost_color.b]
+        for r, row in enumerate(masked):
+            for p, px in enumerate(row):
+                if (px == bg_color).all():
+                    masked[r][p] = [255, 0, 255] # Set px to purple
+                else:
+                    masked[r][p] = ghost_color_array
+        pygame.surfarray.blit_array(surf, masked)
+        surf.set_colorkey(self.colors['transparent'])
+        ghost = {
+            'fade_counter': 200 + random.choice(range(155)),
+            'fade_step': 3,
+            'offset_x': tile.coords[0],
+            'offset_y': tile.coords[1],
+            'rise': True,
+            'surf': surf,
+            'vx': 0,
+            'vx_accel': (random.choice(range(3)) - 1) / 100,
+            'vy': 0,
+            'vy_accel': 0.03 + ((random.choice(range(5)) - 2) / 100)
+        }
+        self.gfx.append(ghost)
 
     def draw_arcs(self, arc_sources):
         for source in arc_sources:
@@ -153,12 +189,16 @@ class GFXSurf:
             surf.fill(self.colors['transparent'])
             surf.set_colorkey(self.colors['transparent'])
             arc = {
-                'color': color,
-                'dims': surf.get_size(),
                 'fade_counter': 255 + random.choice(range(100)),
+                'fade_step': 2,
                 'offset_x': 0,
                 'offset_y': 0,
-                'surf': surf
+                'rise': False,
+                'surf': surf,
+                'vx': 0,
+                'vx_accel': 0,
+                'vy': 0,
+                'vy_accel': 0
             }
             pygame.draw.arc(surf, color, pygame.Rect(left, top, width, height), start_angle, stop_angle, width=3)
             self.gfx.append(arc)

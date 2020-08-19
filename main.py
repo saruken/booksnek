@@ -43,7 +43,8 @@ def main():
     is_running = True
 
     while is_running:
-        delta = clock.tick(60)/1000.0
+        clock.tick(60)
+        game.board.gfx.fps = clock.get_fps()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -107,8 +108,6 @@ if __name__ == '__main__':
     main()
 
     #TODO:
-        # New tiles
-            # Top-left icons for tile types
         # GFX
             # Fade out matched tiles
                 # Blit onto 2nd surface, let other tiles fall behind

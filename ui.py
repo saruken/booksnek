@@ -370,29 +370,29 @@ class Tile():
         return False
 
     def build_image(self):
-        bg_color = self.colors[f'bg_{self.tile_type}{"_selected" if self.selected else ""}']
+        self.bg_color = self.colors[f'bg_{self.tile_type}{"_selected" if self.selected else ""}']
         self.surf.fill(self.border_color)
-        pygame.draw.rect(self.surf, bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
+        pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
 
         if self.tile_type == 'stone':
             surf = pygame.Surface((self.dims[0] - 4, self.dims[1] - 4))
-            surf.fill(bg_color)
+            surf.fill(self.bg_color)
             offset = (2, 2)
         else:
             # Render point value
-            surf_pts = self.fonts['small'].render(str(format_num(self.point_value)), True, self.text_color, bg_color)
+            surf_pts = self.fonts['small'].render(str(format_num(self.point_value)), True, self.text_color, self.bg_color)
             # Align bottom/right
             pts_offset = tuple([self.surf.get_size()[i] - surf_pts.get_size()[i] - 3 for i in range(2)])
             self.surf.blit(surf_pts, dest=pts_offset)
             # Render letter
-            surf = self.fonts['large'].render(self.letter, True, self.text_color, bg_color)
+            surf = self.fonts['large'].render(self.letter, True, self.text_color, self.bg_color)
             # Horiz/vert align center
             offset = [floor((self.surf.get_size()[i]) - surf.get_size()[i]) / 2 for i in range(2)]
             # Bump (-1px, -4px); convert offset
             offset = tuple([offset[0], offset[1] - 4])
             # Countdown timer
             if self.tile_type == 'attack':
-                surf_timer = self.fonts['small'].render(str(self.attack_timer), True, self.colors['black'], bg_color)
+                surf_timer = self.fonts['small'].render(str(self.attack_timer), True, self.colors['black'], self.bg_color)
                 # Align bottom/left
                 timer_offset = (3, self.dims[1] - surf_timer.get_size()[1] - 3)
                 self.surf.blit(surf_timer, dest=timer_offset)
