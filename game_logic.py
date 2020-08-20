@@ -60,21 +60,25 @@ class Game:
         h = self.board.hp_display
 
         for tile in [t for t in self.tiles if t.tile_type == 'attack']:
-            if tile.attack_tick():
-                amt = ceil(self.board.hp_display.hp_max / 8) * -1
-                arc_sources.append([tile.middle, 'bg_attack', amt])
-                hp_effect += amt
-                print(f'Damaged {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
-                self.reroll_tiles(tile=tile)
+            # Don't tick tiles that are part of the just-submitted word
+            if not tile in self.snake.tiles:
+                if tile.attack_tick():
+                    amt = ceil(self.board.hp_display.hp_max / 8) * -1
+                    arc_sources.append([tile.middle, 'bg_attack', amt])
+                    hp_effect += amt
+                    print(f'Damaged {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
+                    self.reroll_tiles(tile=tile)
 
         for tile in [t for t in self.tiles if t.tile_type == 'poison']:
-            if tile.first_turn:         # Prevent poison tiles from dealing
-                tile.first_turn = False # damage the turn they come into play
-            else:
-                amt = ceil(h.hp_max / 16) * -1
-                arc_sources.append([tile.middle, 'bg_poison', amt])
-                hp_effect += amt
-                print(f'Poisoned {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
+            # Don't activate tiles that are part of the just-submitted word
+            if not tile in self.snake.tiles:
+                if tile.first_turn:         # Prevent poison tiles from dealing
+                    tile.first_turn = False # damage the turn they come into play
+                else:
+                    amt = ceil(h.hp_max / 16) * -1
+                    arc_sources.append([tile.middle, 'bg_poison', amt])
+                    hp_effect += amt
+                    print(f'Poisoned {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
 
         for tile in [t for t in self.snake.tiles if t.tile_type == 'heal']:
             if self.try_heal():
