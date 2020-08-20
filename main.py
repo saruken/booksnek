@@ -26,7 +26,7 @@ def load_dictionary():
 def main():
     dims = (676, 608)
     pygame.init()
-    pygame.display.set_caption('Booksnake')
+    pygame.display.set_caption('Booksnek')
     window_surface = pygame.display.set_mode(dims)
     game = game_logic.Game(dims=dims, dictionary=load_dictionary())
 
@@ -93,28 +93,26 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if not game.paused:
                     last_typed = game.highlight_tiles_from_letter(event.key, game.last_typed)
-            # game.update_tiles()
             game.update_btn_clear_marked()
         game.animate()
         window_surface.blit(game.board.background, (0, 0))
         for element in game.ui_elements:
             window_surface.blit(element.surf, element.coords)
         game.board.gfx.blit_gfx(window_surface)
-        game.board.deltas.blit_deltas(window_surface)
         pygame.display.update()
 
 if __name__ == '__main__':
-
     main()
 
     #TODO:
-        # Bonuses for making shapes with the tiles in a word would be neat
+        # "+HP growth!" delta for heal when hp=max
+        # Achievements for making shapes with the tiles in a word would be neat
             # Could make a block/shape of tiles that need to be eliminated; if
             # you get them all you get a bonus, or else they turn to stone or
             # something.
         # Controller support!
 
-    # Add
+    # Add words from dict
         #
-    # Remove
+    # Remove words from dict
         #

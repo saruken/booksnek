@@ -58,11 +58,28 @@ class Game:
         arc_sources = []
         hp_effect = 0
         h = self.board.hp_display
+
+        for tile in [t for t in self.tiles if t.tile_type == 'attack']:
+            if tile.attack_tick():
+                amt = ceil(self.board.hp_display.hp_max / 8) * -1
+                arc_sources.append([tile.middle, 'bg_attack', amt])
+                hp_effect += amt
+                print(f'Damaged {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
+                self.reroll_tiles(tile=tile)
+
+        for tile in [t for t in self.tiles if t.tile_type == 'poison']:
+            if tile.first_turn:         # Prevent poison tiles from dealing
+                tile.first_turn = False # damage the turn they come into play
+            else:
+                amt = ceil(h.hp_max / 16) * -1
+                arc_sources.append([tile.middle, 'bg_poison', amt])
+                hp_effect += amt
+                print(f'Poisoned {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
+
         for tile in self.snake.tiles:
             if tile.tile_type == 'heal':
-                arc_sources.append([tile.middle, 'teal'])
                 amt = ceil(h.hp_max / 10)
-                self.board.deltas.add(amt)
+                arc_sources.append([tile.middle, 'teal', amt])
                 hp_effect += amt
                 if self.try_heal():
                     print(f'Healed {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
@@ -74,25 +91,6 @@ class Game:
         if self.snake.length:
             self.reroll_snake_tiles(old_bonus)
 
-        for tile in [t for t in self.tiles if t.tile_type == 'attack']:
-            if tile.attack_tick():
-                arc_sources.append([tile.middle, 'bg_attack'])
-                amt = ceil(self.board.hp_display.hp_max / 8) * -1
-                hp_effect += amt
-                print(f'Damaged {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
-                self.board.deltas.add(amt)
-                self.reroll_tiles(tile=tile)
-
-        for tile in [t for t in self.tiles if t.tile_type == 'poison']:
-            if tile.first_turn:         # Prevent poison tiles from dealing
-                tile.first_turn = False # damage the turn they come into play
-            else:
-                arc_sources.append([tile.middle, 'bg_poison'])
-                amt = ceil(h.hp_max / 16) * -1
-                hp_effect += amt
-                print(f'Poisoned {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
-                self.board.deltas.add(amt)
-
         self.update_tile_rows()
 
         if hp_effect > 0:
@@ -103,7 +101,7 @@ class Game:
         h.hp = max(0, min(new_hp, h.hp_max))
 
         if arc_sources:
-            self.board.gfx.draw_arcs(arc_sources) # Move up before reroll
+            self.board.gfx.draw_arcs(arc_sources)
 
     def add_tile(self, tile):
         self.snake.add(tile)

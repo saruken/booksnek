@@ -12669,6 +12669,9 @@ colossus
 colostomies
 colostomy
 colostrum
+colour
+colouring
+colours
 cols
 colt
 coltish

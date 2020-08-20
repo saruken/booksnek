@@ -376,7 +376,9 @@ class Tile():
                 self.tile_type = 'stone'
                 self.letter = '__'
                 self.marked = False
+                self.update()
                 return True
+        self.update()
         return False
 
     def build_image(self):

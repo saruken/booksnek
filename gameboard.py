@@ -45,8 +45,7 @@ class Board():
         coords = offset_from_element(self.best_display, corner=(0, 1), offset=(0, 4))
         self.history_display = ui.Display(dims=(310, 425), coords=coords, fonts=self.fonts, colors=colors, label='WORD LIST')
 
-        self.deltas = DeltaSurf(self.fonts, colors)
-        self.gfx = GFXSurf(colors)
+        self.gfx = GFXSurf(self.fonts, colors)
 
         self.menu_btns = [self.btn_clear_marked, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
         self.ui_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
@@ -76,48 +75,10 @@ class Board():
         else:
             return 10
 
-class DeltaSurf:
+class GFXSurf:
     def __init__(self, fonts, colors):
         self.colors = colors
-        self.coords = (30, 150)
-        self.deltas = []
         self.fonts = fonts
-        self.interactive = False
-
-    def add(self, amt):
-        if amt < 0:
-            color = self.colors['red']
-            prefix = ''
-        else:
-            color = self.colors['green']
-            prefix = '+'
-        surf = self.fonts['large'].render(prefix + str(amt), True, color)
-        offset_x = random.choice(range(250))
-        offset_y = 0
-        delta = {
-            'color': color,
-            'dims': surf.get_size(),
-            'fade_counter': 255 + random.choice(range(100)),
-            'offset_x': offset_x,
-            'offset_y': offset_y,
-            'surf': surf
-        }
-        self.deltas.append(delta)
-
-    def blit_deltas(self, window_surface):
-        for i, d in enumerate(self.deltas):
-            d['fade_counter'] -= 1
-            if d['fade_counter'] > 0:
-                d['offset_y'] -= 20 / d['fade_counter']
-                d['surf'].set_alpha(d['fade_counter'])
-                dest = (self.coords[0] + d['offset_x'], self.coords[1] - d['dims'][1] + d['offset_y'])
-                window_surface.blit(d['surf'], dest=dest)
-            else:
-                self.deltas.pop(i)
-
-class GFXSurf:
-    def __init__(self, colors):
-        self.colors = colors
         self.fps = 0
         self.gfx = []
         self.interactive = False
@@ -138,6 +99,35 @@ class GFXSurf:
                 window_surface.blit(g['surf'], dest=dest)
         if not [g for g in self.gfx if g['fade_counter'] > 0]:
             self.gfx = []
+
+    def create_delta(self, amt, offset_x):
+        if type(amt) == str:
+            color = self.colors['green']
+            prefix = '+'
+        else:
+            if amt < 0:
+                color = self.colors['red']
+                prefix = ''
+            else:
+                color = self.colors['green']
+                prefix = '+'
+        surf = self.fonts['large'].render(prefix + str(amt), True, color)
+        delta = {
+            'color': color,
+            'dims': surf.get_size(),
+            'fade_counter': 255 + random.choice(range(50)),
+            'fade_step': 2,
+            'offset_x': offset_x,
+            'offset_y': 150 - surf.get_size()[1],
+            'rise': True,
+            'surf': surf,
+            'vx': 0,
+            'vx_accel': 0,
+            'vy': 0,
+            'vy_accel': 0.003
+        }
+
+        self.gfx.append(delta)
 
     def create_ghost(self, tile, ghost_color):
         surf = pygame.Surface(tile.dims)
@@ -165,6 +155,7 @@ class GFXSurf:
 
     def draw_arcs(self, arc_sources):
         for source in arc_sources:
+            print(f'arc_source: {source}')
             arc_start = source[0]
             arc_end = (100 + random.choice(range(100)), 136)
             pts = [arc_start, arc_end]
@@ -198,6 +189,8 @@ class GFXSurf:
             }
             pygame.draw.arc(surf, color, pygame.Rect(left, top, width, height), start_angle, stop_angle, width=3)
             self.gfx.append(arc)
+
+            self.create_delta(amt=source[2], offset_x=arc_end[0])
 
 def offset_from_element(element, corner, offset):
     point = [element.coords[i] + element.surf.get_size()[i] if corner[i] else element.coords[i] for i in range(len(corner))]
