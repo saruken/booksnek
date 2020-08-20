@@ -63,10 +63,10 @@ class Game:
             # Don't tick tiles that are part of the just-submitted word
             if not tile in self.snake.tiles:
                 if tile.attack_tick():
-                    amt = ceil(self.board.hp_display.hp_max / 8) * -1
+                    amt = ceil(h.hp_max / 8) * -1
                     arc_sources.append([tile.middle, 'bg_attack', amt])
                     hp_effect += amt
-                    print(f'Damaged {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
+                    print(f'Damaged {amt} from c{tile.col}r{tile.row} "{tile.letter}". Net HP effect this turn is {hp_effect}.')
                     self.reroll_tiles(tile=tile)
 
         for tile in [t for t in self.tiles if t.tile_type == 'poison']:
@@ -75,15 +75,14 @@ class Game:
                 amt = ceil(h.hp_max / 16) * -1
                 arc_sources.append([tile.middle, 'bg_poison', amt])
                 hp_effect += amt
-                print(f'Poisoned {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
+                print(f'Poisoned {amt} from c{tile.col}r{tile.row} "{tile.letter}". Net HP effect this turn is {hp_effect}.')
 
         for tile in [t for t in self.snake.tiles if t.tile_type == 'heal']:
             if self.try_heal():
                 amt = ceil(h.hp_max / 10)
                 arc_sources.append([tile.middle, 'teal', amt])
                 hp_effect += amt
-                print(f'Healed {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
-                h.hp = min(h.hp + amt, h.hp_max)
+                print(f'Healed {amt} from c{tile.col}r{tile.row} "{tile.letter}". Net HP effect this turn is {hp_effect}.')
             else:
                 arc_sources.append([tile.middle, 'teal', 'HP BASE'])
                 print(f'Added 10 to base HP stat from c{tile.col}r{tile.row} "{tile.letter}"')
@@ -99,7 +98,9 @@ class Game:
         elif hp_effect < 0:
             h.flash(color='red')
         new_hp = h.hp + hp_effect
+        print(f'h.hp={h.hp}, hp_effect={hp_effect}, new_hp={new_hp}, h.hp_max={h.hp_max}')
         h.hp = max(0, min(new_hp, h.hp_max))
+        print(f'HP set to {h.hp}')
 
         if arc_sources:
             self.board.gfx.draw_arcs(arc_sources)
@@ -148,6 +149,7 @@ class Game:
         d.update()
 
     def check_dictionary(self):
+        return True # TODO: Remove
         return bool(self.snake.word.lower() in self.dictionary)
 
     def check_level_progress(self):

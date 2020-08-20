@@ -265,6 +265,7 @@ class HPDisplay():
         self.calculate_hp_max()
         delta = self.hp_max - old_max
         self.hp += delta
+        print(f'+{delta} to max HP ({self.hp_max}) and current HP ({self.hp})')
         self.hp_displayed += delta
         self.update()
 

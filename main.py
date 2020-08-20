@@ -106,13 +106,8 @@ if __name__ == '__main__':
 
     #TODO:
         # Make atk tiles flash on (1)
-        # Possible bug:
-            # Set up
-                # Heal tile in snake
-                # HP + heal < max
-                # Score from word will advance beyond next level
-            # Result
-                # Seems like the HP delta boost from levelling is healing more than it should in this case?
+        # Bugs:
+            # Clicking on icon doesn't highlight tile
         # Achievements for making shapes with tiles
         # Controller support!
 
