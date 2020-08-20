@@ -106,8 +106,6 @@ if __name__ == '__main__':
 
     #TODO:
         # Make atk tiles flash on (1)
-        # Bugs:
-            # Clicking on icon doesn't highlight tile
         # Achievements for making shapes with tiles
         # Controller support!
 
