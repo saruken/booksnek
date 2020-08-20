@@ -1,5 +1,5 @@
 import os, pygame
-from math import floor, sqrt
+from math import ceil, floor, sqrt
 from numpy.random import choice
 
 class BaseObj:
@@ -223,7 +223,8 @@ class HPDisplay():
         self.build_image()
 
     def buff(self):
-        self.hp_buff += 10
+        self.hp_buff += ceil(self.lv / 10)
+        self.calculate_hp_max()
 
     def build_image(self):
         if self.fade_counter:
@@ -248,7 +249,8 @@ class HPDisplay():
         self.surf.blit(label, (24, -2))
 
     def calculate_hp_max(self):
-        self.hp_max = floor(((2 * self.hp_base + (self.hp_buff / 4)) * self.lv) / 100) + self.lv + 10
+        self.hp_max = floor(((2 * self.hp_base) * self.lv) / 100) + self.lv + self.hp_buff + 10
+        self.update()
         print(f'calculate_hp_max(): hp_max set to {self.hp_max}')
 
     def flash(self, color=None):
