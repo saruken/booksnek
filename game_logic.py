@@ -72,13 +72,10 @@ class Game:
         for tile in [t for t in self.tiles if t.tile_type == 'poison']:
             # Don't activate tiles that are part of the just-submitted word
             if not tile in self.snake.tiles:
-                if tile.first_turn:         # Prevent poison tiles from dealing
-                    tile.first_turn = False # damage the turn they come into play
-                else:
-                    amt = ceil(h.hp_max / 16) * -1
-                    arc_sources.append([tile.middle, 'bg_poison', amt])
-                    hp_effect += amt
-                    print(f'Poisoned {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
+                amt = ceil(h.hp_max / 16) * -1
+                arc_sources.append([tile.middle, 'bg_poison', amt])
+                hp_effect += amt
+                print(f'Poisoned {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
 
         for tile in [t for t in self.snake.tiles if t.tile_type == 'heal']:
             if self.try_heal():
@@ -297,6 +294,7 @@ class Game:
         self.multiplier += 1
         self.bonus_counter += 1
         self.board.multiplier_display.flash()
+        self.update_tiles()
 
     def new_game(self):
         self.bonus_counter = 3

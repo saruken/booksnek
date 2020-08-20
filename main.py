@@ -105,10 +105,15 @@ if __name__ == '__main__':
     main()
 
     #TODO:
-        # Achievements for making shapes with the tiles in a word would be neat
-            # Could make a block/shape of tiles that need to be eliminated; if
-            # you get them all you get a bonus, or else they turn to stone or
-            # something.
+        # Make atk tiles flash on (1)
+        # Possible bug:
+            # Set up
+                # Heal tile in snake
+                # HP + heal < max
+                # Score from word will advance beyond next level
+            # Result
+                # Seems like the HP delta boost from levelling is healing more than it should in this case?
+        # Achievements for making shapes with tiles
         # Controller support!
 
     # Add words from dict
