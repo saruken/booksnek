@@ -76,17 +76,17 @@ class Game:
                 hp_effect += amt
                 print(f'Poisoned {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
 
-        for tile in self.snake.tiles:
-            if tile.tile_type == 'heal':
+        for tile in [t for t in self.snake.tiles if t.tile_type == 'heal']:
+            if self.try_heal():
                 amt = ceil(h.hp_max / 10)
                 arc_sources.append([tile.middle, 'teal', amt])
                 hp_effect += amt
-                if self.try_heal():
-                    print(f'Healed {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
-                    h.hp = min(h.hp + amt, h.hp_max)
-                else:
-                    print('+HP growth!')
-                    h.buff()
+                print(f'Healed {amt} from c{tile.col}r{tile.row} "{tile.letter}"')
+                h.hp = min(h.hp + amt, h.hp_max)
+            else:
+                arc_sources.append([tile.middle, 'teal', 'HP BASE'])
+                print(f'Added 10 to base HP stat from c{tile.col}r{tile.row} "{tile.letter}"')
+                h.buff()
 
         if self.snake.length:
             self.reroll_snake_tiles(old_bonus)
@@ -147,6 +147,7 @@ class Game:
         d.update()
 
     def check_dictionary(self):
+        return True # TODO: Remove
         return bool(self.snake.word.lower() in self.dictionary)
 
     def check_level_progress(self):

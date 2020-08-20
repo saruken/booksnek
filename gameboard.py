@@ -1,4 +1,4 @@
-import numpy, pygame, random
+import numpy, os, pygame, random
 from math import pi
 from time import sleep
 
@@ -102,8 +102,9 @@ class GFXSurf:
 
     def create_delta(self, amt, offset_x):
         if type(amt) == str:
-            color = self.colors['green']
+            color = self.colors['gold']
             prefix = '+'
+            surf = self.fonts['medium'].render(prefix + amt, True, color)
         else:
             if amt < 0:
                 color = self.colors['red']
@@ -111,14 +112,13 @@ class GFXSurf:
             else:
                 color = self.colors['green']
                 prefix = '+'
-        surf = self.fonts['large'].render(prefix + str(amt), True, color)
+            surf = self.fonts['large'].render(prefix + str(amt), True, color)
         delta = {
-            'color': color,
             'dims': surf.get_size(),
             'fade_counter': 255 + random.choice(range(50)),
             'fade_step': 2,
-            'offset_x': offset_x,
-            'offset_y': 150 - surf.get_size()[1],
+            'offset_x': offset_x - (surf.get_size()[0] / 2),
+            'offset_y': 130 - surf.get_size()[1],
             'rise': True,
             'surf': surf,
             'vx': 0,
@@ -155,7 +155,6 @@ class GFXSurf:
 
     def draw_arcs(self, arc_sources):
         for source in arc_sources:
-            print(f'arc_source: {source}')
             arc_start = source[0]
             arc_end = (100 + random.choice(range(100)), 136)
             pts = [arc_start, arc_end]
