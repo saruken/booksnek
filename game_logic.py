@@ -147,7 +147,6 @@ class Game:
         d.update()
 
     def check_dictionary(self):
-        return True # TODO: Remove
         return bool(self.snake.word.lower() in self.dictionary)
 
     def check_level_progress(self):

@@ -105,7 +105,6 @@ if __name__ == '__main__':
     main()
 
     #TODO:
-        # "+HP growth!" delta for heal when hp=max
         # Achievements for making shapes with the tiles in a word would be neat
             # Could make a block/shape of tiles that need to be eliminated; if
             # you get them all you get a bonus, or else they turn to stone or
