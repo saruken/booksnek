@@ -458,13 +458,16 @@ class Tile():
     def mouse_out(self):
         self.hovered = False
         self.border_color = self.colors['light_gray']
+        self.update()
 
     def mouse_over(self):
         self.hovered = True
         self.border_color = self.colors['gold']
+        self.update()
 
     def select(self):
         self.selected = True
+        self.update()
 
     def set_coords(self, dy=0):
         x = self.offset[0] + (self.dims[0] * self.col)
@@ -480,6 +483,7 @@ class Tile():
 
     def unselect(self):
         self.selected = False
+        self.update()
 
     def reset(self):
         self.attack_timer = 5
@@ -491,6 +495,7 @@ class Tile():
         self.choose_letter()
         self.update_point_value()
         self.set_text_color()
+        self.update()
 
     def set_target(self, from_row_col=False):
         if from_row_col:
@@ -509,10 +514,13 @@ class Tile():
 
     def toggle_mark(self):
         self.marked = not self.marked
+        self.update()
 
-    def update(self, level, multiplier):
-        self.level = level
-        self.multiplier = multiplier
+    def update(self, level=None, multiplier=None):
+        if level:
+            self.level = level
+        if multiplier:
+            self.multiplier = multiplier
 
         self.update_point_value()
         self.set_text_color()

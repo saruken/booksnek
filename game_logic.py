@@ -100,7 +100,6 @@ class Game:
         elif hp_effect < 0:
             h.flash(color='red')
         new_hp = h.hp + hp_effect
-        print(f'new_hp={new_hp}; h.hp={h.hp}; hp_effect={hp_effect}')
         h.hp = max(0, min(new_hp, h.hp_max))
 
         if arc_sources:
@@ -342,7 +341,7 @@ class Game:
                 self.board.gfx.create_ghost(tile, self.colors['light_gray'])
             # Overwrite other colors if bonus word
             if self.snake.word == old_bonus:
-                self.board.gfx.create_ghost(tile, self.colors['progress'])
+                self.board.gfx.create_ghost(tile, self.colors['green'])
 
             tile.choose_letter()
             self.set_row(tile)
@@ -379,7 +378,7 @@ class Game:
         for i, tile in enumerate(self.snake.tiles):
             tile.marked = False
             tile.tile_type = tile_type if i == special_index else 'normal'
-            tile.attack_timer = 5
+            self.set_attack_timer(tile)
             tile.first_turn = True
 
     def reroll_tiles(self, tile):
@@ -418,12 +417,26 @@ class Game:
             try:
                 atk = random.choice([t for t in self.tiles if (t.row == 0 and t.tile_type == 'normal')])
                 atk.tile_type = 'attack'
-                atk.attack_timer = 5
+                self.set_attack_timer(atk)
             except IndexError: # No normal tiles on top row
                 pass
         for tile in [t for t in self.tiles if t.tile_type == 'normal']:
             tile.marked = False
             tile.choose_letter()
+
+        self.update_tiles()
+
+    def set_attack_timer(self, tile):
+        if tile.tile_type == 'attack':
+            letter_value = self.board.lookup_letter_value(tile.letter)
+            if letter_value < 3:
+                tile.attack_timer = 3
+            elif letter_value < 8:
+                tile.attack_timer = 4
+            else:
+                tile.attack_timer = 5
+        else:
+            tile.attack_timer = 5
 
     def set_row(self, tile):
         tile.row = min([t.row for t in self.tiles if t.col == tile.col]) - 1

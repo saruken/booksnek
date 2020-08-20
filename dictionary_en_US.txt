@@ -21319,8 +21319,6 @@ dystonia
 dystopi
 dystopia
 dystopian
-eBay
-eMusic
 each
 eager
 eagerer
@@ -33122,11 +33120,6 @@ hysteric
 hysterical
 hysterically
 hysterics
-iOS
-iPad
-iPhone
-iPod
-iTunes
 iamb
 iambi
 iambic
@@ -53653,7 +53646,6 @@ python
 pythons
 pyx
 pyxes
-pzazz
 qua
 quack
 quacked
@@ -70557,8 +70549,11 @@ tramway
 tramways
 trance
 trances
+tranch
 tranche
+tranched
 tranches
+tranching
 tranquil
 tranquiler
 tranquilest
@@ -71850,6 +71845,8 @@ tyrannous
 tyranny
 tyrant
 tyrants
+tyre
+tyres
 tyro
 tyros
 tzatziki
@@ -77534,7 +77531,6 @@ yucky
 yuk
 yukked
 yukking
-yukky
 yuks
 yule
 yuletide

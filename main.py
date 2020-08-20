@@ -93,7 +93,7 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if not game.paused:
                     last_typed = game.highlight_tiles_from_letter(event.key, game.last_typed)
-            game.update_tiles()
+            # game.update_tiles()
             game.update_btn_clear_marked()
         game.animate()
         window_surface.blit(game.board.background, (0, 0))
@@ -108,7 +108,6 @@ if __name__ == '__main__':
     main()
 
     #TODO:
-        # Only run Tile.update() if there's something to update
         # Bonuses for making shapes with the tiles in a word would be neat
             # Could make a block/shape of tiles that need to be eliminated; if
             # you get them all you get a bonus, or else they turn to stone or
@@ -116,6 +115,6 @@ if __name__ == '__main__':
         # Controller support!
 
     # Add
-        # tyre/s
+        #
     # Remove
         #
