@@ -21709,6 +21709,8 @@ eggcups
 egged
 egghead
 eggheads
+eggier
+eggiest
 egging
 eggnog
 eggplant
@@ -21716,6 +21718,7 @@ eggplants
 eggs
 eggshell
 eggshells
+eggy
 eglantine
 eglantines
 ego
