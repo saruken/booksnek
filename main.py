@@ -109,7 +109,7 @@ if __name__ == '__main__':
         # Achievements for making shapes with tiles
         # Controller support!
 
-    # Add words from dict
+    # Add words to dict
         #
     # Remove words from dict
         #

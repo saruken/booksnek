@@ -38940,7 +38940,6 @@ lipstick
 lipsticked
 lipsticking
 lipsticks
-liq
 liquefaction
 liquefied
 liquefies
@@ -50032,6 +50031,7 @@ pinny
 pinochle
 pinon
 pinons
+pinot
 pinpoint
 pinpointed
 pinpointing
@@ -50516,6 +50516,7 @@ pliancy
 pliant
 pliantly
 plied
+plier
 pliers
 plies
 plight
