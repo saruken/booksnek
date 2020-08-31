@@ -340,6 +340,10 @@ class Tile():
     def __init__(self, fonts,  colors, col, row, offset):
         self.ay = 0
         self.attack_timer = 5
+        self.beacon = False
+        self.beacon_counter = 0
+        self.beacon_counter_dir = 1
+        self.beacon_fade_speed = 3
         self.col = col
         self.colors = colors
         self.dims = (48, 48)
@@ -370,12 +374,24 @@ class Tile():
         self.set_text_color()
         self.load_images()
 
+    def animate_beacon(self):
+        self.beacon = True
+        self.beacon_counter += self.beacon_fade_speed * self.beacon_counter_dir
+        if self.beacon_counter > 100 or self.beacon_counter < 0:
+            # Clamp values for lerp
+            self.beacon_counter = min(max(self.beacon_counter, 0), 100)
+            self.beacon_counter_dir *= -1
+        self.bg_color = self.colors['beacon_red'].lerp(self.colors['bg_attack'], self.beacon_counter / 100.0)
+
+        self.build_image()
+
     def attack_tick(self):
         self.attack_timer -= 1
         if self.first_turn:
             self.first_turn = False
         else:
             if self.attack_timer == 0:
+                self.beacon = False
                 self.tile_type = 'stone'
                 self.letter = '__'
                 self.marked = False
@@ -385,7 +401,8 @@ class Tile():
         return False
 
     def build_image(self):
-        self.bg_color = self.colors[f'bg_{self.tile_type}{"_selected" if self.selected else ""}']
+        if not self.beacon:
+            self.bg_color = self.colors[f'bg_{self.tile_type}{"_selected" if self.selected else ""}']
         self.surf.fill(self.border_color)
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
 

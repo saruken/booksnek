@@ -106,8 +106,13 @@ if __name__ == '__main__':
 
     #TODO:
         # Make atk tiles flash on (1)
+        # Make "Game Over" mean something
+        # Load & auto-check for previous scores
+        # Save game state
+        # Save high scores
+        # Tutorial cards with skip
         # Achievements for making shapes with tiles
-        # Controller support!
+        # SFX
 
     # Add words to dict
         #

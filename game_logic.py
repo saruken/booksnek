@@ -26,6 +26,7 @@ class Game:
             'bg_silver': pygame.Color('#9eadad'),
             'bg_silver_selected': pygame.Color('#d5e7e8'),
             'bg_stone': pygame.Color('#5f666b'),
+            'beacon_red': pygame.Color('#ab2200'),
             'black': pygame.Color('#000000'),
             'border_gold': pygame.Color('#d4c413'),
             'dark_gray': pygame.Color('#202d36'),
@@ -59,6 +60,7 @@ class Game:
         hp_effect = 0
         h = self.board.hp_display
 
+        # Attack tiles
         for tile in [t for t in self.tiles if t.tile_type == 'attack']:
             # Don't tick tiles that are part of the just-submitted word
             if not tile in self.snake.tiles:
@@ -69,6 +71,7 @@ class Game:
                     print(f'Damaged {amt} from c{tile.col}r{tile.row} "{tile.letter}". Net HP effect this turn is {hp_effect}.')
                     self.reroll_tiles(tile=tile)
 
+        # Poison tiles
         for tile in [t for t in self.tiles if t.tile_type == 'poison']:
             # Don't activate tiles that are part of the just-submitted word
             if not tile in self.snake.tiles:
@@ -77,6 +80,7 @@ class Game:
                 hp_effect += amt
                 print(f'Poisoned {amt} from c{tile.col}r{tile.row} "{tile.letter}". Net HP effect this turn is {hp_effect}.')
 
+        # Heal tiles
         for tile in [t for t in self.snake.tiles if t.tile_type == 'heal']:
             if self.try_heal():
                 amt = ceil(h.hp_max / 10)
@@ -117,6 +121,9 @@ class Game:
                 t.ay = 0
         if not to_animate:
             self.paused = False
+
+        for tile in [t for t in self.tiles if t.attack_timer == 1]:
+            tile.animate_beacon()
 
         d = self.board.level_display
         if d.progress > d.progress_actual:
@@ -222,6 +229,7 @@ class Game:
     def empty_snake(self):
         for tile in [t for t in self.snake.tiles]:
             tile.unselect()
+            tile.beacon = False
         self.snake.tiles = []
         self.snake.update()
 
@@ -281,6 +289,7 @@ class Game:
         d.progress_actual -= d.progress_max
         d.progress_max += self.level * d.progress_lv_increment
         self.level += 1
+        print(f'Level up: Lv{self.level}')
         d.flash()
         d.update(self.level)
         self.board.hp_display.level_up(self.level)
