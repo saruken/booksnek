@@ -52,7 +52,7 @@ class Game:
         self.snake = tile_snake.Snake()
         tile_offset = gameboard.offset_from_element(self.board.level_display, corner=(0, 1), offset=(0, 10))
         self.tiles = self.board.create_tiles(self.colors, offset=tile_offset)
-        self.board.ui_elements = self.tiles + self.board.game_elements + self.board.splash_elements
+        self.board.ui_elements = self.board.splash_elements
 
         self.new_game()
 
@@ -265,6 +265,11 @@ class Game:
             self.new_game()
         elif elem.name == 'splash tutorial':
             self.board.create_tutorial()
+            self.board.ui_elements = self.board.splash_elements
+        elif elem.name == 'tutorial next':
+            self.board.advance_tutorial()
+        elif elem.name == 'tutorial done':
+            self.board.create_splash_menu()
             self.board.ui_elements = self.board.splash_elements
 
     def highlight_selected_tiles(self):

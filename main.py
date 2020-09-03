@@ -123,8 +123,7 @@ if __name__ == '__main__':
         # Load & auto-check for previous scores
         # Save game state
         # Save high scores
-        # Tutorial cards with skip
-        # Achievements for making shapes with tiles
+        # Add tutorial GIFs, steps
         # SFX
 
     # Add words to dict

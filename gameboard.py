@@ -54,23 +54,32 @@ class Board():
         self.game_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
         self.create_splash_menu()
 
+    def advance_tutorial(self):
+        self.tutorial_current_step += 1
+        self.show_gif()
+        self.splash_elements[2].set_text(self.tutorial_steps[self.tutorial_current_step])
+
+        if self.tutorial_current_step == len(self.tutorial_steps) - 1:
+            self.splash_elements.pop(3) # Remove 'Next' button
+
     def create_splash_menu(self):
         self.hide_splash_menu()
-        welcome_text = self.fonts['medium'].render('WELCOME TO BOOKSNEK!', True, self.colors['light_gray'], None)
-        w = welcome_text.get_size()[0]
-        h = welcome_text.get_size()[1]
-        surf_w = 265
-        splash_menu_bg = ui.Display(dims=(surf_w, 70 + h), coords=(50, 280), fonts=self.fonts, colors=self.colors)
-        splash_menu_bg.surf.blit(welcome_text, dest=(surf_w / 2 - w / 2, 10))
-
-        coords = offset_from_element(splash_menu_bg, corner=(0, 0), offset=(10, 20 + h))
-        splash_menu_new = ui.Interactive(name='splash new', dims=(52, 40), coords=coords, fonts=self.fonts, text='NEW', colors=self.colors, text_color='light_gray')
-        coords = offset_from_element(splash_menu_new, corner=(1, 0), offset=(10, 0))
-        splash_menu_open = ui.Interactive(name='splash load', dims=(63, 40), coords=coords, fonts=self.fonts, text='LOAD', text_color='light_gray', colors=self.colors)
+        header = self.fonts['medium'].render('WELCOME TO BOOKSNEK!', True, self.colors['light_gray'], None)
+        w = header.get_size()[0]
+        h = header.get_size()[1]
+        surf_dims = (284, 200)
+        splash_menu_bg = ui.Display(dims=surf_dims, coords=(196, 204), fonts=self.fonts, colors=self.colors)
+        splash_menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
+        coords = offset_from_element(splash_menu_bg, corner=(0, 0), offset=(10, 50 + h))
+        splash_menu_open = ui.Interactive(name='splash load', dims=(52, 40), coords=coords, fonts=self.fonts, text='LOAD', colors=self.colors, text_color='light_gray')
         coords = offset_from_element(splash_menu_open, corner=(1, 0), offset=(10, 0))
+        splash_menu_hi_scores = ui.Interactive(name='splash scores', dims=(80, 40), coords=coords, fonts=self.fonts, text='SCORES', text_color='light_gray', colors=self.colors)
+        coords = offset_from_element(splash_menu_hi_scores, corner=(1, 0), offset=(10, 0))
         splash_menu_tutorial = ui.Interactive(name='splash tutorial', dims=(110, 40), coords=coords, fonts=self.fonts, text='TUTORIAL', text_color='light_gray', colors=self.colors)
+        coords = offset_from_element(splash_menu_open, corner=(0, 1), offset=(0, 10))
+        splash_menu_new = ui.Interactive(name='splash new', dims=(264, 40), coords=coords, fonts=self.fonts, text='NEW GAME', text_color='light_gray', colors=self.colors)
 
-        self.splash_elements = [splash_menu_bg, splash_menu_new, splash_menu_open, splash_menu_tutorial]
+        self.splash_elements = [splash_menu_bg, splash_menu_open, splash_menu_hi_scores, splash_menu_tutorial, splash_menu_new]
 
     def create_tiles(self, colors, offset):
         tiles = []
@@ -82,12 +91,15 @@ class Board():
         return tiles
 
     def create_tutorial(self):
+        self.tutorial_steps = ['Connect adjacent letters to form a word', 'Creating valid words yields points and EXP']
+        self.tutorial_gifs = [None for t in self.tutorial_steps]
+        self.tutorial_current_step = 0
         self.hide_splash_menu()
         header = self.fonts['medium'].render('BOOKSNEK TUTORIAL', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
         h = header.get_size()[1]
         surf_dims = (656, 588)
-        tutorial_text = 'Connect adjacent letters to form a word'
+        tutorial_text = self.tutorial_steps[self.tutorial_current_step]
         tut_menu_bg = ui.Display(dims=surf_dims, coords=(10, 10), fonts=self.fonts, colors=self.colors)
         tut_menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
         demo_bg = ui.Display(dims=(328, 294), coords=(178, 30 + h), fonts=self.fonts, colors=self.colors, label="DEMO", text="GIF HERE", center=True)
@@ -121,6 +133,10 @@ class Board():
             return 8
         else:
             return 10
+
+    def show_gif(self):
+        # TODO: Load & display self.tutorial_gifs[self.tutorial_current_step]
+        pass
 
 class GFXSurf:
     def __init__(self, fonts, colors):
