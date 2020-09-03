@@ -1,4 +1,4 @@
-import pygame, random
+import json, pygame, random
 from math import ceil, floor
 from numpy.random import choice
 
@@ -248,8 +248,7 @@ class Game:
         elif elem.name == 'open':
             self.load_game()
         elif elem.name == 'save':
-            if self.board.menu_save.enabled:
-                self.save_game()
+            self.save_game()
         elif elem.name == 'scramble':
             self.scramble()
             self.last_typed = ''
@@ -258,17 +257,22 @@ class Game:
                 self.clear_marked()
                 self.board.btn_clear_marked.update()
                 self.last_typed = ''
+        elif elem.name == 'splash load':
+            # gamestates = self.load_gamestates()
+            gamestates = None
+            self.board.create_load_menu(gamestates)
+            self.board.ui_elements = self.board.splash_elements
+        elif elem.name == 'splash tutorial':
+            self.board.create_tutorial()
+            self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'splash new':
             self.mode = 'play'
             self.board.hide_splash_menu()
             self.board.ui_elements = self.tiles + self.board.game_elements
             self.new_game()
-        elif elem.name == 'splash tutorial':
-            self.board.create_tutorial()
-            self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'tutorial next':
             self.board.advance_tutorial()
-        elif elem.name == 'tutorial done':
+        elif elem.name in ('tutorial done', 'load back'):
             self.board.create_splash_menu()
             self.board.ui_elements = self.board.splash_elements
 

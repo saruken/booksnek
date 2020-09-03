@@ -22,7 +22,7 @@ class Board():
         coords = offset_from_element(self.menu_new, corner=(1, 0), offset=(10, 0))
         self.menu_open = ui.Interactive(name='load', dims=(63, 40), coords=coords, fonts=self.fonts, text='LOAD', text_color='light_gray', colors=colors)
         coords = offset_from_element(self.menu_open, corner=(1, 0), offset=(10, 0))
-        self.menu_save = ui.Interactive(name='save', dims=(63, 40), coords=coords, fonts=self.fonts, text='SAVE', enabled=False, colors=colors)
+        self.menu_save = ui.Interactive(name='save', dims=(63, 40), coords=coords, fonts=self.fonts, text='SAVE', colors=colors)
         coords = offset_from_element(self.menu_bg, corner=(0, 1), offset=(12, 10))
         self.bonus_display = ui.Display(dims=(336, 40), coords=coords, fonts=self.fonts, colors=colors, text_color='light_gray', label='MULTIPLIER+', center=True)
         coords = offset_from_element(self.bonus_display, corner=(0, 1), offset=(0, 10))
@@ -62,24 +62,44 @@ class Board():
         if self.tutorial_current_step == len(self.tutorial_steps) - 1:
             self.splash_elements.pop(3) # Remove 'Next' button
 
+    def create_load_menu(self, gamestates):
+        self.hide_splash_menu()
+        header = self.fonts['medium'].render('LOAD GAME STATE', True, self.colors['light_gray'], None)
+        w = header.get_size()[0]
+        h = header.get_size()[1]
+        surf_dims = (284, 400)
+        load_menu_bg = ui.Display(dims=surf_dims, coords=(196, 60), fonts=self.fonts, colors=self.colors)
+        load_menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
+        btn_back = ui.Interactive(name='load back', dims=(63, 40), coords=(10, 558), fonts=self.fonts, text='BACK', text_color='light_gray', colors=self.colors)
+        gamestate_btns = []
+
+        coords = offset_from_element(load_menu_bg, corner=(0, 0), offset=(10, 20 + h))
+        if gamestates:
+            for n, gamestate in enumerate(gamestates):
+                btn = ui.Interactive(name=f'gamestate {n}', dims=(264, 40), coords=coords, fonts=self.fonts, text=f"{gamestate['username']} {gamestate['date']}", colors=self.colors, text_color='light_gray', center=False, text_offset=(8, 10))
+                coords = (coords[0], coords[1] + 50)
+                gamestate_btns.append(btn)
+        else:
+            btn = ui.Display(dims=(264, 40), coords=coords, fonts=self.fonts, text='NO SAVED GAMESTATES', colors=self.colors, center=True)
+            gamestate_btns.append(btn)
+        self.splash_elements = [load_menu_bg, btn_back] + gamestate_btns
+
     def create_splash_menu(self):
         self.hide_splash_menu()
         header = self.fonts['medium'].render('WELCOME TO BOOKSNEK!', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
         h = header.get_size()[1]
-        surf_dims = (284, 200)
+        surf_dims = (284, 160)
         splash_menu_bg = ui.Display(dims=surf_dims, coords=(196, 204), fonts=self.fonts, colors=self.colors)
         splash_menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
-        coords = offset_from_element(splash_menu_bg, corner=(0, 0), offset=(10, 50 + h))
-        splash_menu_open = ui.Interactive(name='splash load', dims=(52, 40), coords=coords, fonts=self.fonts, text='LOAD', colors=self.colors, text_color='light_gray')
+        coords = offset_from_element(splash_menu_bg, corner=(0, 0), offset=(10, 60))
+        splash_menu_open = ui.Interactive(name='splash load', dims=(127, 40), coords=coords, fonts=self.fonts, text='LOAD', colors=self.colors, text_color='light_gray')
         coords = offset_from_element(splash_menu_open, corner=(1, 0), offset=(10, 0))
-        splash_menu_hi_scores = ui.Interactive(name='splash scores', dims=(80, 40), coords=coords, fonts=self.fonts, text='SCORES', text_color='light_gray', colors=self.colors)
-        coords = offset_from_element(splash_menu_hi_scores, corner=(1, 0), offset=(10, 0))
-        splash_menu_tutorial = ui.Interactive(name='splash tutorial', dims=(110, 40), coords=coords, fonts=self.fonts, text='TUTORIAL', text_color='light_gray', colors=self.colors)
+        splash_menu_tutorial = ui.Interactive(name='splash tutorial', dims=(127, 40), coords=coords, fonts=self.fonts, text='TUTORIAL', text_color='light_gray', colors=self.colors)
         coords = offset_from_element(splash_menu_open, corner=(0, 1), offset=(0, 10))
         splash_menu_new = ui.Interactive(name='splash new', dims=(264, 40), coords=coords, fonts=self.fonts, text='NEW GAME', text_color='light_gray', colors=self.colors)
 
-        self.splash_elements = [splash_menu_bg, splash_menu_open, splash_menu_hi_scores, splash_menu_tutorial, splash_menu_new]
+        self.splash_elements = [splash_menu_bg, splash_menu_open, splash_menu_tutorial, splash_menu_new]
 
     def create_tiles(self, colors, offset):
         tiles = []
@@ -106,9 +126,9 @@ class Board():
         coords = offset_from_element(demo_bg, corner=(0, 1), offset=(0, 10))
         display = ui.Display(dims=(surf_dims[0] - 20, 20 + h), coords=(20, coords[1]), fonts=self.fonts, colors=self.colors, text_color='light_gray', label="SNEK TIP", text=tutorial_text, text_offset=(8, 10), vert_center=False)
         coords = offset_from_element(tut_menu_bg, corner=(1, 1), offset=(-73, -50))
-        btn_next = ui.Interactive(name='tutorial next', dims=(63, 40), coords=(coords), fonts=self.fonts, text='NEXT', text_color='light_gray', colors=self.colors)
+        btn_next = ui.Interactive(name='tutorial next', dims=(63, 40), coords=coords, fonts=self.fonts, text='NEXT', text_color='light_gray', colors=self.colors)
         coords = offset_from_element(tut_menu_bg, corner=(0, 1), offset=(10, -50))
-        btn_done = ui.Interactive(name='tutorial done', dims=(63, 40), coords=(coords), fonts=self.fonts, text='DONE', text_color='light_gray', colors=self.colors)
+        btn_done = ui.Interactive(name='tutorial done', dims=(63, 40), coords=coords, fonts=self.fonts, text='DONE', text_color='light_gray', colors=self.colors)
 
         self.splash_elements = [tut_menu_bg, demo_bg, display, btn_next, btn_done]
 

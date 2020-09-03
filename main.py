@@ -119,6 +119,7 @@ if __name__ == '__main__':
     main()
 
     #TODO:
+        # Display hi scores on splash page
         # Make "Game Over" mean something
         # Load & auto-check for previous scores
         # Save game state
