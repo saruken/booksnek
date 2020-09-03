@@ -263,6 +263,9 @@ class Game:
             self.board.hide_splash_menu()
             self.board.ui_elements = self.tiles + self.board.game_elements
             self.new_game()
+        elif elem.name == 'splash tutorial':
+            self.board.create_tutorial()
+            self.board.ui_elements = self.board.splash_elements
 
     def highlight_selected_tiles(self):
         for tile in [t for t in self.tiles if t.selected]:

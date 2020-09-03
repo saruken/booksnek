@@ -17,7 +17,7 @@ class BaseObj:
         return pygame.Rect(self.coords, self.dims)
 
 class Display(BaseObj):
-    def __init__(self, dims, coords, fonts, colors, text=None, text_color=None, text_prefix='', center=False, text_offset=[0, 0], label=None, show_progress=None, multicolor=False):
+    def __init__(self, dims, coords, fonts, colors, text=None, text_color=None, text_prefix='', center=False, vert_center=True, text_offset=[0, 0], label=None, show_progress=None, multicolor=False):
         super(Display, self).__init__(dims=dims, coords=coords, fonts=fonts, colors=colors)
         self.bg_color = self.colors['bg_main']
         self.bg_progress = self.colors['bg_progress']
@@ -37,10 +37,11 @@ class Display(BaseObj):
         self.progress_bar_max_width = None
         self.text = text
         self.center = center
-        self.text_color = self.colors[text_color] if text_color else None
+        self.text_color = self.colors[text_color] if text_color else self.colors['light_gray']
         self.text_obj = None
         self.text_offset = text_offset
         self.text_prefix = text_prefix
+        self.vert_center = vert_center
 
         self.build_image()
 
@@ -69,7 +70,9 @@ class Display(BaseObj):
             else:
                 offset_x = self.text_offset[0]
             # Vert align
-            offset_y = floor((self.surf.get_size()[1] - surf.get_size()[1]) / 2) + self.text_offset[1]
+            if self.vert_center:
+                offset_y = floor((self.surf.get_size()[1] - surf.get_size()[1]) / 2) + self.text_offset[1]
+            else: offset_y = self.text_offset[1]
             self.surf.blit(surf, dest=(offset_x, offset_y))
 
         if self.label:

@@ -48,27 +48,29 @@ class Board():
 
         self.gfx = GFXSurf(self.fonts, colors)
 
+        self.splash_elements = []
         self.ui_elements = []
         self.menu_btns = [self.btn_clear_marked, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
         self.game_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
         self.create_splash_menu()
 
     def create_splash_menu(self):
+        self.hide_splash_menu()
         welcome_text = self.fonts['medium'].render('WELCOME TO BOOKSNEK!', True, self.colors['light_gray'], None)
         w = welcome_text.get_size()[0]
         h = welcome_text.get_size()[1]
         surf_w = 265
-        self.splash_menu_bg = ui.Display(dims=(surf_w, 70 + h), coords=(50, 280), fonts=self.fonts, colors=self.colors)
-        self.splash_menu_bg.surf.blit(welcome_text, dest=(surf_w / 2 - w / 2, 10))
+        splash_menu_bg = ui.Display(dims=(surf_w, 70 + h), coords=(50, 280), fonts=self.fonts, colors=self.colors)
+        splash_menu_bg.surf.blit(welcome_text, dest=(surf_w / 2 - w / 2, 10))
 
-        coords = offset_from_element(self.splash_menu_bg, corner=(0, 0), offset=(10, 20 + h))
-        self.splash_menu_new = ui.Interactive(name='splash new', dims=(52, 40), coords=coords, fonts=self.fonts, text='NEW', colors=self.colors, text_color='light_gray')
-        coords = offset_from_element(self.splash_menu_new, corner=(1, 0), offset=(10, 0))
-        self.splash_menu_open = ui.Interactive(name='splash load', dims=(63, 40), coords=coords, fonts=self.fonts, text='LOAD', text_color='light_gray', colors=self.colors)
-        coords = offset_from_element(self.splash_menu_open, corner=(1, 0), offset=(10, 0))
-        self.splash_menu_tutorial = ui.Interactive(name='splash tutorial', dims=(110, 40), coords=coords, fonts=self.fonts, text='TUTORIAL', text_color='light_gray', colors=self.colors)
+        coords = offset_from_element(splash_menu_bg, corner=(0, 0), offset=(10, 20 + h))
+        splash_menu_new = ui.Interactive(name='splash new', dims=(52, 40), coords=coords, fonts=self.fonts, text='NEW', colors=self.colors, text_color='light_gray')
+        coords = offset_from_element(splash_menu_new, corner=(1, 0), offset=(10, 0))
+        splash_menu_open = ui.Interactive(name='splash load', dims=(63, 40), coords=coords, fonts=self.fonts, text='LOAD', text_color='light_gray', colors=self.colors)
+        coords = offset_from_element(splash_menu_open, corner=(1, 0), offset=(10, 0))
+        splash_menu_tutorial = ui.Interactive(name='splash tutorial', dims=(110, 40), coords=coords, fonts=self.fonts, text='TUTORIAL', text_color='light_gray', colors=self.colors)
 
-        self.splash_elements = [self.splash_menu_bg, self.splash_menu_new, self.splash_menu_open, self.splash_menu_tutorial]
+        self.splash_elements = [splash_menu_bg, splash_menu_new, splash_menu_open, splash_menu_tutorial]
 
     def create_tiles(self, colors, offset):
         tiles = []
@@ -78,6 +80,25 @@ class Board():
                 tiles.append(ui.Tile(fonts=self.fonts, col=col, row=row, colors=colors, offset=offset))
 
         return tiles
+
+    def create_tutorial(self):
+        self.hide_splash_menu()
+        header = self.fonts['medium'].render('BOOKSNEK TUTORIAL', True, self.colors['light_gray'], None)
+        w = header.get_size()[0]
+        h = header.get_size()[1]
+        surf_dims = (656, 588)
+        tutorial_text = 'Connect adjacent letters to form a word'
+        tut_menu_bg = ui.Display(dims=surf_dims, coords=(10, 10), fonts=self.fonts, colors=self.colors)
+        tut_menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
+        demo_bg = ui.Display(dims=(328, 294), coords=(178, 30 + h), fonts=self.fonts, colors=self.colors, label="DEMO", text="GIF HERE", center=True)
+        coords = offset_from_element(demo_bg, corner=(0, 1), offset=(0, 10))
+        display = ui.Display(dims=(surf_dims[0] - 20, 20 + h), coords=(20, coords[1]), fonts=self.fonts, colors=self.colors, text_color='light_gray', label="SNEK TIP", text=tutorial_text, text_offset=(8, 10), vert_center=False)
+        coords = offset_from_element(tut_menu_bg, corner=(1, 1), offset=(-73, -50))
+        btn_next = ui.Interactive(name='tutorial next', dims=(63, 40), coords=(coords), fonts=self.fonts, text='NEXT', text_color='light_gray', colors=self.colors)
+        coords = offset_from_element(tut_menu_bg, corner=(0, 1), offset=(10, -50))
+        btn_done = ui.Interactive(name='tutorial done', dims=(63, 40), coords=(coords), fonts=self.fonts, text='DONE', text_color='light_gray', colors=self.colors)
+
+        self.splash_elements = [tut_menu_bg, demo_bg, display, btn_next, btn_done]
 
     def hide_splash_menu(self):
         for elem in self.splash_elements:
