@@ -1,4 +1,5 @@
 import json, pygame, random
+from datetime import datetime
 from math import ceil, floor
 from numpy.random import choice
 
@@ -234,6 +235,11 @@ class Game:
         self.snake.tiles = []
         self.snake.update()
 
+    def fetch_gamestates(self):
+        with open('saved_gamestates.json') as file:
+            gamestates = json.load(file)
+        return gamestates
+
     def game_over(self):
         print('game_over() placeholder')
 
@@ -245,7 +251,7 @@ class Game:
             return
         if elem.name == 'new':
             self.new_game()
-        elif elem.name == 'open':
+        elif elem.name == 'load':
             self.load_game()
         elif elem.name == 'save':
             self.save_game()
@@ -258,8 +264,7 @@ class Game:
                 self.board.btn_clear_marked.update()
                 self.last_typed = ''
         elif elem.name == 'splash load':
-            # gamestates = self.load_gamestates()
-            gamestates = None
+            gamestates = self.fetch_gamestates()
             self.board.create_load_menu(gamestates)
             self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'splash tutorial':
@@ -315,8 +320,10 @@ class Game:
         self.update_tiles()
 
     def load_game(self):
-        h = self.board.hp_display
-        print(f'hp: {h.hp}; hp_displayed: {h.hp_displayed}; hp_max: {h.hp_max}')
+        self.mode = 'menu'
+        gamestates = self.fetch_gamestates()
+        self.board.create_load_menu(gamestates)
+        self.board.ui_elements = self.board.splash_elements
 
     def mult_up(self):
         self.multiplier += 1
@@ -421,7 +428,49 @@ class Game:
         self.update_tile_rows()
 
     def save_game(self):
-        print('save_game() placeholder')
+        h = self.board.hp_display
+        d = self.board.level_display
+
+        tiles = []
+        for t in self.tiles:
+            tile = {
+                'attack_timer': t.attack_timer,
+                'col': t.col,
+                'first_turn': t.first_turn,
+                'letter': t.letter,
+                'level': t.level,
+                'marked': t.marked,
+                'multiplier': t.multiplier,
+                'point_value': t.point_value,
+                'row': t.row,
+                'tile_type': t.tile_type
+            }
+            tiles.append(tile)
+
+        gamestate = {
+            'timestamp': datetime.strftime(datetime.today(), '%b %m, %Y'),
+            'username': None,
+            'score': self.score,
+            'level': self.level,
+            'bonus_word': self.bonus_word,
+            'history': self.history,
+            'best_word': self.word_best,
+            'longest_word': self.word_longest,
+            'hp': h.hp,
+            'hp_max': h.hp_max,
+            'exp': d.progress_actual,
+            'next_level': d.progress_max,
+            'tiles': tiles
+        }
+
+        with open('saved_gamestates.json') as file:
+            saved_gamestates = json.load(file)['gamestates']
+
+        saved_gamestates.append(gamestate)
+        with open('saved_gamestates.json', 'w') as file:
+            json.dump(saved_gamestates, file)
+
+        print('Gamestate saved')
 
     def score_word(self, word=None):
         value = 0

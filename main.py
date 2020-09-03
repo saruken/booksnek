@@ -120,6 +120,7 @@ if __name__ == '__main__':
 
     #TODO:
         # Display hi scores on splash page
+        # Lv has some effect on score, but primarily on DEF/HP; Mult has much more effect on damage dealt to player (and points scored)
         # Make "Game Over" mean something
         # Load & auto-check for previous scores
         # Save game state

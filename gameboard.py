@@ -76,7 +76,8 @@ class Board():
         coords = offset_from_element(load_menu_bg, corner=(0, 0), offset=(10, 20 + h))
         if gamestates:
             for n, gamestate in enumerate(gamestates):
-                btn = ui.Interactive(name=f'gamestate {n}', dims=(264, 40), coords=coords, fonts=self.fonts, text=f"{gamestate['username']} {gamestate['date']}", colors=self.colors, text_color='light_gray', center=False, text_offset=(8, 10))
+                username = gamestate['username'] if gamestate['username'] else 'SNEK'
+                btn = ui.Interactive(name=f'gamestate {n}', dims=(264, 40), coords=coords, fonts=self.fonts, text=f"{username} {gamestate['timestamp']}", colors=self.colors, text_color='light_gray')
                 coords = (coords[0], coords[1] + 50)
                 gamestate_btns.append(btn)
         else:
