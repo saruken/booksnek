@@ -22,6 +22,7 @@ class Display(BaseObj):
         self.bg_color = self.colors['bg_main']
         self.bg_progress = self.colors['bg_progress']
         self.border_color = self.colors['mid_gray']
+        self.hovered = False
         self.label = label
         self.letter_height = 19
         self.letter_width = 19

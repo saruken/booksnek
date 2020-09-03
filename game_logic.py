@@ -48,10 +48,11 @@ class Game:
 
         self.board = gameboard.Board(dims=dims, coords=(0, 0), colors=self.colors)
         self.dictionary = dictionary
+        self.mode = 'menu'
         self.snake = tile_snake.Snake()
         tile_offset = gameboard.offset_from_element(self.board.level_display, corner=(0, 1), offset=(0, 10))
         self.tiles = self.board.create_tiles(self.colors, offset=tile_offset)
-        self.ui_elements = self.tiles + self.board.ui_elements
+        self.board.ui_elements = self.tiles + self.board.game_elements + self.board.splash_elements
 
         self.new_game()
 
@@ -257,6 +258,11 @@ class Game:
                 self.clear_marked()
                 self.board.btn_clear_marked.update()
                 self.last_typed = ''
+        elif elem.name == 'splash new':
+            self.mode = 'play'
+            self.board.hide_splash_menu()
+            self.board.ui_elements = self.tiles + self.board.game_elements
+            self.new_game()
 
     def highlight_selected_tiles(self):
         for tile in [t for t in self.tiles if t.selected]:
@@ -490,11 +496,17 @@ class Game:
         h = self.board.hp_display
         return bool(h.hp < h.hp_max)
 
-    def try_mouse_over(self, elem):
-        for el in [e for e in self.board.menu_btns + self.tiles if e.hovered]:
-            el.mouse_out()
-        if isinstance(elem, Interactive) or isinstance(elem, Tile):
-            elem.mouse_over()
+    def try_mouse_over(self, game_mode, elem):
+        if game_mode == 'menu':
+            for el in [e for e in self.board.splash_elements if e.hovered]:
+                el.mouse_out()
+            if elem:
+                elem.mouse_over()
+        else:
+            for el in [e for e in self.board.menu_btns + self.tiles if e.hovered]:
+                el.mouse_out()
+            if isinstance(elem, Interactive) or isinstance(elem, Tile):
+                elem.mouse_over()
 
     def try_submit_word(self):
         if len(self.snake.tiles) == 1: # Must use this instead of

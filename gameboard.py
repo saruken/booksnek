@@ -8,6 +8,7 @@ class Board():
     def __init__(self, dims, coords, colors):
         self.background = pygame.Surface(dims)
         self.background.fill(colors['bg_back'])
+        self.colors = colors
         self.coords = coords
         self.fonts = {
             'large': pygame.font.Font('VCR_OSD_MONO.ttf', 36),
@@ -19,7 +20,7 @@ class Board():
         coords = offset_from_element(self.menu_bg, corner=(0, 0), offset=(10, 10))
         self.menu_new = ui.Interactive(name='new', dims=(52, 40), coords=coords, fonts=self.fonts, text='NEW', colors=colors, text_color='light_gray')
         coords = offset_from_element(self.menu_new, corner=(1, 0), offset=(10, 0))
-        self.menu_open = ui.Interactive(name='open', dims=(63, 40), coords=coords, fonts=self.fonts, text='LOAD', text_color='light_gray', colors=colors)
+        self.menu_open = ui.Interactive(name='load', dims=(63, 40), coords=coords, fonts=self.fonts, text='LOAD', text_color='light_gray', colors=colors)
         coords = offset_from_element(self.menu_open, corner=(1, 0), offset=(10, 0))
         self.menu_save = ui.Interactive(name='save', dims=(63, 40), coords=coords, fonts=self.fonts, text='SAVE', enabled=False, colors=colors)
         coords = offset_from_element(self.menu_bg, corner=(0, 1), offset=(12, 10))
@@ -47,17 +48,42 @@ class Board():
 
         self.gfx = GFXSurf(self.fonts, colors)
 
+        self.ui_elements = []
         self.menu_btns = [self.btn_clear_marked, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
-        self.ui_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
+        self.game_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
+        self.create_splash_menu()
+
+    def create_splash_menu(self):
+        welcome_text = self.fonts['medium'].render('WELCOME TO BOOKSNEK!', True, self.colors['light_gray'], None)
+        w = welcome_text.get_size()[0]
+        h = welcome_text.get_size()[1]
+        surf_w = 265
+        self.splash_menu_bg = ui.Display(dims=(surf_w, 70 + h), coords=(50, 280), fonts=self.fonts, colors=self.colors)
+        self.splash_menu_bg.surf.blit(welcome_text, dest=(surf_w / 2 - w / 2, 10))
+
+        coords = offset_from_element(self.splash_menu_bg, corner=(0, 0), offset=(10, 20 + h))
+        self.splash_menu_new = ui.Interactive(name='splash new', dims=(52, 40), coords=coords, fonts=self.fonts, text='NEW', colors=self.colors, text_color='light_gray')
+        coords = offset_from_element(self.splash_menu_new, corner=(1, 0), offset=(10, 0))
+        self.splash_menu_open = ui.Interactive(name='splash load', dims=(63, 40), coords=coords, fonts=self.fonts, text='LOAD', text_color='light_gray', colors=self.colors)
+        coords = offset_from_element(self.splash_menu_open, corner=(1, 0), offset=(10, 0))
+        self.splash_menu_tutorial = ui.Interactive(name='splash tutorial', dims=(110, 40), coords=coords, fonts=self.fonts, text='TUTORIAL', text_color='light_gray', colors=self.colors)
+
+        self.splash_elements = [self.splash_menu_bg, self.splash_menu_new, self.splash_menu_open, self.splash_menu_tutorial]
 
     def create_tiles(self, colors, offset):
         tiles = []
-        # Every other column has 7 and 8 tiles, starting and ending with 7s
+        # Columns alternate between 7 and 8 tiles, starting and ending with 7s
         for col in range(7):
             for row in range(7 + col % 2):
                 tiles.append(ui.Tile(fonts=self.fonts, col=col, row=row, colors=colors, offset=offset))
 
         return tiles
+
+    def hide_splash_menu(self):
+        for elem in self.splash_elements:
+            self.surf = None
+            elem = None
+        self.splash_elements = []
 
     def lookup_letter_value(self, letter):
         if letter in 'AEILNORSTU':
