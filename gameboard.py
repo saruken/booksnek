@@ -67,8 +67,8 @@ class Board():
         header = self.fonts['medium'].render('LOAD GAMESTATE', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
         h = header.get_size()[1]
-        surf_dims = (284, 400)
-        load_menu_bg = ui.Display(dims=surf_dims, coords=(196, 60), fonts=self.fonts, colors=self.colors)
+        surf_dims = (400, 400)
+        load_menu_bg = ui.Display(dims=surf_dims, coords=(138, 60), fonts=self.fonts, colors=self.colors)
         load_menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
         btn_back = ui.Interactive(name='load back', dims=(63, 40), coords=(10, 558), fonts=self.fonts, text='BACK', text_color='light_gray', colors=self.colors)
         gamestate_btns = []
@@ -77,8 +77,8 @@ class Board():
         if gamestates:
             for n, gamestate in enumerate(gamestates):
                 username = gamestate['username'] if gamestate['username'] else 'SNEK'
-                game_id = gamestate['id']
-                btn = ui.Interactive(name=f'gamestate {game_id}', dims=(264, 40), coords=coords, fonts=self.fonts, text=game_id, colors=self.colors, text_color='light_gray')
+                game_id = gamestate['username'] + ' ' + gamestate['timestamp']
+                btn = ui.Interactive(name=f'gamestate {gamestate["id"]}', dims=(380, 40), coords=coords, fonts=self.fonts, text=game_id, colors=self.colors, text_color='light_gray')
                 coords = (coords[0], coords[1] + 50)
                 gamestate_btns.append(btn)
         else:
