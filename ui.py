@@ -223,9 +223,6 @@ class HPDisplay():
         self.bg_color_progress = self.colors['bg_progress']
         self.border_color = self.colors['mid_gray']
 
-        self.level_up(lv=1)
-        self.build_image()
-
     def buff(self):
         self.hp_buff += ceil(self.lv / 10)
         self.calculate_hp_max()

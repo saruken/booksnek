@@ -133,6 +133,7 @@ if __name__ == '__main__':
     # BUGS
         # 2 heal tiles in the same word -- If 1 would be enough to restore MAX HP, 2nd one should buff HP GROWTH
         # History not totally filling from saved gamestate when there are >= max # of words
+        # Letters are changing point value on match, before ghosts are created
 
     # Add words to dict
         #

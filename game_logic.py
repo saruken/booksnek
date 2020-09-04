@@ -49,12 +49,12 @@ class Game:
 
         self.board = gameboard.Board(dims=dims, coords=(0, 0), colors=self.colors)
         self.dictionary = dictionary
+        self.max_history_words = 25
         self.mode = 'menu'
         self.snake = tile_snake.Snake()
         tile_offset = gameboard.offset_from_element(self.board.level_display, corner=(0, 1), offset=(0, 10))
         self.tiles = self.board.create_tiles(self.colors, offset=tile_offset)
 
-        self.new_game()
         self.board.create_splash_menu(self.load_hi_scores())
         self.board.ui_elements = self.board.splash_elements
 
@@ -147,7 +147,8 @@ class Game:
             h.hp_displayed += amt
             h.update()
         if h.hp_displayed <= 0:
-            self.game_over()
+            if self.mode == 'play':
+                self.game_over()
 
         for elem in [self.board.multiplier_display, self.board.longest_display, self.board.best_display]:
             if elem.fade_counter:
@@ -227,6 +228,8 @@ class Game:
         history_word = self.color_letters(history_word)
 
         self.history.append(history_word)
+        if len(self.history) > self.max_history_words:
+            self.history.pop(0)
         self.last_five_words = [len(w['word']) for w in self.history[-5:]]
 
     def empty_snake(self):
@@ -242,7 +245,9 @@ class Game:
         return gamestates
 
     def game_over(self):
-        print('game_over() placeholder')
+        self.mode = 'menu'
+        self.board.create_game_over_menu()
+        self.board.ui_elements += self.board.splash_elements
 
     def get_enemy_weight(self, avg):
         return -0.375 * avg + 1.975
@@ -286,6 +291,10 @@ class Game:
             self.mode = 'play'
         elif elem.name == 'tutorial next':
             self.board.advance_tutorial()
+        elif elem.name == 'game over ok':
+            self.try_update_hi_score()
+            self.board.create_splash_menu(self.load_hi_scores())
+            self.board.ui_elements = self.board.splash_elements
         elif elem.name in ('tutorial done', 'load back'):
             self.board.create_splash_menu(self.load_hi_scores())
             self.board.ui_elements = self.board.splash_elements
@@ -412,14 +421,19 @@ class Game:
             'colors': []
         }
 
+        d = self.board.level_display
+        d.progress = 0
+        d.progress_actual = 0
+        d.progress_max = d.progress_lv_increment
+
         h = self.board.hp_display
         h.hp = 1
         h.hp_max = 1
         h.hp_base = 108
         h.hp_buff = 0
         h.lv = 1
-
-        d = self.board.level_display
+        h.level_up(lv=1)
+        h.build_image()
 
         self.choose_bonus_word()
         self.empty_snake()
@@ -671,11 +685,11 @@ class Game:
             self.empty_snake()         # snake.length due to 'Qu' tiles
         elif self.snake.length > 2:
             if self.check_dictionary():
-                print(f'Committed word "{self.snake.word}"')
                 old_bonus = self.bonus_word
                 self.paused = True
                 self.last_typed = ''
                 self.commit_word_to_history()
+                print(f'Committed word "{self.snake.word}"')
                 self.check_update_longest()
                 if self.snake.word == self.bonus_word:
                     print(f'This is the bonus word')
