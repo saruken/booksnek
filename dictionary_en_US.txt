@@ -8980,10 +8980,8 @@ cafeteria
 cafeterias
 cafetiere
 cafetieres
-caff
 caffeinated
 caffeine
-caffs
 caftan
 caftans
 cage

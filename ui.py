@@ -150,11 +150,7 @@ class Display(BaseObj):
             colors - Letter colors (list of strings):
         '''
         text = ''
-        text_offset = (8, 10)
-        max_lines = floor((self.surf.get_size()[1] - text_offset[1]) / self.letter_height)
-        if len(history) > max_lines:
-            history = history[-max_lines:]
-
+        text_offset = (8, 12)
         container = pygame.Surface(self.dims)
         container.fill(self.bg_color)
 

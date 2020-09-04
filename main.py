@@ -119,10 +119,9 @@ if __name__ == '__main__':
     main()
 
     #TODO:
-        # Lv has some effect on score, but primarily on DEF/HP; Mult has much more effect on damage dealt to player (and points scored)
+        # Lv has some effect on point value, but primarily on DEF/HP; Mult has much more effect on damage dealt to player (and points scored)
         # Heal tiles should display how much they will heal
         # Instead of HP GROWTH, heal tiles should add some amt to MAX HP (but not to HP)
-        # Make "Game Over" mean something
         # View high scores during game
         # When multiple effects will take place in the same "turn", put a quick delay between them
         # Add tutorial GIFs, steps
@@ -138,4 +137,4 @@ if __name__ == '__main__':
     # Add words to dict
         #
     # Remove words from dict
-        #
+        # caff/s

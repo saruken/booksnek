@@ -428,6 +428,7 @@ class Game:
 
         h = self.board.hp_display
         h.hp = 1
+        h.hp_displayed = 1
         h.hp_max = 1
         h.hp_base = 108
         h.hp_buff = 0
@@ -722,7 +723,7 @@ class Game:
                 'score': self.score
             }
             scores.append(entry)
-            scores = sorted(scores,  key=lambda k: k['score'])
+            scores = sorted(scores,  key=lambda k: k['score'], reverse=True)
             self.save_hi_scores(scores)
 
     def update_bonus_color(self):
