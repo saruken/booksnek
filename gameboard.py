@@ -18,8 +18,8 @@ class Board():
 
         self.menu_bg = ui.Display(dims=(348, 60), coords=(-2, -2), fonts=self.fonts, colors=colors)
         coords = offset_from_element(self.menu_bg, corner=(0, 0), offset=(10, 10))
-        self.menu_new = ui.Interactive(name='new', dims=(52, 40), coords=coords, fonts=self.fonts, text='NEW', colors=colors, text_color='light_gray')
-        coords = offset_from_element(self.menu_new, corner=(1, 0), offset=(10, 0))
+        self.menu_quit = ui.Interactive(name='quit', dims=(63, 40), coords=coords, fonts=self.fonts, text='QUIT', colors=colors, text_color='light_gray')
+        coords = offset_from_element(self.menu_quit, corner=(1, 0), offset=(10, 0))
         self.menu_open = ui.Interactive(name='load', dims=(63, 40), coords=coords, fonts=self.fonts, text='LOAD', text_color='light_gray', colors=colors)
         coords = offset_from_element(self.menu_open, corner=(1, 0), offset=(10, 0))
         self.menu_save = ui.Interactive(name='save', dims=(63, 40), coords=coords, fonts=self.fonts, text='SAVE', colors=colors)
@@ -34,7 +34,7 @@ class Board():
         coords = offset_from_element(self.multiplier_display, corner=(1, 0), offset=(10, 0))
         self.btn_clear_marked = ui.Interactive(name='clear', dims=(100, 40), coords=coords, fonts=self.fonts, text='UNMARK', enabled=False, colors=colors)
         coords = offset_from_element(self.menu_save, corner=(1, 0), offset=(10, 0))
-        self.btn_scramble = ui.Interactive(name='scramble', dims=(120, 40), coords=coords, colors=colors, fonts=self.fonts, text='SCRAMBLE', text_color='light_gray')
+        self.btn_scramble = ui.Interactive(name='scramble', dims=(109, 40), coords=coords, colors=colors, fonts=self.fonts, text='SCRAMBLE', text_color='light_gray')
         coords = offset_from_element(self.btn_scramble, corner=(1, 0), offset=(20, 0))
         self.score_display = ui.Display(dims=(310, 40), coords=coords, fonts=self.fonts, colors=colors, text='0', text_color='light_gray', label='SCORE', center=True)
         coords = offset_from_element(self.score_display, corner=(0, 1), offset=(0, 4))
@@ -50,8 +50,8 @@ class Board():
 
         self.splash_elements = []
         self.ui_elements = []
-        self.menu_btns = [self.btn_clear_marked, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
-        self.game_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
+        self.menu_btns = [self.btn_clear_marked, self.menu_quit, self.menu_open, self.menu_save, self.btn_scramble]
+        self.game_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_quit, self.menu_open, self.menu_save, self.btn_scramble]
 
     def advance_tutorial(self):
         self.tutorial_current_step += 1
@@ -84,6 +84,19 @@ class Board():
             btn = ui.Display(dims=(264, 40), coords=coords, fonts=self.fonts, text='NO SAVED GAMESTATES', colors=self.colors, center=True)
             gamestate_btns.append(btn)
         self.splash_elements = [load_menu_bg, btn_back] + gamestate_btns
+
+    def create_quit_menu(self):
+        self.hide_splash_menu()
+        header = self.fonts['medium'].render('REALLY QUIT?', True, self.colors['light_gray'], None)
+        w = header.get_size()[0]
+        surf_dims = (284, 140)
+        quit_menu_bg = ui.Display(dims=surf_dims, coords=(38, 290), fonts=self.fonts, colors=self.colors)
+        quit_menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
+        coords = offset_from_element(quit_menu_bg, corner=(0, 0), offset=(10, 60))
+        quit_menu_no = ui.Interactive(name='quit no', dims=(127, 40), coords=coords, fonts=self.fonts, text='NO', colors=self.colors, text_color='light_gray')
+        coords = offset_from_element(quit_menu_bg, corner=(1, 0), offset=(-137, 60))
+        quit_menu_yes = ui.Interactive(name='quit yes', dims=(127, 40), coords=coords, fonts=self.fonts, text='YES', colors=self.colors, text_color='light_gray')
+        self.splash_elements = [quit_menu_bg, quit_menu_no, quit_menu_yes]
 
     def create_splash_menu(self, scores):
         self.hide_splash_menu()

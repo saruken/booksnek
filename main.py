@@ -119,10 +119,9 @@ if __name__ == '__main__':
     main()
 
     #TODO:
-        # Display hi scores on splash page
         # Lv has some effect on score, but primarily on DEF/HP; Mult has much more effect on damage dealt to player (and points scored)
         # Make "Game Over" mean something
-        # Save high scores
+        # "Quit" btn -> check/save hi score
         # Add tutorial GIFs, steps
         # SFX
 

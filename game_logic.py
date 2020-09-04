@@ -250,8 +250,10 @@ class Game:
     def handle_menu_btn_click(self, elem):
         if not isinstance(elem, Interactive):
             return
-        if elem.name == 'new':
-            self.new_game()
+        if elem.name == 'quit':
+            self.mode = 'menu'
+            self.board.create_quit_menu()
+            self.board.ui_elements += self.board.splash_elements
         elif elem.name == 'load':
             self.open_load_menu()
         elif elem.name == 'save':
