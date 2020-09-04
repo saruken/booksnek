@@ -231,8 +231,8 @@ class Game:
 
     def empty_snake(self):
         for tile in [t for t in self.snake.tiles]:
-            tile.unselect()
             tile.beacon = False
+            tile.unselect()
         self.snake.tiles = []
         self.snake.update()
 
