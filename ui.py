@@ -341,7 +341,7 @@ class Interactive(BaseObj):
         self.build_image()
 
 class Tile():
-    def __init__(self, fonts,  colors, col, row, offset):
+    def __init__(self, fonts, colors, col=None, row=None, offset=None, letter=None):
         self.ay = 0
         self.attack_timer = 5
         self.beacon = False
@@ -360,7 +360,6 @@ class Tile():
         self.marked = False
         self.middle = (0, 0)
         self.multiplier = 1
-        self.offset = offset if self.col % 2 else (offset[0], offset[1] + (self.dims[0] / 2))
         self.point_value = 0
         self.row = row
         self.selected = False
@@ -371,9 +370,17 @@ class Tile():
         self.bg_color = self.colors['beige']
         self.border_color = self.colors['light_gray']
 
-        self.set_coords()
-        self.set_target()
-        self.choose_letter()
+        if offset == None:
+            self.offset = 0
+        else:
+            self.offset = offset if self.col % 2 else (offset[0], offset[1] + (self.dims[0] / 2))
+
+        if letter:
+            self.letter = letter
+        else:
+            self.set_coords()
+            self.set_target()
+            self.choose_letter()
         self.update_point_value()
         self.set_text_color()
         self.load_images()

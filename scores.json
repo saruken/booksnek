@@ -1,24 +1,27 @@
-{
-	"scores": [
-		{
-			"username": "WHL",
-			"score": "1000000"
-		},
-		{
-			"username": "PIG",
-			"score": "99999"
-		},
-		{
-			"username": "JSTS",
-			"score": "61453"
-		},
-		{
-			"username": "PONES",
-			"score": "9523"
-		},
-		{
-			"username": "SHAT",
-			"score": "1701"
-		}
-	]
-}
+[
+	{
+		"username": "WHL",
+		"date": "Sep. 04, 2020",
+		"score": 1000000
+	},
+	{
+		"username": "PIG",
+		"date": "Sep. 04, 2020",
+		"score": 99999
+	},
+	{
+		"username": "JSTS",
+		"date": "Sep. 04, 2020",
+		"score": 61453
+	},
+	{
+		"username": "PONES",
+		"date": "Sep. 04, 2020",
+		"score": 9523
+	},
+	{
+		"username": "SHAT",
+		"date": "Sep. 04, 2020",
+		"score": 1701
+	}
+]

@@ -52,7 +52,6 @@ class Board():
         self.ui_elements = []
         self.menu_btns = [self.btn_clear_marked, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
         self.game_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_new, self.menu_open, self.menu_save, self.btn_scramble]
-        self.create_splash_menu()
 
     def advance_tutorial(self):
         self.tutorial_current_step += 1
@@ -86,13 +85,14 @@ class Board():
             gamestate_btns.append(btn)
         self.splash_elements = [load_menu_bg, btn_back] + gamestate_btns
 
-    def create_splash_menu(self):
+    def create_splash_menu(self, scores):
         self.hide_splash_menu()
+
+        # Load / Tutorial / New Game menu
         header = self.fonts['medium'].render('WELCOME TO BOOKSNEK!', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
-        h = header.get_size()[1]
         surf_dims = (284, 160)
-        splash_menu_bg = ui.Display(dims=surf_dims, coords=(196, 204), fonts=self.fonts, colors=self.colors)
+        splash_menu_bg = ui.Display(dims=surf_dims, coords=(196, 10), fonts=self.fonts, colors=self.colors)
         splash_menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
         coords = offset_from_element(splash_menu_bg, corner=(0, 0), offset=(10, 60))
         splash_menu_open = ui.Interactive(name='splash load', dims=(127, 40), coords=coords, fonts=self.fonts, text='LOAD', colors=self.colors, text_color='light_gray')
@@ -101,7 +101,33 @@ class Board():
         coords = offset_from_element(splash_menu_open, corner=(0, 1), offset=(0, 10))
         splash_menu_new = ui.Interactive(name='splash new', dims=(264, 40), coords=coords, fonts=self.fonts, text='NEW GAME', text_color='light_gray', colors=self.colors)
 
-        self.splash_elements = [splash_menu_bg, splash_menu_open, splash_menu_tutorial, splash_menu_new]
+        # Hi Score list
+        header = self.fonts['medium'].render('HI SCORES', True, self.colors['bg_gold'], None)
+        w = header.get_size()[0]
+        surf_dims = (656, 387)
+        coords = offset_from_element(splash_menu_bg, corner=(0, 1), offset=(0, 40))
+        scores_bg = ui.Display(dims=surf_dims, coords=(10, coords[1]), fonts=self.fonts, colors=self.colors)
+        scores_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
+        label = self.fonts['medium'].render('Name', True, self.colors['mid_gray'], None)
+        scores_bg.surf.blit(label, dest=(66, 60))
+        label = self.fonts['medium'].render('Date', True, self.colors['mid_gray'], None)
+        scores_bg.surf.blit(label, dest=(320, 60))
+        label = self.fonts['medium'].render('Score', True, self.colors['mid_gray'], None)
+        scores_bg.surf.blit(label, dest=(550, 60))
+        for n, entry in enumerate(scores):
+            val = self.fonts['medium'].render(f'{str(n + 1)}.', True, self.colors['light_gray'], None)
+            scores_bg.surf.blit(val, dest=(10, 108 + n * 48 + n * 10))
+            for i, letter in enumerate(entry['username']):
+                tile = ui.Tile(fonts=self.fonts, colors=self.colors, letter=letter)
+                tile.mouse_out()
+                scores_bg.surf.blit(tile.surf, dest=(34 + i * 48, 86 + n * 48 + n * 10))
+            val = self.fonts['medium'].render(entry['date'], True, self.colors['light_gray'], None)
+            scores_bg.surf.blit(val, dest=(300, 110 + n * 48 + n * 10))
+            val = self.fonts['medium'].render('{:,}'.format(entry['score']), True, self.colors['light_gray'], None)
+            w = val.get_size()[0]
+            scores_bg.surf.blit(val, dest=(636 - w, 110 + n * 48 + n * 10))
+
+        self.splash_elements = [splash_menu_bg, splash_menu_open, splash_menu_tutorial, splash_menu_new, scores_bg]
 
     def create_tiles(self, colors, offset):
         tiles = []

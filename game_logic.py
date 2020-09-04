@@ -53,9 +53,10 @@ class Game:
         self.snake = tile_snake.Snake()
         tile_offset = gameboard.offset_from_element(self.board.level_display, corner=(0, 1), offset=(0, 10))
         self.tiles = self.board.create_tiles(self.colors, offset=tile_offset)
-        self.board.ui_elements = self.board.splash_elements
 
         self.new_game()
+        self.board.create_splash_menu(self.load_hi_scores())
+        self.board.ui_elements = self.board.splash_elements
 
     def activate_tile_effects(self, old_bonus='____'):
         arc_sources = []
@@ -278,7 +279,7 @@ class Game:
         elif elem.name == 'tutorial next':
             self.board.advance_tutorial()
         elif elem.name in ('tutorial done', 'load back'):
-            self.board.create_splash_menu()
+            self.board.create_splash_menu(self.load_hi_scores())
             self.board.ui_elements = self.board.splash_elements
         elif 'gamestate' in elem.name:
             game_id = elem.name.split(' ')[-1]
@@ -371,6 +372,11 @@ class Game:
 
         self.board.ui_elements = self.tiles + self.board.game_elements
         self.mode = 'play'
+
+    def load_hi_scores(self):
+        with open('scores.json') as file:
+            scores = json.load(file)
+        return scores
 
     def mult_up(self):
         self.multiplier += 1
