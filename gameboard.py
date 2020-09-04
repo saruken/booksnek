@@ -115,7 +115,7 @@ class Board():
         splash_menu_new = ui.Interactive(name='splash new', dims=(264, 40), coords=coords, fonts=self.fonts, text='NEW GAME', text_color='light_gray', colors=self.colors)
 
         # Hi Score list
-        header = self.fonts['medium'].render('HI SCORES', True, self.colors['bg_gold'], None)
+        header = self.fonts['medium'].render('~ HI SCORES ~', True, self.colors['bg_gold'], None)
         w = header.get_size()[0]
         surf_dims = (656, 387)
         coords = offset_from_element(splash_menu_bg, corner=(0, 1), offset=(0, 40))

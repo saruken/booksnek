@@ -254,6 +254,11 @@ class Game:
             self.mode = 'menu'
             self.board.create_quit_menu()
             self.board.ui_elements += self.board.splash_elements
+        elif elem.name == 'quit no':
+            self.board.ui_elements = self.tiles + self.board.game_elements
+            self.mode = 'play'
+        elif elem.name == 'quit yes':
+            self.try_update_hi_score()
         elif elem.name == 'load':
             self.open_load_menu()
         elif elem.name == 'save':
@@ -275,7 +280,6 @@ class Game:
             self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'splash new':
             self.mode = 'play'
-            self.board.hide_splash_menu()
             self.board.ui_elements = self.tiles + self.board.game_elements
             self.new_game()
         elif elem.name == 'tutorial next':
@@ -545,6 +549,11 @@ class Game:
 
         print('Gamestate saved')
 
+    def save_hi_scores(self, scores):
+        with open('scores.json', 'w') as file:
+            json.dump(scores, file)
+        print('Hi scores updated')
+
     def score_word(self, word=None):
         value = 0
         if word:
@@ -673,6 +682,19 @@ class Game:
             self.snake.last.mouse_out()
             self.empty_snake()
             self.update_word_display()
+
+    def try_update_hi_score(self):
+        scores = sorted(self.load_hi_scores(), key=lambda k: k['score'])
+        if self.score >= scores[0]['score']:
+            scores.pop(0)
+            entry = {
+                'username': 'AJL',
+                'date': datetime.strftime(datetime.today(), '%b %d, %Y'),
+                'score': self.score
+            }
+            scores.append(entry)
+            scores = sorted(scores,  key=lambda k: k['score'])
+            self.save_hi_scores(scores)
 
     def update_bonus_color(self):
         self.board.update_bonus_color(self.bonus_word, self.snake.word, self.colors)

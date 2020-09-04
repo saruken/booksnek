@@ -120,6 +120,7 @@ if __name__ == '__main__':
 
     #TODO:
         # Lv has some effect on score, but primarily on DEF/HP; Mult has much more effect on damage dealt to player (and points scored)
+        # Heal tiles should display how much they will heal
         # Make "Game Over" mean something
         # "Quit" btn -> check/save hi score
         # Add tutorial GIFs, steps
@@ -128,6 +129,7 @@ if __name__ == '__main__':
     # BUGS
         # New game not resetting exp, best/longest, hp, hp_max, hp growth(?), bonus(?)
         # 2 heal tiles in the same word -- If 1 would be enough to restore MAX HP, 2nd one should buff HP GROWTH
+        # Atk tile with beacon=True that gets matched and remade into another attack tile is getting jacked up (still red) bg_color until mouse_over fixes it
 
     # Add words to dict
         #
