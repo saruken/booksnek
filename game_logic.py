@@ -164,17 +164,17 @@ class Game:
         return bool(self.board.level_display.progress >= self.board.level_display.progress_max)
 
     def check_update_best(self):
-        if self.history[-1]['value'] > self.value_best:
+        if self.history[-1]['value'] > self.word_best['value']:
             self.level_best = self.level
             self.mult_best = self.multiplier
-            self.value_best = self.history[-1]['value']
-            self.word_best = self.history[-1]['word']
             text = f"{format(self.history[-1]['value'], ',d')} {self.history[-1]['word']}"
             filler = ['beige' for _ in range(len(text) - len(self.history[-1]['colors']))]
             obj = {
                 'word': text,
+                'value': self.history[-1]['value'],
                 'colors': filler + self.history[-1]['colors']
             }
+            self.word_best = obj
             self.board.best_display.set_colored_text(obj)
             self.board.best_display.flash()
 
@@ -252,7 +252,7 @@ class Game:
         if elem.name == 'new':
             self.new_game()
         elif elem.name == 'load':
-            self.load_game()
+            self.open_load_menu()
         elif elem.name == 'save':
             self.save_game()
         elif elem.name == 'scramble':
@@ -280,6 +280,9 @@ class Game:
         elif elem.name in ('tutorial done', 'load back'):
             self.board.create_splash_menu()
             self.board.ui_elements = self.board.splash_elements
+        elif 'gamestate' in elem.name:
+            game_id = elem.name.split(' ')[-1]
+            self.load_game(game_id)
 
     def highlight_selected_tiles(self):
         for tile in [t for t in self.tiles if t.selected]:
@@ -319,11 +322,55 @@ class Game:
         self.update_bonus_display()
         self.update_tiles()
 
-    def load_game(self):
-        self.mode = 'menu'
-        gamestates = self.fetch_gamestates()
-        self.board.create_load_menu(gamestates)
-        self.board.ui_elements = self.board.splash_elements
+    def load_game(self, game_id):
+        self.new_game()
+
+        with open('saved_gamestates.json') as file:
+            saved_gamestates = json.load(file)
+        gamestate = [g for g in saved_gamestates if g['id'] == game_id][0]
+
+        h = self.board.hp_display
+        d = self.board.level_display
+
+        d.progress_actual = gamestate['exp']
+        d.progress_max = gamestate['next_level']
+        h.hp = gamestate['hp']
+        h.hp_max = gamestate['hp_max']
+        self.bonus_counter = gamestate['bonus_counter']
+        self.bonus_word = gamestate['bonus_word']
+        self.history = gamestate['history']
+        self.last_five_words = gamestate['last_five_words']
+        self.level = gamestate['level']
+        self.level_best = gamestate['level_best']
+        self.score = gamestate['score']
+        self.word_best = gamestate['best_word']
+        self.word_longest = gamestate['longest_word']
+
+        for n, tile in enumerate(self.tiles):
+            source_tile = gamestate['tiles'][n]
+            tile.attack_timer = source_tile['attack_timer']
+            tile.col = source_tile['col']
+            tile.first_turn = source_tile['first_turn']
+            tile.letter = source_tile['letter']
+            tile.level = source_tile['level']
+            tile.marked = source_tile['marked']
+            tile.multiplier = source_tile['multiplier']
+            tile.point_value = source_tile['point_value']
+            tile.row = source_tile['row']
+            tile.tile_type = source_tile['tile_type']
+            tile.update()
+
+        self.board.best_display.set_colored_text(self.word_best)
+        self.update_bonus_display()
+        self.board.longest_display.update(self.word_longest)
+        self.board.multiplier_display.update(self.multiplier)
+        self.board.score_display.update(self.score)
+        self.board.level_display.update(self.level)
+        if self.history:
+            self.board.history_display.set_multiline_text(self.history)
+
+        self.board.ui_elements = self.tiles + self.board.game_elements
+        self.mode = 'play'
 
     def mult_up(self):
         self.multiplier += 1
@@ -342,14 +389,17 @@ class Game:
         self.multiplier = 1
         self.paused = False
         self.score = 0
-        self.value_best = 0
-        self.word_best = None
         self.word_longest = None
+        self.word_best = {
+            "word": '',
+            "value": 0,
+            'colors': []
+        }
 
         self.choose_bonus_word()
         self.empty_snake()
 
-        self.board.best_display.update(self.word_best)
+        self.board.best_display.update(None)
         self.update_bonus_display()
         self.board.history_display.update(self.history)
         self.board.longest_display.update(self.word_longest)
@@ -359,6 +409,12 @@ class Game:
 
         for t in self.tiles:
             t.reset()
+
+    def open_load_menu(self):
+        self.mode = 'menu'
+        gamestates = self.fetch_gamestates()
+        self.board.create_load_menu(gamestates)
+        self.board.ui_elements = self.board.splash_elements
 
     def reroll_snake_tiles(self, old_bonus):
         for tile in self.snake.tiles:
@@ -447,24 +503,33 @@ class Game:
             }
             tiles.append(tile)
 
+        username = 'SHAT'
+        stamp = datetime.today()
+        timestamp_long =  datetime.strftime(stamp, '%b %d, %Y %H:%M:%S')
+        timestamp_short =  datetime.strftime(stamp, '%Y-%m-%d-%H-%M-%S')
+
         gamestate = {
-            'timestamp': datetime.strftime(datetime.today(), '%b %m, %Y'),
-            'username': None,
-            'score': self.score,
-            'level': self.level,
-            'bonus_word': self.bonus_word,
-            'history': self.history,
+            'id': f'{username}_{timestamp_short}',
+            'timestamp': timestamp_long,
+            'username': username,
             'best_word': self.word_best,
-            'longest_word': self.word_longest,
+            'bonus_counter': self.bonus_counter,
+            'bonus_word': self.bonus_word,
+            'exp': d.progress_actual,
+            'history': self.history,
             'hp': h.hp,
             'hp_max': h.hp_max,
-            'exp': d.progress_actual,
+            'last_five_words': self.last_five_words,
+            'level': self.level,
+            'level_best': self.level_best,
+            'longest_word': self.word_longest,
             'next_level': d.progress_max,
+            'score': self.score,
             'tiles': tiles
         }
 
         with open('saved_gamestates.json') as file:
-            saved_gamestates = json.load(file)['gamestates']
+            saved_gamestates = [g for g in json.load(file)]
 
         saved_gamestates.append(gamestate)
         with open('saved_gamestates.json', 'w') as file:

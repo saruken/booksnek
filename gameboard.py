@@ -64,7 +64,7 @@ class Board():
 
     def create_load_menu(self, gamestates):
         self.hide_splash_menu()
-        header = self.fonts['medium'].render('LOAD GAME STATE', True, self.colors['light_gray'], None)
+        header = self.fonts['medium'].render('LOAD GAMESTATE', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
         h = header.get_size()[1]
         surf_dims = (284, 400)
@@ -77,7 +77,8 @@ class Board():
         if gamestates:
             for n, gamestate in enumerate(gamestates):
                 username = gamestate['username'] if gamestate['username'] else 'SNEK'
-                btn = ui.Interactive(name=f'gamestate {n}', dims=(264, 40), coords=coords, fonts=self.fonts, text=f"{username} {gamestate['timestamp']}", colors=self.colors, text_color='light_gray')
+                game_id = gamestate['id']
+                btn = ui.Interactive(name=f'gamestate {game_id}', dims=(264, 40), coords=coords, fonts=self.fonts, text=game_id, colors=self.colors, text_color='light_gray')
                 coords = (coords[0], coords[1] + 50)
                 gamestate_btns.append(btn)
         else:

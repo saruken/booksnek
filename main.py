@@ -128,6 +128,10 @@ if __name__ == '__main__':
         # Add tutorial GIFs, steps
         # SFX
 
+    # BUGS
+        # New game not resetting exp, best/longest, hp, hp_max, hp growth(?), bonus(?)
+        # 2 heal tiles in the same word -- If 1 would be enough to restore MAX HP, 2nd one should buff HP GROWTH
+
     # Add words to dict
         #
     # Remove words from dict
