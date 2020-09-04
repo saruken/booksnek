@@ -32158,7 +32158,9 @@ homeys
 homicidal
 homicide
 homicides
+homie
 homier
+homies
 homiest
 homiletic
 homilies
@@ -44687,6 +44689,7 @@ noggin
 noggins
 nogs
 nohow
+noir
 noise
 noised
 noiseless
@@ -45924,6 +45927,8 @@ oilcans
 oilcloth
 oilcloths
 oiled
+oiler
+oilers
 oilfield
 oilfields
 oilier
@@ -49423,8 +49428,6 @@ petunias
 pew
 pewee
 pewees
-pewit
-pewits
 pews
 pewter
 pewters

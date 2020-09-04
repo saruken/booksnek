@@ -259,6 +259,8 @@ class Game:
             self.mode = 'play'
         elif elem.name == 'quit yes':
             self.try_update_hi_score()
+            self.board.create_splash_menu(self.load_hi_scores())
+            self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'load':
             self.open_load_menu()
         elif elem.name == 'save':
@@ -279,9 +281,9 @@ class Game:
             self.board.create_tutorial()
             self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'splash new':
-            self.mode = 'play'
-            self.board.ui_elements = self.tiles + self.board.game_elements
             self.new_game()
+            self.board.ui_elements = self.tiles + self.board.game_elements
+            self.mode = 'play'
         elif elem.name == 'tutorial next':
             self.board.advance_tutorial()
         elif elem.name in ('tutorial done', 'load back'):
@@ -342,7 +344,9 @@ class Game:
         d.progress_actual = gamestate['exp']
         d.progress_max = gamestate['next_level']
         h.hp = gamestate['hp']
+        h.hp_buff = gamestate['hp_buff']
         h.hp_max = gamestate['hp_max']
+        h.lv = gamestate['hp_lv']
         self.bonus_counter = gamestate['bonus_counter']
         self.bonus_word = gamestate['bonus_word']
         self.history = gamestate['history']
@@ -407,6 +411,15 @@ class Game:
             "value": 0,
             'colors': []
         }
+
+        h = self.board.hp_display
+        h.hp = 1
+        h.hp_max = 1
+        h.hp_base = 108
+        h.hp_buff = 0
+        h.lv = 1
+
+        d = self.board.level_display
 
         self.choose_bonus_word()
         self.empty_snake()
@@ -530,6 +543,8 @@ class Game:
             'exp': d.progress_actual,
             'history': self.history,
             'hp': h.hp,
+            'hp_buff': h.hp_buff,
+            'hp_lv': h.lv,
             'hp_max': h.hp_max,
             'last_five_words': self.last_five_words,
             'level': self.level,

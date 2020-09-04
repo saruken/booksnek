@@ -121,13 +121,18 @@ if __name__ == '__main__':
     #TODO:
         # Lv has some effect on score, but primarily on DEF/HP; Mult has much more effect on damage dealt to player (and points scored)
         # Heal tiles should display how much they will heal
+        # Instead of HP GROWTH, heal tiles should add some amt to MAX HP (but not to HP)
         # Make "Game Over" mean something
+        # View high scores during game
+        # When multiple effects will take place in the same "turn", put a quick delay between them
         # Add tutorial GIFs, steps
+        # Need some way to indicating that beacon tiles are highlighted
+        # If you quit with a high score, it should then be highlighted on the splash menu
         # SFX
 
     # BUGS
-        # New game not resetting exp, best/longest, hp, hp_max, hp growth(?), bonus(?)
         # 2 heal tiles in the same word -- If 1 would be enough to restore MAX HP, 2nd one should buff HP GROWTH
+        # History not totally filling from saved gamestate when there are >= max # of words
 
     # Add words to dict
         #
