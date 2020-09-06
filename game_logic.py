@@ -91,8 +91,7 @@ class Game:
                 hp_effect += amt
                 print(f'Healed {amt} from c{tile.col}r{tile.row} "{tile.letter}". Net HP effect this turn is {hp_effect}.')
             else:
-                arc_sources.append([tile.middle, 'teal', 'HP BASE'])
-                print(f'Added 10 to base HP stat from c{tile.col}r{tile.row} "{tile.letter}"')
+                arc_sources.append([tile.middle, 'teal', 'HP MAX'])
                 h.buff()
 
         if self.snake.length:
@@ -353,9 +352,7 @@ class Game:
         d.progress_actual = gamestate['exp']
         d.progress_max = gamestate['next_level']
         h.hp = gamestate['hp']
-        h.hp_buff = gamestate['hp_buff']
         h.hp_max = gamestate['hp_max']
-        h.lv = gamestate['hp_lv']
         self.bonus_counter = gamestate['bonus_counter']
         self.bonus_word = gamestate['bonus_word']
         self.history = gamestate['history']
@@ -427,13 +424,9 @@ class Game:
         d.progress_max = d.progress_lv_increment
 
         h = self.board.hp_display
-        h.hp = 1
+        h.hp_max = h.hp_max_base
+        h.hp = h.hp_max
         h.hp_displayed = 1
-        h.hp_max = 1
-        h.hp_base = 108
-        h.hp_buff = 0
-        h.lv = 1
-        h.level_up(lv=1)
         h.build_image()
 
         self.choose_bonus_word()
@@ -558,8 +551,6 @@ class Game:
             'exp': d.progress_actual,
             'history': self.history,
             'hp': h.hp,
-            'hp_buff': h.hp_buff,
-            'hp_lv': h.lv,
             'hp_max': h.hp_max,
             'last_five_words': self.last_five_words,
             'level': self.level,

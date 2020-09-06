@@ -1,4 +1,4 @@
-import os, pygame
+import os, pygame, random
 from math import ceil, floor, sqrt
 from numpy.random import choice
 
@@ -205,13 +205,11 @@ class HPDisplay():
         self.fade_counter_speed = 1.2
         self.fonts = fonts
         self.hp = 1
-        self.hp_base = 108
-        self.hp_buff = 0
         self.hp_color = self.colors['hp_green']
         self.hp_displayed = 1
-        self.hp_max = 1
+        self.hp_max = 15
+        self.hp_max_base = 15
         self.interactive = False
-        self.lv = 1
         self.surf = pygame.Surface(self.dims)
 
         self.bar_max_width = self.dims[0] - 4
@@ -220,8 +218,9 @@ class HPDisplay():
         self.border_color = self.colors['mid_gray']
 
     def buff(self):
-        self.hp_buff += ceil(self.lv / 10)
-        self.calculate_hp_max()
+        self.hp_max += 1
+        self.update()
+        print('HP_MAX increased by 1')
 
     def build_image(self):
         if self.fade_counter:
@@ -245,11 +244,6 @@ class HPDisplay():
         pygame.draw.line(self.surf, self.bg_color, (14, 0), (label.get_size()[0] + 14 + 20, 0), width=2)
         self.surf.blit(label, (24, -2))
 
-    def calculate_hp_max(self):
-        self.hp_max = floor(((2 * self.hp_base) * self.lv) / 100) + self.lv + self.hp_buff + 10
-        self.update()
-        print(f'calculate_hp_max(): hp_max set to {self.hp_max}')
-
     def flash(self, color=None):
         if not self.fade_counter:
             self.fade_counter = 1
@@ -259,13 +253,11 @@ class HPDisplay():
             self.fade_color = self.colors['red']
 
     def level_up(self, lv):
-        self.lv = lv
-        old_max = self.hp_max
-        self.calculate_hp_max()
-        delta = self.hp_max - old_max
-        self.hp += delta
-        print(f'+{delta} to max HP ({self.hp_max}) and current HP ({self.hp})')
-        self.hp_displayed += delta
+        buff = random.choice([1, 2, 3])
+        self.hp_max += buff
+        self.hp += buff
+        self.hp_displayed += buff
+        print(f'HP and HP_MAX increased by {buff}')
         self.update()
 
     def set_hp_color(self):
