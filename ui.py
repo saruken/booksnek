@@ -182,12 +182,14 @@ class Display(BaseObj):
         else:
             self.update(text='__clear__')
 
-    def update(self, text=None):
+    def update(self, text=None, label=None):
         if text:
             if text == '__clear__':
                 self.text = None
             else:
                 self.text = self.text_prefix + str(text)
+        if label:
+            self.label = label
         if self.fade_counter:
             self.fade_border()
         if self.multicolor:

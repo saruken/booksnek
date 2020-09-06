@@ -457,7 +457,7 @@ class Game:
         self.board.longest_display.update(self.word_longest)
         self.board.multiplier_display.update(self.multiplier)
         self.board.score_display.update(self.score)
-        self.board.level_display.update(self.level)
+        self.board.level_display.update(self.level, label=self.player_name)
 
         for t in self.tiles:
             t.reset()

@@ -123,7 +123,6 @@ if __name__ == '__main__':
     #TODO:
         # View high scores during game
         # When multiple effects will take place in the same "turn", put a quick delay between them
-        # Allow name entry/change
         # Add tutorial GIFs, steps
         # Need some way to indicating that beacon tiles are highlighted
         # If you quit with a high score, it should then be highlighted on the splash menu
