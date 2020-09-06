@@ -119,10 +119,9 @@ if __name__ == '__main__':
     main()
 
     #TODO:
-        # Lv's only effect is on HP; Mult controls atk tile dmg & points
-        # Heal tiles should display how much they will heal
         # View high scores during game
         # When multiple effects will take place in the same "turn", put a quick delay between them
+        # Allow name entry/change
         # Add tutorial GIFs, steps
         # Need some way to indicating that beacon tiles are highlighted
         # If you quit with a high score, it should then be highlighted on the splash menu
@@ -134,6 +133,6 @@ if __name__ == '__main__':
         # Letters are changing point value on match, before ghosts are created
 
     # Add words to dict
-        # roamings
+        # roamings, mould/s/ed/ing/y
     # Remove words from dict
         # caff/s, fum/s/med/ming

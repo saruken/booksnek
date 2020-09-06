@@ -375,7 +375,6 @@ class Game:
             tile.col = source_tile['col']
             tile.first_turn = source_tile['first_turn']
             tile.letter = source_tile['letter']
-            tile.level = source_tile['level']
             tile.marked = source_tile['marked']
             tile.multiplier = source_tile['multiplier']
             tile.point_value = source_tile['point_value']
@@ -533,7 +532,6 @@ class Game:
                 'col': t.col,
                 'first_turn': t.first_turn,
                 'letter': t.letter,
-                'level': t.level,
                 'marked': t.marked,
                 'multiplier': t.multiplier,
                 'point_value': t.point_value,

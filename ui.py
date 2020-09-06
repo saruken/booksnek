@@ -336,7 +336,6 @@ class Tile():
         self.hovered = False
         self.images = {}
         self.interactive = True
-        self.level = 1
         self.marked = False
         self.middle = (0, 0)
         self.multiplier = 1
@@ -559,7 +558,7 @@ class Tile():
         elif self.tile_type == 'gold':
             type_multiplier = 4
 
-        self.point_value = value * self.level * self.multiplier * type_multiplier
+        self.point_value = value * self.multiplier * type_multiplier
 
 def format_num(num):
     if num < 1000:
