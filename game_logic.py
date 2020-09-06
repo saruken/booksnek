@@ -51,6 +51,7 @@ class Game:
         self.dictionary = dictionary
         self.max_history_words = 25
         self.mode = 'menu'
+        self.player_name = 'SNEK'
         self.snake = tile_snake.Snake()
         tile_offset = gameboard.offset_from_element(self.board.level_display, corner=(0, 1), offset=(0, 10))
         self.tiles = self.board.create_tiles(self.colors, offset=tile_offset)
@@ -291,9 +292,17 @@ class Game:
             self.board.create_tutorial()
             self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'splash new':
+            self.board.create_name_menu(self.player_name)
+            self.board.ui_elements = self.board.splash_elements
+            self.mode = 'name entry'
+        elif elem.name == 'name start':
             self.new_game()
             self.board.ui_elements = self.tiles + self.board.game_elements
             self.mode = 'play'
+        elif elem.name == 'name clear':
+            self.player_name = ''
+            self.board.clear_name()
+            self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'tutorial next':
             self.board.advance_tutorial()
         elif elem.name == 'game over ok':
@@ -306,6 +315,11 @@ class Game:
         elif 'gamestate' in elem.name:
             game_id = elem.name.split(' ')[-1]
             self.load_game(game_id)
+
+    def handle_name_entry(self, key):
+        letter = pygame.key.name(key).upper()
+        self.player_name = self.board.update_name(self.player_name, letter)
+        self.board.ui_elements = self.board.splash_elements
 
     def highlight_selected_tiles(self):
         for tile in [t for t in self.tiles if t.selected]:
@@ -665,7 +679,7 @@ class Game:
         return bool(h.hp < h.hp_max)
 
     def try_mouse_over(self, game_mode, elem):
-        if game_mode == 'menu':
+        if game_mode in ('menu', 'name entry'):
             for el in [e for e in self.board.splash_elements if e.hovered]:
                 el.mouse_out()
             if elem:

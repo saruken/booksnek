@@ -1,4 +1,4 @@
-import numpy, os, pygame, random
+import numpy, os, pygame, random, string
 from math import pi
 from time import sleep
 
@@ -15,6 +15,7 @@ class Board():
             'medium': pygame.font.Font('VCR_OSD_MONO.ttf', 18),
             'small': pygame.font.Font('VCR_OSD_MONO.ttf', 12)
         }
+        self.name_entry_pos = 0
 
         self.menu_bg = ui.Display(dims=(348, 60), coords=(-2, -2), fonts=self.fonts, colors=colors)
         coords = offset_from_element(self.menu_bg, corner=(0, 0), offset=(10, 10))
@@ -61,6 +62,10 @@ class Board():
         if self.tutorial_current_step == len(self.tutorial_steps) - 1:
             self.splash_elements.pop(3) # Remove 'Next' button
 
+    def clear_name(self):
+        self.name_entry_pos = 0
+        self.create_name_menu('')
+
     def create_game_over_menu(self):
         self.hide_splash_menu()
         header = self.fonts['medium'].render('GAME OVER', True, self.colors['light_gray'], None)
@@ -95,6 +100,38 @@ class Board():
             btn = ui.Display(dims=(264, 40), coords=coords, fonts=self.fonts, text='NO SAVED GAMESTATES', colors=self.colors, center=True)
             gamestate_btns.append(btn)
         self.splash_elements = [load_menu_bg, btn_back] + gamestate_btns
+
+    def create_name_menu(self, player_name):
+        self.hide_splash_menu()
+        header = self.fonts['medium'].render('PLAYER NAME', True, self.colors['light_gray'], None)
+        w = header.get_size()[0]
+        surf_dims = (350, 200)
+        menu_bg = ui.Display(dims=surf_dims, coords=(163, 90), fonts=self.fonts, colors=self.colors)
+        menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
+        coords = offset_from_element(menu_bg, corner=(1, 1), offset=(-150, -50))
+        btn_start = ui.Interactive(name='name start', dims=(140, 40), coords=coords, fonts=self.fonts, text='START', colors=self.colors, text_color='light_gray')
+        coords = offset_from_element(menu_bg, corner=(0, 1), offset=(10, -50))
+        btn_clear = ui.Interactive(name='name clear', dims=(140, 40), coords=coords, fonts=self.fonts, text='CLEAR', colors=self.colors, text_color='light_gray')
+        if self.name_entry_pos >= len(player_name):
+            tile_surf = pygame.Surface(((len(player_name) + 1) * 48, 48))
+        else:
+            tile_surf = pygame.Surface((len(player_name) * 48, 48))
+        for n, letter in enumerate(player_name):
+            tile = ui.Tile(fonts=self.fonts, colors=self.colors, letter=letter)
+            if n == self.name_entry_pos:
+                tile.mouse_over()
+            else:
+                tile.mouse_out()
+            tile_surf.blit(tile.surf, dest=(n * 48, 0))
+        if self.name_entry_pos >= len(player_name):
+            border = pygame.Surface((48, 48))
+            border.fill(self.colors['gold'])
+            pygame.draw.rect(border, self.colors['bg_main'], pygame.Rect((2, 2), (44, 44)))
+            tile_surf.blit(border, dest=(len(player_name) * 48, 0))
+
+        w = tile_surf.get_size()[0]
+        menu_bg.surf.blit(tile_surf, dest=(175 - w / 2, 50))
+        self.splash_elements = [menu_bg, btn_start, btn_clear]
 
     def create_quit_menu(self):
         self.hide_splash_menu()
@@ -209,6 +246,50 @@ class Board():
     def show_gif(self):
         # TODO: Load & display self.tutorial_gifs[self.tutorial_current_step]
         pass
+
+    def update_name(self, player_name, letter):
+        name = list(player_name)
+        if letter not in string.ascii_uppercase:
+            if letter == 'RIGHT':
+                if self.name_entry_pos < 4:
+                    try:
+                        name[self.name_entry_pos]
+                        self.name_entry_pos += 1
+                    except IndexError:
+                        pass
+                    new_name = player_name
+            elif letter == 'LEFT':
+                if self.name_entry_pos:
+                    self.name_entry_pos -= 1
+                new_name = player_name
+            elif letter == 'BACKSPACE':
+                if self.name_entry_pos:
+                    name[self.name_entry_pos - 1] = ''
+                    name.pop(self.name_entry_pos - 1)
+                    self.name_entry_pos -= 1
+                    new_name = ''.join(name)
+                else:
+                    new_name = player_name
+            elif letter == 'DELETE':
+                if self.name_entry_pos < len(name):
+                    name[self.name_entry_pos] = ''
+                    name.pop(self.name_entry_pos)
+                    new_name = ''.join(name)
+                else:
+                    new_name = player_name
+            else:
+                new_name = player_name
+            self.create_name_menu(new_name)
+            return new_name
+        try:
+            name[self.name_entry_pos] = letter
+        except IndexError:
+            name.append(letter)
+        if self.name_entry_pos < 4:
+            self.name_entry_pos += 1
+        new_name = ''.join(name)
+        self.create_name_menu(new_name)
+        return new_name
 
 class GFXSurf:
     def __init__(self, fonts, colors):

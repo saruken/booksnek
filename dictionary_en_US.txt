@@ -27587,7 +27587,6 @@ fulminations
 fulsome
 fulsomely
 fulsomeness
-fum
 fumble
 fumbled
 fumbler
@@ -27610,7 +27609,6 @@ fumigation
 fumigator
 fumigators
 fuming
-fums
 fumy
 fun
 function
@@ -43232,6 +43230,11 @@ motto
 mottoes
 moue
 moues
+mould
+moulded
+moulding
+moulds
+mouldy
 mound
 mounded
 mounding
@@ -58228,6 +58231,7 @@ roamed
 roamer
 roamers
 roaming
+roamings
 roams
 roan
 roans

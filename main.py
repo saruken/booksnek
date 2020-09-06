@@ -106,6 +106,8 @@ def main():
                 if game.mode == 'play':
                     if not game.paused:
                         last_typed = game.highlight_tiles_from_letter(event.key, game.last_typed)
+                elif game.mode == 'name entry':
+                    game.handle_name_entry(event.key)
             if game.mode == 'play':
                 game.update_btn_clear_marked()
         game.animate()
@@ -133,6 +135,6 @@ if __name__ == '__main__':
         # Letters are changing point value on match, before ghosts are created
 
     # Add words to dict
-        # roamings, mould/s/ed/ing/y
+        #
     # Remove words from dict
-        # caff/s, fum/s/med/ming
+        #
