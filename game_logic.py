@@ -67,18 +67,22 @@ class Game:
         for tile in [t for t in self.tiles if t.tile_type == 'attack']:
             # Don't tick tiles that are part of the just-submitted word
             if not tile in self.snake.tiles:
-                if tile.attack_tick():
-                    amt = ceil(h.hp_max / 8) * -1
+                tile.attack_tick()
+                if tile.attack_timer:
+                    tile.update()
+                else:
+                    amt = tile.point_value * -1
+                    tile.update()
                     arc_sources.append([tile.middle, 'bg_attack', amt])
                     hp_effect += amt
-                    print(f'Damaged {amt} from c{tile.col}r{tile.row} "{tile.letter}". Net HP effect this turn is {hp_effect}.')
+                    print(f'Dealt {amt} damage from c{tile.col}r{tile.row} "{tile.letter}". Net HP effect this turn is {hp_effect}.')
                     self.reroll_tiles(tile=tile)
 
         # Poison tiles
         for tile in [t for t in self.tiles if t.tile_type == 'poison']:
             # Don't activate tiles that are part of the just-submitted word
             if not tile in self.snake.tiles:
-                amt = ceil(h.hp_max / 16) * -1
+                amt = self.multiplier * -1
                 arc_sources.append([tile.middle, 'bg_poison', amt])
                 hp_effect += amt
                 print(f'Poisoned {amt} from c{tile.col}r{tile.row} "{tile.letter}". Net HP effect this turn is {hp_effect}.')
@@ -86,13 +90,15 @@ class Game:
         # Heal tiles
         for tile in [t for t in self.snake.tiles if t.tile_type == 'heal']:
             if self.try_heal():
-                amt = ceil(h.hp_max / 10)
+                amt = tile.point_value
                 arc_sources.append([tile.middle, 'teal', amt])
                 hp_effect += amt
                 print(f'Healed {amt} from c{tile.col}r{tile.row} "{tile.letter}". Net HP effect this turn is {hp_effect}.')
             else:
-                arc_sources.append([tile.middle, 'teal', 'HP MAX'])
-                h.buff()
+                arc_sources.append([tile.middle, 'teal', f'{self.multiplier} MAX'])
+                h.hp_max += self.multiplier
+                print(f'HP_MAX increased by {self.multiplier}')
+                h.update()
 
         if self.snake.length:
             self.reroll_snake_tiles(old_bonus)

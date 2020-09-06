@@ -217,11 +217,6 @@ class HPDisplay():
         self.bg_color_progress = self.colors['bg_progress']
         self.border_color = self.colors['mid_gray']
 
-    def buff(self):
-        self.hp_max += 1
-        self.update()
-        print('HP_MAX increased by 1')
-
     def build_image(self):
         if self.fade_counter:
             try:
@@ -391,10 +386,6 @@ class Tile():
                 self.tile_type = 'stone'
                 self.letter = '__'
                 self.marked = False
-                self.update()
-                return True
-        self.update()
-        return False
 
     def build_image(self):
         if not self.beacon:
@@ -563,9 +554,7 @@ class Tile():
             value = 10
 
         type_multiplier = 1
-        if self.tile_type in ('attack', 'heal', 'poison'):
-            type_multiplier = 2
-        elif self.tile_type == 'silver':
+        if self.tile_type == 'silver':
             type_multiplier = 3
         elif self.tile_type == 'gold':
             type_multiplier = 4
