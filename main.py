@@ -135,8 +135,6 @@ if __name__ == '__main__':
                         Copy images to ghosts
                     Poison tile activation
         Move QUIT btn to top right (eat into SCORE area); move UNMARK to menu row
-        ENTER on name entry screen starts new game
-        Change point_value display on HEAL tiles to '+N'; ATK/POISON tiles as '-N'
         Add tutorial GIFs, steps
         SFX
         Maybe do marquee effect for bonus word tile ghosts?

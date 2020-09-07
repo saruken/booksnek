@@ -56,10 +56,10 @@ class Display(BaseObj):
             pygame.draw.rect(self.surf, self.colors['progress'], pygame.Rect((2, self.dims[1] - 6), (bar_width, 4)))
             formatted = format_num(self.progress)
             surf = self.fonts['small'].render(formatted, True, self.colors['mid_gray'], self.bg_color)
-            self.surf.blit(surf, dest=(3, self.dims[1] - surf.get_size()[1] - 8))
+            self.surf.blit(surf, dest=(5, self.dims[1] - surf.get_size()[1] - 8))
             formatted = format_num(self.progress_max)
             surf = self.fonts['small'].render(formatted, True, self.colors['mid_gray'], self.bg_color)
-            self.surf.blit(surf, dest=(self.dims[0] - surf.get_size()[0] - 3, self.dims[1] - surf.get_size()[1] - 8))
+            self.surf.blit(surf, dest=(self.dims[0] - surf.get_size()[0] - 5, self.dims[1] - surf.get_size()[1] - 8))
 
         if self.text:
             # Render text

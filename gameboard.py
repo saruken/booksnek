@@ -19,25 +19,25 @@ class Board():
 
         self.menu_bg = ui.Display(dims=(348, 60), coords=(-2, -2), fonts=self.fonts, colors=colors)
         coords = offset_from_element(self.menu_bg, corner=(0, 0), offset=(10, 10))
-        self.menu_quit = ui.Interactive(name='quit', dims=(63, 40), coords=coords, fonts=self.fonts, text='QUIT', colors=colors, text_color='light_gray')
-        coords = offset_from_element(self.menu_quit, corner=(1, 0), offset=(10, 0))
-        self.menu_open = ui.Interactive(name='load', dims=(63, 40), coords=coords, fonts=self.fonts, text='LOAD', text_color='light_gray', colors=colors)
-        coords = offset_from_element(self.menu_open, corner=(1, 0), offset=(10, 0))
-        self.menu_save = ui.Interactive(name='save', dims=(63, 40), coords=coords, fonts=self.fonts, text='SAVE', colors=colors)
+        self.menu_open = ui.Interactive(name='load', dims=(62, 40), coords=coords, fonts=self.fonts, text='LOAD', text_color='light_gray', colors=colors)
+        coords = offset_from_element(self.menu_open, corner=(1, 0), offset=(4, 0))
+        self.menu_save = ui.Interactive(name='save', dims=(62, 40), coords=coords, fonts=self.fonts, text='SAVE', colors=colors)
+        coords = offset_from_element(self.menu_save, corner=(1, 0), offset=(4, 0))
+        self.btn_clear_marked = ui.Interactive(name='clear', dims=(83, 40), coords=coords, fonts=self.fonts, text='UNMARK', enabled=False, colors=colors)
+        coords = offset_from_element(self.btn_clear_marked, corner=(1, 0), offset=(4, 0))
+        self.btn_scramble = ui.Interactive(name='scramble', dims=(109, 40), coords=coords, colors=colors, fonts=self.fonts, text='SCRAMBLE', text_color='light_gray')
         coords = offset_from_element(self.menu_bg, corner=(0, 1), offset=(12, 10))
         self.bonus_display = ui.Display(dims=(336, 40), coords=coords, fonts=self.fonts, colors=colors, text_color='light_gray', label='MULTIPLIER+', center=True)
         coords = offset_from_element(self.bonus_display, corner=(0, 1), offset=(0, 10))
         self.hp_display = ui.HPDisplay(dims=(336, 34), coords=coords, fonts=self.fonts, colors=colors)
         coords = offset_from_element(self.hp_display, corner=(0, 1), offset=(0, 10))
-        self.level_display = ui.Display(dims=(136, 40), coords=coords, fonts=self.fonts, colors=colors, label='EXP.', text_prefix='Lv', text_color='light_gray', center=True, show_progress=True)
+        self.level_display = ui.Display(dims=(246, 40), coords=coords, fonts=self.fonts, colors=colors, label='EXP.', text_prefix='Lv', text_color='light_gray', center=True, show_progress=True)
         coords = offset_from_element(self.level_display, corner=(1, 0), offset=(10, 0))
         self.multiplier_display = ui.Display(dims=(80, 40), coords=coords, fonts=self.fonts, colors=colors, label='MULT.', text_prefix='x', text_color='light_gray', center=True)
-        coords = offset_from_element(self.multiplier_display, corner=(1, 0), offset=(10, 0))
-        self.btn_clear_marked = ui.Interactive(name='clear', dims=(100, 40), coords=coords, fonts=self.fonts, text='UNMARK', enabled=False, colors=colors)
-        coords = offset_from_element(self.menu_save, corner=(1, 0), offset=(10, 0))
-        self.btn_scramble = ui.Interactive(name='scramble', dims=(109, 40), coords=coords, colors=colors, fonts=self.fonts, text='SCRAMBLE', text_color='light_gray')
-        coords = offset_from_element(self.btn_scramble, corner=(1, 0), offset=(20, 0))
-        self.score_display = ui.Display(dims=(310, 40), coords=coords, fonts=self.fonts, colors=colors, text='0', text_color='light_gray', label='SCORE', center=True)
+        coords = offset_from_element(self.menu_bg, corner=(1, 0), offset=(10, 10))
+        self.score_display = ui.Display(dims=(243, 40), coords=coords, fonts=self.fonts, colors=colors, text='0', text_color='light_gray', label='SCORE', center=True)
+        coords = offset_from_element(self.score_display, corner=(1, 0), offset=(4, 0))
+        self.menu_quit = ui.Interactive(name='quit', dims=(63, 40), coords=coords, fonts=self.fonts, text='QUIT', colors=colors, text_color='light_gray')
         coords = offset_from_element(self.score_display, corner=(0, 1), offset=(0, 4))
         self.word_display = ui.Display(dims=(310, 40), coords=coords, fonts=self.fonts, colors=colors, text_color='light_gray', label="SELECTED", center=True)
         coords = offset_from_element(self.word_display, corner=(0, 1), offset=(0, 4))
@@ -53,8 +53,8 @@ class Board():
 
         self.splash_elements = []
         self.ui_elements = []
-        self.menu_btns = [self.btn_clear_marked, self.menu_quit, self.menu_open, self.menu_save, self.btn_scramble]
-        self.game_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.hi_score_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_quit, self.menu_open, self.menu_save, self.btn_scramble]
+        self.menu_btns = [self.menu_open, self.menu_save, self.btn_clear_marked, self.btn_scramble, self.menu_quit]
+        self.game_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.hi_score_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.menu_bg, self.menu_quit, self.menu_open, self.menu_save, self.btn_clear_marked, self.btn_scramble]
 
     def advance_tutorial(self):
         self.tutorial_current_step += 1

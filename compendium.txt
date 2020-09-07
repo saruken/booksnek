@@ -61537,6 +61537,7 @@ shirtwaist,0.59
 shirtwaists,0.64
 shirty,0.3
 shit,0.22
+shite,0.33999999999999997
 shitfaced,0.51
 shithead,0.49
 shitheads,0.54
