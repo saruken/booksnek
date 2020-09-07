@@ -49,6 +49,7 @@ class Game:
 
         self.board = gameboard.Board(dims=dims, coords=(0, 0), colors=self.colors)
         self.dictionary = dictionary
+        self.hi_scores = self.load_hi_scores()
         self.max_history_words = 25
         self.mode = 'menu'
         self.player_name = 'SNEK'
@@ -56,7 +57,7 @@ class Game:
         tile_offset = gameboard.offset_from_element(self.board.level_display, corner=(0, 1), offset=(0, 10))
         self.tiles = self.board.create_tiles(self.colors, offset=tile_offset)
 
-        self.board.create_splash_menu(self.load_hi_scores())
+        self.board.create_splash_menu(self.hi_scores)
         self.board.ui_elements = self.board.splash_elements
 
     def activate_tile_effects(self, old_bonus='____'):
@@ -166,7 +167,7 @@ class Game:
         d.update()
 
     def check_dictionary(self):
-        return bool(self.snake.word.lower() in self.dictionary)
+        return bool(self.snake.word.lower() in [x[0] for x in self.dictionary])
 
     def check_level_progress(self):
         return bool(self.board.level_display.progress >= self.board.level_display.progress_max)
@@ -197,7 +198,8 @@ class Game:
         self.board.longest_display.set_text(self.word_longest)
 
     def choose_bonus_word(self):
-        word_pool = [w for w in self.dictionary if len(w) == self.bonus_counter]
+        r_values = [0, 0, 0, 0.16, 0.22, 0.28, 0.36, 0.42, 0.48, 0.55, 0.61, 0.68, 0.74, 0.8, 0.87, 0.93, 0.99, 1.07, 1.13, 1.28, 1.31, 1.38]
+        word_pool = [w[0] for w in self.dictionary if len(w[0]) == self.bonus_counter and w[1] > r_values[self.bonus_counter]]
         self.bonus_word = random.choice(word_pool).upper()
 
     def clear_marked(self):
@@ -269,8 +271,8 @@ class Game:
             self.board.ui_elements = self.tiles + self.board.game_elements
             self.mode = 'play'
         elif elem.name == 'quit yes':
-            self.try_update_hi_score()
-            self.board.create_splash_menu(self.load_hi_scores())
+            self.try_update_hi_score_file()
+            self.board.create_splash_menu(self.hi_scores)
             self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'load':
             self.open_load_menu()
@@ -306,11 +308,11 @@ class Game:
         elif elem.name == 'tutorial next':
             self.board.advance_tutorial()
         elif elem.name == 'game over ok':
-            self.try_update_hi_score()
-            self.board.create_splash_menu(self.load_hi_scores())
+            self.try_update_hi_score_file()
+            self.board.create_splash_menu(self.hi_scores)
             self.board.ui_elements = self.board.splash_elements
         elif elem.name in ('tutorial done', 'load back'):
-            self.board.create_splash_menu(self.load_hi_scores())
+            self.board.create_splash_menu(self.hi_scores)
             self.board.ui_elements = self.board.splash_elements
         elif 'gamestate' in elem.name:
             game_id = elem.name.split(' ')[-1]
@@ -448,6 +450,7 @@ class Game:
         h.hp_displayed = 1
         h.build_image()
 
+        self.board.update_hi_score_display(self.hi_scores)
         self.choose_bonus_word()
         self.empty_snake()
 
@@ -711,6 +714,7 @@ class Game:
                     print(f'Added {score} to score')
                     self.score += score
                     self.update_score_display()
+                    self.try_update_hi_scores()
                     self.check_update_best()
                     self.apply_level_progress(score)
                 self.update_history_display()
@@ -722,14 +726,28 @@ class Game:
             self.empty_snake()
             self.update_word_display()
 
-    def try_update_hi_score(self):
+    def try_update_hi_scores(self):
+        scores = sorted(self.hi_scores, key=lambda k: k['score'])
+        if self.score >= scores[0]['score']:
+            scores.pop[0]
+            entry = {
+                'username': self.player_name,
+                'score': self.score,
+                'current': True
+            }
+            scores.append(entry)
+            scores = sorted(scores,  key=lambda k: k['score'], reverse=True)
+            self.board.update_hi_score_display(scores)
+
+    def try_update_hi_score_file(self):
         scores = sorted(self.load_hi_scores(), key=lambda k: k['score'])
         if self.score >= scores[0]['score']:
             scores.pop(0)
             entry = {
-                'username': 'AJL',
+                'username': self.player_name,
                 'date': datetime.strftime(datetime.today(), '%b %d, %Y'),
-                'score': self.score
+                'score': self.score,
+                'current': False
             }
             scores.append(entry)
             scores = sorted(scores,  key=lambda k: k['score'], reverse=True)

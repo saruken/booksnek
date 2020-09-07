@@ -537,30 +537,31 @@ class Tile():
         self.build_image()
 
     def update_point_value(self):
-        value = 0
-
-        if self.letter in 'AEILNORSTU':
-            value = 1
-        elif self.letter in 'DG':
-            value = 2
-        elif self.letter in 'BCMP':
-            value = 3
-        elif self.letter in 'FHVWY':
-            value = 4
-        elif self.letter == 'K':
-            value = 5
-        elif self.letter in 'JX':
-            value = 8
+        if self.tile_type == 'poison':
+            self.point_value = self.multiplier
         else:
-            value = 10
+            if self.letter in 'AEILNORSTU':
+                value = 1
+            elif self.letter in 'DG':
+                value = 2
+            elif self.letter in 'BCMP':
+                value = 3
+            elif self.letter in 'FHVWY':
+                value = 4
+            elif self.letter == 'K':
+                value = 5
+            elif self.letter in 'JX':
+                value = 8
+            else:
+                value = 10
 
-        type_multiplier = 1
-        if self.tile_type == 'silver':
-            type_multiplier = 3
-        elif self.tile_type == 'gold':
-            type_multiplier = 4
+            type_multiplier = 1
+            if self.tile_type == 'silver':
+                type_multiplier = 3
+            elif self.tile_type == 'gold':
+                type_multiplier = 4
 
-        self.point_value = value * self.multiplier * type_multiplier
+            self.point_value = value * self.multiplier * type_multiplier
 
 def format_num(num):
     if num < 1000:

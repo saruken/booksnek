@@ -45,14 +45,16 @@ class Board():
         coords = offset_from_element(self.longest_display, corner=(0, 1), offset=(0, 4))
         self.best_display = ui.Display(dims=(310, 34), coords=coords, fonts=self.fonts, colors=colors, label='HIGHEST SCORE', text_color='beige', center=True, text_offset=(30, 2), multicolor=True)
         coords = offset_from_element(self.best_display, corner=(0, 1), offset=(0, 4))
-        self.history_display = ui.Display(dims=(310, 425), coords=coords, fonts=self.fonts, colors=colors, label='WORD LIST')
+        self.history_display = ui.Display(dims=(310, 304), coords=coords, fonts=self.fonts, colors=colors, label='WORD LIST')
+        coords = offset_from_element(self.history_display, corner=(0, 1), offset=(0, 4))
+        self.hi_score_display = ui.Display(dims=(310, 117), coords=coords, fonts=self.fonts, colors=colors, label='HI SCORES')
 
         self.gfx = GFXSurf(self.fonts, colors)
 
         self.splash_elements = []
         self.ui_elements = []
         self.menu_btns = [self.btn_clear_marked, self.menu_quit, self.menu_open, self.menu_save, self.btn_scramble]
-        self.game_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_quit, self.menu_open, self.menu_save, self.btn_scramble]
+        self.game_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.hi_score_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.btn_clear_marked, self.menu_bg, self.menu_quit, self.menu_open, self.menu_save, self.btn_scramble]
 
     def advance_tutorial(self):
         self.tutorial_current_step += 1
@@ -246,6 +248,18 @@ class Board():
     def show_gif(self):
         # TODO: Load & display self.tutorial_gifs[self.tutorial_current_step]
         pass
+
+    def update_hi_score_display(self, scores):
+        for n, entry in enumerate(scores):
+            color = self.colors['bg_gold'] if entry['current'] else self.colors['light_gray']
+            surf = self.fonts['medium'].render(f'{n + 1}. {entry["username"]}', True, color)
+            h = surf.get_size()[1]
+            self.hi_score_display.surf.blit(surf, dest=(10, 12 + h * n + 4 * n))
+            score = '{:,}'.format(entry['score'])
+            surf = self.fonts['medium'].render(score, True, color)
+            w = surf.get_size()[0]
+            pos_x = self.hi_score_display.surf.get_size()[0] - 10 - w
+            self.hi_score_display.surf.blit(surf, dest=(pos_x, 12 + h * n + 4 * n))
 
     def update_name(self, player_name, letter):
         name = list(player_name)

@@ -15,15 +15,17 @@ def get_elem_under_mouse(game, mode):
     return None
 
 def load_dictionary():
-    words = None
+    words = []
 
     try:
-        with open('dictionary_en_US.txt') as file:
-            words = file.read().split('\n')
+        with open('compendium.txt') as file:
+            for line in file.read().split('\n'):
+                x = line.split(',')
+                words.append([x[0], float(x[1])])
     except FileNotFoundError:
-        raise SystemExit('Error: Dictionary file not found\nExpexted file at "dictionary_en_US.txt"')
+        raise SystemExit('Error: Dictionary file not found\nExpexted file at "compendium.txt"')
     if not words:
-        raise SystemExit('Error: Dictionary file at "dictionary_en_US.txt" is empty or unreadable')
+        raise SystemExit('Error: Dictionary file at "compendium.txt" is empty or unreadable')
 
     return words
 
@@ -121,7 +123,7 @@ if __name__ == '__main__':
     main()
 
     #TODO:
-        # View high scores during game
+        # Finish filtering bonus words by rarity; only choose <= avg words
         # When multiple effects will take place in the same "turn", put a quick delay between them
         # Add tutorial GIFs, steps
         # Need some way to indicating that beacon tiles are highlighted

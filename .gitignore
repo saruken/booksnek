@@ -1,5 +1,7 @@
 __pycache__/
 
+dictionary*
+
 add_to_dict.py
 reset_scores.py
 test*
