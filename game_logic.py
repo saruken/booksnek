@@ -321,8 +321,13 @@ class Game:
 
     def handle_name_entry(self, key):
         letter = pygame.key.name(key).upper()
-        self.player_name = self.board.update_name(self.player_name, letter)
-        self.board.ui_elements = self.board.splash_elements
+        if letter == 'RETURN':
+            self.new_game()
+            self.board.ui_elements = self.tiles + self.board.game_elements
+            self.mode = 'play'
+        else:
+            self.player_name = self.board.update_name(self.player_name, letter)
+            self.board.ui_elements = self.board.splash_elements
 
     def highlight_selected_tiles(self):
         for tile in [t for t in self.tiles if t.selected]:
