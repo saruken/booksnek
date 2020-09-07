@@ -50,6 +50,7 @@ class Game:
         self.board = gameboard.Board(dims=dims, coords=(0, 0), colors=self.colors)
         self.dictionary = dictionary
         self.hi_scores = self.load_hi_scores()
+        self.uncurrent_hi_scores()
         self.max_history_words = 17
         self.mode = 'menu'
         self.player_name = 'SNEK'
@@ -450,6 +451,8 @@ class Game:
         h.hp_displayed = 1
         h.build_image()
 
+        self.uncurrent_hi_scores()
+
         self.board.update_hi_score_display(self.hi_scores)
         self.choose_bonus_word()
         self.empty_snake()
@@ -474,7 +477,7 @@ class Game:
     def reroll_snake_tiles(self, old_bonus):
         for tile in self.snake.tiles:
             if self.snake.word == old_bonus:
-                self.board.gfx.create_ghost(tile, self.colors['green'])
+                self.board.gfx.create_ghost(tile, self.colors['bg_gold'])
             else:
                 if tile.tile_type == 'attack':
                     self.board.gfx.create_ghost(tile, self.colors['bg_attack'])
@@ -747,11 +750,17 @@ class Game:
                 'username': self.player_name,
                 'date': datetime.strftime(datetime.today(), '%b %d, %Y'),
                 'score': self.score,
-                'current': False
+                'current': True
             }
             scores.append(entry)
             scores = sorted(scores,  key=lambda k: k['score'], reverse=True)
             self.save_hi_scores(scores)
+            self.hi_scores = self.load_hi_scores()
+
+    def uncurrent_hi_scores(self):
+        for entry in self.hi_scores:
+            entry['current'] = False
+        self.save_hi_scores(self.hi_scores)
 
     def update_bonus_color(self):
         self.board.update_bonus_color(self.bonus_word, self.snake.word, self.colors)

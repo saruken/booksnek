@@ -148,7 +148,7 @@ class Board():
         quit_menu_yes = ui.Interactive(name='quit yes', dims=(127, 40), coords=coords, fonts=self.fonts, text='YES', colors=self.colors, text_color='light_gray')
         self.splash_elements = [quit_menu_bg, quit_menu_no, quit_menu_yes]
 
-    def create_splash_menu(self, scores, game_over=False):
+    def create_splash_menu(self, scores):
         self.hide_splash_menu()
 
         # Load / Tutorial / New Game menu
@@ -178,15 +178,16 @@ class Board():
         label = self.fonts['medium'].render('Score', True, self.colors['mid_gray'], None)
         scores_bg.surf.blit(label, dest=(550, 60))
         for n, entry in enumerate(scores):
-            val = self.fonts['medium'].render(f'{str(n + 1)}.', True, self.colors['light_gray'], None)
+            color = self.colors['gold'] if entry['current'] else self.colors['light_gray']
+            val = self.fonts['medium'].render(f'{str(n + 1)}.', True, color, None)
             scores_bg.surf.blit(val, dest=(10, 108 + n * 48 + n * 10))
             for i, letter in enumerate(entry['username']):
                 tile = ui.Tile(fonts=self.fonts, colors=self.colors, letter=letter)
                 tile.mouse_out()
                 scores_bg.surf.blit(tile.surf, dest=(34 + i * 48, 86 + n * 48 + n * 10))
-            val = self.fonts['medium'].render(entry['date'], True, self.colors['light_gray'], None)
+            val = self.fonts['medium'].render(entry['date'], True, color, None)
             scores_bg.surf.blit(val, dest=(300, 110 + n * 48 + n * 10))
-            val = self.fonts['medium'].render('{:,}'.format(entry['score']), True, self.colors['light_gray'], None)
+            val = self.fonts['medium'].render('{:,}'.format(entry['score']), True, color, None)
             w = val.get_size()[0]
             scores_bg.surf.blit(val, dest=(636 - w, 110 + n * 48 + n * 10))
 

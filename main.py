@@ -122,21 +122,34 @@ def main():
 if __name__ == '__main__':
     main()
 
+    '''
     # TODO:
-        # When multiple effects will take place in the same "turn", put a quick delay between them
-        # Add tutorial GIFs, steps
-        # If you quit with a high score, it should then be highlighted on the splash menu
-        # SFX
+        When multiple effects will take place in the same "turn", put a 0.2s(?) delay between them
+            Precedence
+                Snake tiles
+                    Heal effect
+                        +HP or +HP MAX is determined by (actual HP == HP MAX), rather than (displayed HP == HP MAX)
+                    Copy tile images to ghosts
+                Non-snake tiles
+                    Attack tile countdowns/activation
+                        Copy images to ghosts
+                    Poison tile activation
+        Set different arc targets for heal tiles -- HP or HP MAX, depending on what the tile's effect is
+        Move QUIT btn to top right (eat into SCORE area); move UNMARK to menu row
+        ENTER on name entry screen starts new game
+        Change point_value display on HEAL tiles to '+N'; ATK/POISON tiles as '-N'
+        Add tutorial GIFs, steps
+        SFX
+        Maybe do marquee effect for bonus word tile ghosts?
 
-    # BUGS
-        # 2 heal tiles in the same word -- If 1 would be enough to restore MAX HP, 2nd one should buff HP GROWTH
-        # History not totally filling from saved gamestate when there are >= max # of words
-        # Letters are changing point value on match, before ghosts are created
-        # Black border sticking after word is submitted
-        # Committing word with heal tile that also is in the splash radius of an attack tile that goes off is not healing
-        # Selecting words seems to get jacked up after loading a gamestate
+    BUGS
+        Tile selection gets jacked up after loading a gamestate
+        2 heal tiles in the same word -- If 1 would be enough to restore MAX HP, 2nd one should buff HP GROWTH
+        History not totally filling from saved gamestate when there are >= max # of words
+        Letters are changing point value on match, before ghosts are created
 
-    # Add words to dict
-        # pows
-    # Remove words from dict
-        #
+    Add words to dict
+
+    Remove words from dict
+
+    '''
