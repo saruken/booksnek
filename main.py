@@ -134,7 +134,6 @@ if __name__ == '__main__':
                     Attack tile countdowns/activation
                         Copy images to ghosts
                     Poison tile activation
-        Set different arc targets for heal tiles -- HP or HP MAX, depending on what the tile's effect is
         Move QUIT btn to top right (eat into SCORE area); move UNMARK to menu row
         ENTER on name entry screen starts new game
         Change point_value display on HEAL tiles to '+N'; ATK/POISON tiles as '-N'

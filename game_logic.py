@@ -94,11 +94,11 @@ class Game:
         for tile in [t for t in self.snake.tiles if t.tile_type == 'heal']:
             if self.try_heal():
                 amt = tile.point_value
-                arc_sources.append([tile.middle, 'teal', amt])
+                arc_sources.append([tile.middle, 'teal', amt, 'HP'])
                 hp_effect += amt
                 print(f'Healed {amt} from c{tile.col}r{tile.row} "{tile.letter}". Net HP effect this turn is {hp_effect}.')
             else:
-                arc_sources.append([tile.middle, 'teal', f'{self.multiplier} MAX'])
+                arc_sources.append([tile.middle, 'teal', f'{self.multiplier} MAX', 'HP_MAX'])
                 h.hp_max += self.multiplier
                 print(f'HP_MAX increased by {self.multiplier}')
                 h.update()

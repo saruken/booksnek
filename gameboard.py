@@ -388,7 +388,10 @@ class GFXSurf:
     def draw_arcs(self, arc_sources):
         for source in arc_sources:
             arc_start = source[0]
-            arc_end = (100 + random.choice(range(100)), 136)
+            if source[3] == 'HP':
+                arc_end = (150, 136)
+            elif source[3] == 'HP_MAX':
+                arc_end = (204, 136)
             pts = [arc_start, arc_end]
             left = min(pts[0][0], pts[1][0])
             top = min(pts[0][1], pts[1][1])
