@@ -134,19 +134,19 @@ if __name__ == '__main__':
                     Attack tile countdowns/activation
                         Copy images to ghosts
                     Poison tile activation
-        Move QUIT btn to top right (eat into SCORE area); move UNMARK to menu row
+        'Game saved' confirmation message
+        HP and HP MAX arcs, '+N' for LvUP
         Add tutorial GIFs, steps
         SFX
         Maybe do marquee effect for bonus word tile ghosts?
+        Make gold tiles blow up neighbors like ATK?
 
     BUGS
         Tile selection gets jacked up after loading a gamestate
-        2 heal tiles in the same word -- If 1 would be enough to restore MAX HP, 2nd one should buff HP GROWTH
-        History not totally filling from saved gamestate when there are >= max # of words
         Letters are changing point value on match, before ghosts are created
 
-    Add words to dict
+    Add words
 
-    Remove words from dict
+    Remove words
 
     '''

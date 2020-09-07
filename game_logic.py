@@ -76,7 +76,7 @@ class Game:
                 else:
                     amt = tile.point_value * -1
                     tile.update()
-                    arc_sources.append([tile.middle, 'bg_attack', amt])
+                    arc_sources.append([tile.middle, 'bg_attack', amt, 'HP'])
                     hp_effect += amt
                     print(f'Dealt {amt} damage from c{tile.col}r{tile.row} "{tile.letter}". Net HP effect this turn is {hp_effect}.')
                     self.reroll_tiles(tile=tile)
@@ -86,7 +86,7 @@ class Game:
             # Don't activate tiles that are part of the just-submitted word
             if not tile in self.snake.tiles:
                 amt = self.multiplier * -1
-                arc_sources.append([tile.middle, 'bg_poison', amt])
+                arc_sources.append([tile.middle, 'bg_poison', amt, 'HP'])
                 hp_effect += amt
                 print(f'Poisoned {amt} from c{tile.col}r{tile.row} "{tile.letter}". Net HP effect this turn is {hp_effect}.')
 
@@ -244,6 +244,7 @@ class Game:
     def empty_snake(self):
         for tile in [t for t in self.snake.tiles]:
             tile.beacon = False
+            tile.highlighted = False
             tile.unselect()
         self.snake.tiles = []
         self.snake.update()
@@ -639,13 +640,13 @@ class Game:
         if tile.tile_type == 'attack':
             letter_value = self.board.lookup_letter_value(tile.letter)
             if letter_value < 3:
-                tile.attack_timer = 3
+                tile.attack_timer = 2
             elif letter_value < 8:
-                tile.attack_timer = 4
+                tile.attack_timer = 3
             else:
-                tile.attack_timer = 5
+                tile.attack_timer = 4
         else:
-            tile.attack_timer = 5
+            tile.attack_timer = 4
 
     def set_row(self, tile):
         tile.row = min([t.row for t in self.tiles if t.col == tile.col]) - 1
