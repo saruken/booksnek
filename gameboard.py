@@ -250,6 +250,7 @@ class Board():
         pass
 
     def update_hi_score_display(self, scores):
+        self.hi_score_display.surf.fill(self.colors['bg_main'])
         for n, entry in enumerate(scores):
             color = self.colors['bg_gold'] if entry['current'] else self.colors['light_gray']
             surf = self.fonts['medium'].render(f'{n + 1}. {entry["username"]}', True, color)

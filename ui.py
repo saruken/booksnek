@@ -335,6 +335,7 @@ class Tile():
         self.dims = (48, 48)
         self.first_turn = True
         self.fonts = fonts
+        self.highlighted = False
         self.hovered = False
         self.images = {}
         self.interactive = True
@@ -389,15 +390,16 @@ class Tile():
                 self.marked = False
 
     def build_image(self):
-        if self.beacon:
-            if self.hovered:
-                self.border_color = self.colors['gold']
-            elif self.selected:
-                self.border_color = self.colors['black']
-            else:
-                self.border_color = self.colors['light_gray']
-        else:
+        # Set border color
+        self.border_color = self.colors['light_gray']
+        if self.hovered:
+            self.border_color = self.colors['gold']
+        elif self.highlighted:
+            self.border_color = self.colors['dark_gray']
+        # Set BG color
+        if not self.beacon or (self.beacon and self.selected):
             self.bg_color = self.colors[f'bg_{self.tile_type}{"_selected" if self.selected else ""}']
+
         self.surf.fill(self.border_color)
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
 
@@ -467,6 +469,10 @@ class Tile():
     def get_abs_rect(self):
         return pygame.Rect(self.coords, self.dims)
 
+    def highlight(self):
+        self.highlighted = True
+        self.update()
+
     def load_images(self):
         for img_name in ('attack', 'heal', 'poison'):
             self.images[img_name] = pygame.image.load(os.path.join('img', img_name + '.png'))
@@ -497,6 +503,10 @@ class Tile():
         x = self.offset[0] + (self.dims[0] * self.col)
         y = self.offset[1] + (self.dims[1] * self.row)
         self.middle = (x + (self.dims[0] / 2), y + (self.dims[1] / 2))
+
+    def unhighlight(self):
+        self.highlighted = False
+        self.update()
 
     def unselect(self):
         self.selected = False

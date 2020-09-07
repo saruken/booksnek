@@ -1,6 +1,7 @@
 __pycache__/
 
 dictionary*
+.DS_*
 
 add_to_dict.py
 reset_scores.py

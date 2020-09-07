@@ -50,7 +50,7 @@ class Game:
         self.board = gameboard.Board(dims=dims, coords=(0, 0), colors=self.colors)
         self.dictionary = dictionary
         self.hi_scores = self.load_hi_scores()
-        self.max_history_words = 25
+        self.max_history_words = 17
         self.mode = 'menu'
         self.player_name = 'SNEK'
         self.snake = tile_snake.Snake()
@@ -334,18 +334,18 @@ class Game:
         if letter == 'Q':
             letter = 'Qu'
 
-        # Type currently highlighted key to unhighlight all tiles
+        # Type currently highlighted key or ESC to unhighlight all tiles
         if letter in (last_typed, 'ESCAPE'):
             for t in self.tiles:
-                t.mouse_out()
+                t.unhighlight()
             return ''
         else:
             # Otherwise, highlight all tiles with matching letters
             for t in self.tiles:
                 if t.letter == letter:
-                    t.mouse_over()
+                    t.highlight()
                 else:
-                    t.mouse_out()
+                    t.unhighlight()
         # Return typed key to store as last_typed
         return letter
 
@@ -729,7 +729,7 @@ class Game:
     def try_update_hi_scores(self):
         scores = sorted(self.hi_scores, key=lambda k: k['score'])
         if self.score >= scores[0]['score']:
-            scores.pop[0]
+            scores.pop(0)
             entry = {
                 'username': self.player_name,
                 'score': self.score,

@@ -107,7 +107,7 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if game.mode == 'play':
                     if not game.paused:
-                        last_typed = game.highlight_tiles_from_letter(event.key, game.last_typed)
+                        game.last_typed = game.highlight_tiles_from_letter(event.key, game.last_typed)
                 elif game.mode == 'name entry':
                     game.handle_name_entry(event.key)
             if game.mode == 'play':
@@ -122,7 +122,9 @@ def main():
 if __name__ == '__main__':
     main()
 
-    #TODO:
+    # TODO:
+        # Resize history & hi score windows to accommodate new 17 word limit
+        # Existing heal/attack tiles shouldn't increase their value when a new multiplier is reached
         # When multiple effects will take place in the same "turn", put a quick delay between them
         # Add tutorial GIFs, steps
         # If you quit with a high score, it should then be highlighted on the splash menu
@@ -132,8 +134,11 @@ if __name__ == '__main__':
         # 2 heal tiles in the same word -- If 1 would be enough to restore MAX HP, 2nd one should buff HP GROWTH
         # History not totally filling from saved gamestate when there are >= max # of words
         # Letters are changing point value on match, before ghosts are created
+        # Black border sticking after word is submitted
+        # Committing word with heal tile that also is in the splash radius of an attack tile that goes off is not healing
+        # Saves appear to not be updating homescreen list
 
     # Add words to dict
-        #
+        # pows
     # Remove words from dict
         #
