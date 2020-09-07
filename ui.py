@@ -544,10 +544,11 @@ class Tile():
         self.update()
 
     def update(self, level=None, multiplier=None):
-        if level:
-            self.level = level
-        if multiplier:
-            self.multiplier = multiplier
+        if self.tile_type not in ('attack', 'heal', 'poison'):
+            if level:
+                self.level = level
+            if multiplier:
+                self.multiplier = multiplier
 
         self.update_point_value()
         self.set_text_color()

@@ -123,8 +123,6 @@ if __name__ == '__main__':
     main()
 
     # TODO:
-        # Resize history & hi score windows to accommodate new 17 word limit
-        # Existing heal/attack tiles shouldn't increase their value when multiplier is changed
         # When multiple effects will take place in the same "turn", put a quick delay between them
         # Add tutorial GIFs, steps
         # If you quit with a high score, it should then be highlighted on the splash menu
