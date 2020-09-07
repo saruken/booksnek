@@ -123,10 +123,8 @@ if __name__ == '__main__':
     main()
 
     #TODO:
-        # Finish filtering bonus words by rarity; only choose <= avg words
         # When multiple effects will take place in the same "turn", put a quick delay between them
         # Add tutorial GIFs, steps
-        # Need some way to indicating that beacon tiles are highlighted
         # If you quit with a high score, it should then be highlighted on the splash menu
         # SFX
 

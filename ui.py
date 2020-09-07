@@ -389,7 +389,14 @@ class Tile():
                 self.marked = False
 
     def build_image(self):
-        if not self.beacon:
+        if self.beacon:
+            if self.hovered:
+                self.border_color = self.colors['gold']
+            elif self.selected:
+                self.border_color = self.colors['black']
+            else:
+                self.border_color = self.colors['light_gray']
+        else:
             self.bg_color = self.colors[f'bg_{self.tile_type}{"_selected" if self.selected else ""}']
         self.surf.fill(self.border_color)
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
