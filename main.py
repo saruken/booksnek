@@ -139,14 +139,14 @@ if __name__ == '__main__':
         Add tutorial GIFs, steps
         SFX
         Maybe do marquee effect for bonus word tile ghosts?
-        Make gold tiles blow up neighbors like ATK?
+        Make silver/gold tiles blow up neighbors like ATK
 
     BUGS
         Tile selection gets jacked up after loading a gamestate
         Letters are changing point value on match, before ghosts are created
 
     Add words
-
+        bris/es
     Remove words
 
     '''

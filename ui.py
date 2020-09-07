@@ -256,6 +256,7 @@ class HPDisplay():
         self.hp_displayed += buff
         print(f'HP and HP_MAX increased by {buff}')
         self.update()
+        return buff
 
     def set_hp_color(self):
         ratio = self.hp_displayed / self.hp_max
