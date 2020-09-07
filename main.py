@@ -124,7 +124,7 @@ if __name__ == '__main__':
 
     # TODO:
         # Resize history & hi score windows to accommodate new 17 word limit
-        # Existing heal/attack tiles shouldn't increase their value when a new multiplier is reached
+        # Existing heal/attack tiles shouldn't increase their value when multiplier is changed
         # When multiple effects will take place in the same "turn", put a quick delay between them
         # Add tutorial GIFs, steps
         # If you quit with a high score, it should then be highlighted on the splash menu
@@ -136,7 +136,7 @@ if __name__ == '__main__':
         # Letters are changing point value on match, before ghosts are created
         # Black border sticking after word is submitted
         # Committing word with heal tile that also is in the splash radius of an attack tile that goes off is not healing
-        # Saves appear to not be updating homescreen list
+        # Selecting words seems to get jacked up after loading a gamestate
 
     # Add words to dict
         # pows
