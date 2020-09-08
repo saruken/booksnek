@@ -8015,6 +8015,8 @@ brioche,0.41
 brioches,0.46
 briquette,0.58
 briquettes,0.63
+bris,0.21999999999999997
+brises,0.38999999999999996
 brisk,0.23
 brisked,0.39
 brisker,0.41
@@ -10227,6 +10229,7 @@ ceilidh,0.42
 ceilidhs,0.47
 ceiling,0.45
 ceilings,0.5
+cel,0.18
 celandine,0.64
 celeb,0.32
 celebrant,0.59
@@ -10248,6 +10251,8 @@ celerity,0.53
 celery,0.38
 celesta,0.5
 celestas,0.55
+celeste,0.53
+celestes,0.5800000000000001
 celestial,0.63
 celestially,0.69
 celibacy,0.42
@@ -10273,6 +10278,7 @@ cellulite,0.57
 cellulitis,0.59
 celluloid,0.51
 cellulose,0.55
+cels,0.22999999999999998
 cement,0.41
 cemented,0.57
 cementer,0.59
@@ -39460,6 +39466,7 @@ losings,0.4
 loss,0.22
 losses,0.39
 lossless,0.48
+lossy,0.23999999999999996
 lost,0.23
 lot,0.18
 lotion,0.41
@@ -60096,6 +60103,7 @@ scribbles,0.47
 scribbling,0.48
 scribe,0.36
 scribes,0.41
+scries,0.38999999999999996
 scrim,0.25
 scrimmage,0.52
 scrimmaged,0.56
@@ -60198,6 +60206,9 @@ scrutinized,0.64
 scrutinizes,0.65
 scrutinizing,0.66
 scrutiny,0.4
+scry,0.15
+scryed,0.31
+scrying,0.32999999999999996
 scuba,0.22
 scubaed,0.38
 scubaing,0.4

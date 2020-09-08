@@ -135,7 +135,7 @@ if __name__ == '__main__':
                         Copy images to ghosts
                     Poison tile activation
         'Game saved' confirmation message
-        HP and HP MAX arcs, '+N' for LvUP
+        Full lerp from red -> yellow -> green on HP bar
         Add tutorial GIFs, steps
         SFX
         Maybe do marquee effect for bonus word tile ghosts?
@@ -146,7 +146,7 @@ if __name__ == '__main__':
         Letters are changing point value on match, before ghosts are created
 
     Add words
-        bris/es
+
     Remove words
 
     '''

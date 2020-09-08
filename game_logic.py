@@ -100,7 +100,7 @@ class Game:
             else:
                 arc_sources.append([tile.middle, 'teal', f'{self.multiplier} MAX', 'HP_MAX'])
                 h.hp_max += self.multiplier
-                print(f'HP_MAX increased by {self.multiplier}')
+                print(f'HP_MAX increased by {self.multiplier}: {h.hp} / {h.hp_max}')
                 h.update()
 
         if self.snake.length:
@@ -241,6 +241,41 @@ class Game:
             self.history.pop(0)
         self.last_five_words = [len(w['word']) for w in self.history[-5:]]
 
+    def create_event_queue(self):
+        queue = []
+
+        for tile in self.snake.tiles:
+            if tile.tile_type == 'heal':
+                event = {
+                    'tile': tile,
+                    'event': 'heal',
+                    'amount': tile.multiplier
+                }
+                queue.append(event)
+        for tile in self.tiles:
+            if tile.tile_type == 'poison':
+                event = {
+                    'tile': tile,
+                    'event': 'poison',
+                    'amount': tile.multiplier * -1
+                }
+                queue.append(event)
+            elif tile.tile_type == 'attack':
+                if tile.attack_timer > 1:
+                    event = {
+                        'tile': tile,
+                        'event': 'tick',
+                        'amount': 0
+                    }
+                else:
+                    event = {
+                        'tile': tile,
+                        'event': 'attack',
+                        'amount': tile.point_value * -1
+                    }
+                queue.append(event)
+        return queue
+
     def empty_snake(self):
         for tile in [t for t in self.snake.tiles]:
             tile.beacon = False
@@ -248,6 +283,63 @@ class Game:
             tile.unselect()
         self.snake.tiles = []
         self.snake.update()
+
+    def execute_event_queue(self, queue, bonus):
+        for event in queue:
+            source_tile = event['tile']
+            action = event['event']
+            amt = event['amount']
+            h = self.board.hp_display
+            if action == 'heal':
+                if h.hp == h.hp_max:
+                    h.hp_max += amt
+                    arc_sources = [source_tile.middle, 'teal', f'{self.multiplier} MAX', 'HP_MAX']
+                    self.board.gfx.draw_arcs([arc_sources])
+                    print(f'Heal effect from c{source_tile.col}r{source_tile.row} "{source_tile.letter}": HP_MAX increased by {self.multiplier}')
+                else:
+                    h.hp = min(h.hp + amt, h.hp_max)
+                    arc_sources = [source_tile.middle, 'teal', amt, 'HP']
+                    self.board.gfx.draw_arcs([arc_sources])
+                    print(f'Healed {amt} from c{source_tile.col}r{source_tile.row} "{source_tile.letter}"')
+                h.update()
+            elif action == 'attack':
+                # Don't activate tiles that are part of the just-submitted word
+                if not source_tile in self.snake.tiles:
+                    source_tile.attack_tick()
+                    source_tile.update()
+                    h.hp += amt
+                    self.reroll_tiles(source_tile)
+                    arc_sources = [source_tile.middle, 'bg_attack', amt, 'HP']
+                    self.board.gfx.draw_arcs([arc_sources])
+                    print(f'Dealt {amt * -1} damage from c{source_tile.col}r{source_tile.row} "{source_tile.letter}"')
+            elif action == 'poison':
+                # Don't activate tiles that are part of the just-submitted word
+                if not source_tile in self.snake.tiles:
+                    # Ensure tile wasn't destroyed by a neighboring ATK tile
+                    if source_tile.tile_type == 'poison':
+                        h.hp += amt
+                        arc_sources = [source_tile.middle, 'bg_poison', amt, 'HP']
+                        self.board.gfx.draw_arcs([arc_sources])
+                        print(f'Poisoned {amt * -1} from c{source_tile.col}r{source_tile.row} "{source_tile.letter}"')
+                    else:
+                        # Tile has already been destroyed
+                        print(f'Queued tile c{source_tile.col}r{source_tile.row} "{source_tile.letter}" had a poison event, but was destroyed')
+                        continue
+            elif action == 'tick':
+                # Don't activate tiles that are part of the just-submitted word
+                if not source_tile in self.snake.tiles:
+                    if source_tile.tile_type == 'attack': # Ensure tile wasn't
+                        source_tile.attack_tick()         # destroyed by a
+                        source_tile.update()              # neighbor ATK tile
+                        print(f'Attack tile c{source_tile.col}r{source_tile.row} "{source_tile.letter}" counted down to "{source_tile.attack_timer}"')
+                    else:
+                        # Tile has already been destroyed
+                        print(f'Queued tile c{source_tile.col}r{source_tile.row} "{source_tile.letter}" had a tick event, but was destroyed')
+                        continue
+            print(f'HP: {h.hp} / {h.hp_max}')
+
+        self.reroll_snake_tiles(bonus)
+        self.update_tile_rows()
 
     def fetch_gamestates(self):
         with open('saved_gamestates.json') as file:
@@ -365,7 +457,7 @@ class Game:
         d.flash()
         d.update(self.level)
         buff = self.board.hp_display.level_up(self.level)
-        arc_sources = [[(125, 184), 'teal', f'{buff} MAX', 'HP'], [(135, 180), 'teal', f'{buff} MAX', 'HP_MAX']]
+        arc_sources = [[(125, 184), 'teal', str(buff), 'HP'], [(135, 180), 'teal', f'{buff} MAX', 'HP_MAX']]
         self.update_bonus_display()
         self.update_tiles()
         self.board.gfx.draw_arcs(arc_sources)
@@ -729,7 +821,9 @@ class Game:
                     self.check_update_best()
                     self.apply_level_progress(score)
                 self.update_history_display()
-                self.activate_tile_effects(old_bonus=old_bonus)
+                event_queue = self.create_event_queue()
+                # self.activate_tile_effects(old_bonus=old_bonus)
+                self.execute_event_queue(event_queue, old_bonus)
             else:
                 print(f'Word "{self.snake.word}" not in dictionary')
 
