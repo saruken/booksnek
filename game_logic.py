@@ -264,6 +264,8 @@ class Game:
                 arc_sources = [source_tile.middle, 'bg_attack', amt, 'HP']
                 self.board.gfx.draw_arcs([arc_sources])
                 print(f'Dealt {amt * -1} damage from c{source_tile.col}r{source_tile.row} "{source_tile.letter}"')
+            else:
+                print('Attack tile removed via word submission')
         elif action == 'poison':
             # Don't activate tiles that are part of the just-submitted word
             if not source_tile in self.snake.tiles:
@@ -277,6 +279,8 @@ class Game:
                     # Tile has already been destroyed
                     print(f'Queued tile c{source_tile.col}r{source_tile.row} "{source_tile.letter}" had a poison event, but was destroyed')
                     skip = True
+            else:
+                print('Poison tile removed via word submission')
         elif action == 'tick':
             # Don't activate tiles that are part of the just-submitted word
             if not source_tile in self.snake.tiles:

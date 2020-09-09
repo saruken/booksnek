@@ -125,6 +125,7 @@ if __name__ == '__main__':
     '''
     # TODO:
         When multiple effects will take place in the same "turn", put a 0.2s(?) delay between them
+            queue event 0 should be "deal with snake tiles"
         'Game saved' confirmation message
         Full lerp from red -> yellow -> green on HP bar
         Add tutorial GIFs, steps
@@ -137,7 +138,7 @@ if __name__ == '__main__':
         Letters are changing point value on match, before ghosts are created
 
     Add words
-
+        bolo/s, hoar
     Remove words
 
     '''
