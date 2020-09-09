@@ -125,15 +125,6 @@ if __name__ == '__main__':
     '''
     # TODO:
         When multiple effects will take place in the same "turn", put a 0.2s(?) delay between them
-            Precedence
-                Snake tiles
-                    Heal effect
-                        +HP or +HP MAX is determined by (actual HP == HP MAX), rather than (displayed HP == HP MAX)
-                    Copy tile images to ghosts
-                Non-snake tiles
-                    Attack tile countdowns/activation
-                        Copy images to ghosts
-                    Poison tile activation
         'Game saved' confirmation message
         Full lerp from red -> yellow -> green on HP bar
         Add tutorial GIFs, steps

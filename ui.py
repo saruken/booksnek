@@ -343,6 +343,7 @@ class Tile():
         self.marked = False
         self.middle = (0, 0)
         self.multiplier = 1
+        self.paused = False
         self.point_value = 0
         self.row = row
         self.selected = False

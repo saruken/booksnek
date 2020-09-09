@@ -4266,10 +4266,8 @@ azimuth,0.34
 azimuths,0.39
 azure,0.32
 azures,0.37
-baa,0.2
 baaed,0.36
 baaing,0.38
-baas,0.25
 babble,0.31
 babbled,0.35
 babbler,0.37
@@ -32652,8 +32650,12 @@ hubcap,0.21
 hubcaps,0.26
 hubris,0.28
 hubs,0.13
+huck,0.09
+hucked,0.25
+hucking,0.27
 huckleberries,0.77
 huckleberry,0.53
+hucks,0.14
 huckster,0.38
 huckstered,0.54
 huckstering,0.56
@@ -50671,7 +50673,9 @@ plutocratic,0.58
 plutocrats,0.52
 plutonium,0.46
 pluvial,0.34
+ply,0.08
 plying,0.26
+plys,0.13
 plywood,0.3
 pneumatic,0.53
 pneumatically,0.72
