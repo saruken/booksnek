@@ -7130,7 +7130,9 @@ bollocking,0.47
 bollockings,0.52
 bollocks,0.34
 bolls,0.23
+bolo,0.22000000000000003
 bologna,0.4
+bolos,0.27
 bolshie,0.42
 bolster,0.43
 bolstered,0.59
@@ -31917,6 +31919,7 @@ hiya,0.22
 hmm,0.08
 hoagie,0.43
 hoagies,0.48
+hoar,0.25
 hoard,0.29
 hoarded,0.45
 hoarder,0.47

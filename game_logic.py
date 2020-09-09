@@ -257,10 +257,13 @@ class Game:
             return
         event = queue[0]
         if event['event'] == 'submit':
-            print(f'Removing {len(self.snake.tiles)} snake tiles')
-            self.remove_tiles(self.snake.tiles, snake=True)
-            queue.pop(0)
-            threading.Timer(0.2, self.execute_event_queue, [queue]).start()
+            if self.snake.length:
+                print(f'Removing {len(self.snake.tiles)} snake tiles')
+                self.remove_tiles(self.snake.tiles, snake=True)
+                queue.pop(0)
+                threading.Timer(0.2, self.execute_event_queue, [queue]).start()
+            else:
+                print('[submit] event has no tiles; aborting execution')
             return
         source_tile = event['tile']
         action = event['event']
@@ -323,6 +326,8 @@ class Game:
                     # Tile has already been destroyed
                     print(f'Queued tile c{source_tile.col}r{source_tile.row} "{source_tile.letter}" had a tick event, but was destroyed')
                     skip = True
+            else:
+                print('Attack tile had a tick event, but was removed via word submission')
         print(f'HP: {h.hp} / {h.hp_max}')
 
         if len(queue):
@@ -517,6 +522,7 @@ class Game:
         self.bonus_counter += 1
         self.board.multiplier_display.flash()
         self.update_tiles()
+        print(f'Multiplier set to {self.multiplier}')
 
     def new_game(self):
         self.bonus_counter = 3
@@ -595,9 +601,9 @@ class Game:
             # Push tiles with negative rows up off the top of the screen
             tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
             tile.paused = True
-        self.update_tile_rows()
 
     def reroll_tiles(self, snake_length):
+        self.update_tile_rows()
         tiles = [t for t in self.tiles if t.paused]
         print(f'reroll_tiles(): Rerolling {len(tiles)} tiles')
         tile_type = 'normal'
@@ -643,9 +649,7 @@ class Game:
             tile.paused = True
             self.set_row(tile)
             tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
-        print(f'Attack tile "{atk_tile.letter}" changed from row {atk_tile.row}', end=' ')
         atk_tile.row = min(atk_tile.row + 1, 6 + atk_tile.col % 2)
-        print(f'to {atk_tile.row}')
         self.update_tile_rows()
 
     def save_game(self):
@@ -811,6 +815,7 @@ class Game:
             self.update_word_display()
         elif self.snake.length > 2:
             if self.check_dictionary():
+                self.submitted_word = self.snake.word
                 self.prev_bonus = self.bonus_word
                 self.paused = True
                 self.last_typed = ''
@@ -818,7 +823,7 @@ class Game:
                 print(f'----Committed word "{self.snake.word}"----')
                 self.check_update_longest()
                 if self.snake.word == self.bonus_word:
-                    print(f'This is the bonus word')
+                    print(f'Bonus word match')
                     self.mult_up()
                     self.update_mult_display()
                     self.choose_bonus_word()
