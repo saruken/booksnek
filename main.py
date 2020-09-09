@@ -134,8 +134,9 @@ if __name__ == '__main__':
         Make silver/gold tiles blow up neighbors like ATK
 
     BUGS
-        Tile selection gets jacked up after loading a gamestate
+        Tile selection gets jacked up after loading a gamestate; cols out of order?
         Letters are changing point value on match, before ghosts are created
+        What happens if you drag a snake over/past a stone tile?
 
     Add words
         bolo/s, hoar

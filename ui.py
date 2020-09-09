@@ -259,13 +259,18 @@ class HPDisplay():
         return buff
 
     def set_hp_color(self):
-        ratio = self.hp_displayed / self.hp_max
-        if ratio <= .25:
-            self.hp_color = self.colors['hp_red']
-        elif ratio <= .4:
-            self.hp_color = self.colors['hp_yellow']
+        lr = self.hp_displayed / self.hp_max
+        w = (self.hp_max / 2)
+        if lr <= .5:
+            color0 = self.colors['hp_red']
+            color1 = self.colors['hp_yellow']
+            ratio = self.hp_displayed / w
+            self.hp_color = color0.lerp(color1, ratio)
         else:
-            self.hp_color = self.colors['hp_green']
+            color0 = self.colors['hp_yellow']
+            color1 = self.colors['hp_green']
+            ratio = (self.hp_displayed - w) / w
+            self.hp_color = color0.lerp(color1, ratio)
 
     def update(self):
         if self.fade_counter == -1:
@@ -490,6 +495,18 @@ class Tile():
         self.border_color = self.colors['gold']
         self.update()
 
+    def reset(self):
+        self.attack_timer = 5
+        self.first_turn = True
+        self.marked = False
+        self.selected = False
+        self.tile_type = 'normal'
+
+        self.choose_letter()
+        self.update_point_value()
+        self.set_text_color()
+        self.update()
+
     def select(self):
         self.selected = True
         self.update()
@@ -505,26 +522,6 @@ class Tile():
         x = self.offset[0] + (self.dims[0] * self.col)
         y = self.offset[1] + (self.dims[1] * self.row)
         self.middle = (x + (self.dims[0] / 2), y + (self.dims[1] / 2))
-
-    def unhighlight(self):
-        self.highlighted = False
-        self.update()
-
-    def unselect(self):
-        self.selected = False
-        self.update()
-
-    def reset(self):
-        self.attack_timer = 5
-        self.first_turn = True
-        self.marked = False
-        self.selected = False
-        self.tile_type = 'normal'
-
-        self.choose_letter()
-        self.update_point_value()
-        self.set_text_color()
-        self.update()
 
     def set_target(self, from_row_col=False):
         if from_row_col:
@@ -543,6 +540,14 @@ class Tile():
 
     def toggle_mark(self):
         self.marked = not self.marked
+        self.update()
+
+    def unhighlight(self):
+        self.highlighted = False
+        self.update()
+
+    def unselect(self):
+        self.selected = False
         self.update()
 
     def update(self, level=None, multiplier=None):
