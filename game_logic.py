@@ -725,6 +725,7 @@ class Game:
 
     def scramble(self, new_atk=True):
         print('----Scramble----')
+        self.paused = True
         self.empty_snake()
         queue = self.create_event_queue()
         self.execute_event_queue(queue)

@@ -234,7 +234,7 @@ class HPDisplay():
         bar_width = floor((self.hp_displayed / self.hp_max) * self.bar_max_width)
         pygame.draw.rect(self.surf, self.bg_color_progress, pygame.Rect((2, 10), (self.bar_max_width, self.dims[1] - 18)))
         pygame.draw.rect(self.surf, self.hp_color, pygame.Rect((2, 10), (bar_width, self.dims[1] - 18)))
-        hp_display = str(round(self.hp_displayed))
+        hp_display = str(max(round(self.hp_displayed), 0))
         surf = self.fonts['medium'].render(f'{hp_display} / {str(self.hp_max)}', True, self.colors['light_gray'])
         self.surf.blit(surf, dest=(floor((self.dims[0] - surf.get_size()[0]) / 2), floor((self.dims[1] - surf.get_size()[1]) / 2)))
         label = self.fonts['small'].render('HP', True, self.colors['mid_gray'])
@@ -264,12 +264,12 @@ class HPDisplay():
         if lr <= .5:
             color0 = self.colors['hp_red']
             color1 = self.colors['hp_yellow']
-            ratio = self.hp_displayed / w
+            ratio = min(max(self.hp_displayed / w, 0), 1)
             self.hp_color = color0.lerp(color1, ratio)
         else:
             color0 = self.colors['hp_yellow']
             color1 = self.colors['hp_green']
-            ratio = (self.hp_displayed - w) / w
+            ratio = min(max((self.hp_displayed - w) / w, 0), 1)
             self.hp_color = color0.lerp(color1, ratio)
 
     def update(self):
