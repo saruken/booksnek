@@ -193,12 +193,13 @@ class Game:
                     'amount': tile.multiplier
                 }
                 queue.append(event)
-        event = {
-            'tiles': [t for t in self.snake.tiles if not t.tile_type == 'heal'],
-            'event': 'submit',
-            'amount': 0
-        }
-        queue.append(event)
+        if self.snake.length:
+            event = {
+                'tiles': [t for t in self.snake.tiles if not t.tile_type == 'heal'],
+                'event': 'submit',
+                'amount': 0
+            }
+            queue.append(event)
         for tile in self.tiles:
             if tile.tile_type == 'poison':
                 event = {
@@ -257,13 +258,10 @@ class Game:
             return
         event = queue[0]
         if event['event'] == 'submit':
-            if self.snake.length:
-                print(f'Removing {len(self.snake.tiles)} snake tiles')
-                self.remove_tiles(self.snake.tiles, snake=True)
-                queue.pop(0)
-                threading.Timer(0.2, self.execute_event_queue, [queue]).start()
-            else:
-                print('[submit] event has no tiles; aborting execution')
+            print(f'Removing {len(self.snake.tiles)} snake tiles')
+            self.remove_tiles(self.snake.tiles, snake=True)
+            queue.pop(0)
+            threading.Timer(0.2, self.execute_event_queue, [queue]).start()
             return
         source_tile = event['tile']
         action = event['event']
@@ -374,8 +372,9 @@ class Game:
         elif elem.name == 'save':
             self.save_game()
         elif elem.name == 'scramble':
-            self.scramble()
-            self.last_typed = ''
+            if not self.paused:
+                self.scramble()
+                self.last_typed = ''
         elif elem.name == 'clear':
             if self.board.btn_clear_marked.enabled:
                 self.clear_marked()
@@ -602,6 +601,18 @@ class Game:
             tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
             tile.paused = True
 
+    def reroll_neighbor_tiles(self, atk_tile):
+        neighbors = [t for t in self.tiles if self.snake.is_neighbor(new_tile=t, old_tile=atk_tile)]
+        neighbors.pop(neighbors.index(atk_tile))
+        for tile in neighbors:
+            self.board.gfx.create_ghost(tile, self.colors['red'])
+            tile.reset()
+            tile.paused = True
+            self.set_row(tile)
+            tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
+        atk_tile.row = min(atk_tile.row + 1, 6 + atk_tile.col % 2)
+        self.update_tile_rows()
+
     def reroll_tiles(self, snake_length):
         self.update_tile_rows()
         tiles = [t for t in self.tiles if t.paused]
@@ -639,18 +650,6 @@ class Game:
                 self.set_attack_timer(tiles[special_index])
         else:
             print('No special tiles created for this batch')
-
-    def reroll_neighbor_tiles(self, atk_tile):
-        neighbors = [t for t in self.tiles if self.snake.is_neighbor(new_tile=t, old_tile=atk_tile)]
-        neighbors.pop(neighbors.index(atk_tile))
-        for tile in neighbors:
-            self.board.gfx.create_ghost(tile, self.colors['red'])
-            tile.reset()
-            tile.paused = True
-            self.set_row(tile)
-            tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
-        atk_tile.row = min(atk_tile.row + 1, 6 + atk_tile.col % 2)
-        self.update_tile_rows()
 
     def save_game(self):
         h = self.board.hp_display

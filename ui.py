@@ -497,6 +497,7 @@ class Tile():
 
     def reset(self):
         self.attack_timer = 5
+        self.beacon = False
         self.first_turn = True
         self.marked = False
         self.selected = False

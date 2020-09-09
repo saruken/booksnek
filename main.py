@@ -136,7 +136,7 @@ if __name__ == '__main__':
         Letters are changing point value on match, before ghosts are created
 
     Add words
-
+        geist/s
     Remove words
 
     '''
