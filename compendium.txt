@@ -28280,6 +28280,8 @@ geezer,0.46
 geezers,0.51
 gefilte,0.48
 geisha,0.4
+geist,0.35
+geists,0.39999999999999997
 gel,0.19
 gelatin,0.49
 gelatinous,0.66
@@ -33275,7 +33277,6 @@ idolized,0.51
 idolizes,0.52
 idolizing,0.53
 idols,0.3
-ids,0.18
 idyll,0.23
 idyllic,0.34
 idyllically,0.53
@@ -36567,6 +36568,7 @@ jeweling,0.49
 jewelries,0.63
 jewelry,0.39
 jewels,0.36
+jews,0.2
 jib,0.12
 jibbed,0.3
 jibbing,0.32

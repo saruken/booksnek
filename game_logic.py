@@ -31,15 +31,16 @@ class Game:
             'black': pygame.Color('#000000'),
             'border_gold': pygame.Color('#d4c413'),
             'dark_gray': pygame.Color('#202d36'),
+            'gold': pygame.Color('#fce803'),
+            'green': pygame.Color('#65a669'),
             'hp_green': pygame.Color('#305431'),
             'hp_red': pygame.Color('#b3281e'),
             'hp_yellow': pygame.Color('#d16411'),
             'light_gray': pygame.Color('#bfb9a8'),
             'mid_gray': pygame.Color('#546c7a'),
-            'poison': pygame.Color('#7c6e8a'),
-            'gold': pygame.Color('#fce803'),
-            'green': pygame.Color('#65a669'),
             'ocean': pygame.Color('#244254'),
+            'poison': pygame.Color('#7c6e8a'),
+            'poison_bright': pygame.Color('#bb60f0'),
             'progress': pygame.Color('#c9c618'),
             'red': pygame.Color('#e05a41'),
             'silver': pygame.Color('#d5e7e8'),
@@ -249,12 +250,13 @@ class Game:
         # ---- DEBUG STUFF ----
 
         if not queue:
-            self.reroll_tiles(self.snake.length)
-            print('Queue empty; unpausing all tiles')
-            for tile in [t for t in self.tiles if t.paused]:
-                tile.paused = False
-            self.empty_snake()
-            self.update_word_display()
+            if self.snake.length:
+                self.reroll_tiles(self.snake.length)
+                print('Queue empty; unpausing all tiles')
+                for tile in [t for t in self.tiles if t.paused]:
+                    tile.paused = False
+                self.empty_snake()
+                self.update_word_display()
             return
         event = queue[0]
         if event['event'] == 'submit':
@@ -304,7 +306,7 @@ class Game:
                 # Ensure tile wasn't destroyed by a neighboring ATK tile
                 if source_tile.tile_type == 'poison':
                     h.hp += amt
-                    arc_sources = [source_tile.middle, 'bg_poison', amt, 'HP']
+                    arc_sources = [source_tile.middle, 'poison_bright', amt, 'HP']
                     self.board.gfx.draw_arcs([arc_sources])
                     print(f'Poisoned {amt * -1} from c{source_tile.col}r{source_tile.row} "{source_tile.letter}"')
                 else:
@@ -646,6 +648,7 @@ class Game:
             tiles[special_index].tile_type = tile_type
             if tile_type == 'attack':
                 self.set_attack_timer(tiles[special_index])
+            tiles[special_index].update()
         else:
             print('No special tiles created for this batch')
 
@@ -764,6 +767,7 @@ class Game:
                 return
         if end_click_elem == start_click_elem:
             elem.toggle_mark()
+            self.unhighlight_all()
 
     def trim_snake(self, tile):
         index = len(self.snake.tiles) # Must use this instead of snake.length
