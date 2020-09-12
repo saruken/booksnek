@@ -435,9 +435,8 @@ class Game:
 
         # Type currently highlighted key or ESC to unhighlight all tiles
         if letter in (last_typed, 'ESCAPE'):
-            for t in self.tiles:
-                t.unhighlight()
-            return ''
+            self.unhighlight_all()
+            self.last_typed = ''
         else:
             # Otherwise, highlight all tiles with matching letters
             for t in self.tiles:
@@ -445,8 +444,7 @@ class Game:
                     t.highlight()
                 else:
                     t.unhighlight()
-        # Return typed key to store as last_typed
-        return letter
+            self.last_typed = letter
 
     def level_up(self):
         d = self.board.level_display
@@ -819,6 +817,7 @@ class Game:
                 self.prev_bonus = self.bonus_word
                 self.paused = True
                 self.last_typed = ''
+                self.unhighlight_all()
                 self.commit_word_to_history()
                 print(f'----Committed word "{self.snake.word}"----')
                 self.check_update_longest()
@@ -875,6 +874,10 @@ class Game:
         for entry in self.hi_scores:
             entry['current'] = False
         self.save_hi_scores(self.hi_scores)
+
+    def unhighlight_all(self):
+        for t in self.tiles:
+            t.unhighlight()
 
     def update_bonus_color(self):
         self.board.update_bonus_color(self.bonus_word, self.snake.word, self.colors)
