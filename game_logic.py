@@ -396,9 +396,10 @@ class Game:
             self.board.ui_elements = self.board.splash_elements
             self.mode = 'name entry'
         elif elem.name == 'name start':
-            self.new_game()
-            self.board.ui_elements = self.tiles + self.board.game_elements
-            self.mode = 'play'
+            if self.player_name:
+                self.new_game()
+                self.board.ui_elements = self.tiles + self.board.game_elements
+                self.mode = 'play'
         elif elem.name == 'name clear':
             self.player_name = ''
             self.board.clear_name()
@@ -419,9 +420,10 @@ class Game:
     def handle_name_entry(self, key):
         letter = pygame.key.name(key).upper()
         if letter == 'RETURN':
-            self.new_game()
-            self.board.ui_elements = self.tiles + self.board.game_elements
-            self.mode = 'play'
+            if self.player_name:
+                self.new_game()
+                self.board.ui_elements = self.tiles + self.board.game_elements
+                self.mode = 'play'
         else:
             self.player_name = self.board.update_name(self.player_name, letter)
             self.board.ui_elements = self.board.splash_elements
@@ -729,7 +731,6 @@ class Game:
 
     def scramble(self, new_atk=True):
         print('----Scramble----')
-        self.paused = True
         self.empty_snake()
         self.unhighlight_all()
         queue = self.create_event_queue()
