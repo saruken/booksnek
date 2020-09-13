@@ -310,8 +310,10 @@ class Game:
                 source_tile.attack_tick()
                 source_tile.update()
                 h.hp += amt
-                self.reroll_neighbor_tiles(source_tile, self.colors['red'])
                 arc_sources = [source_tile.middle, 'bg_attack', amt, 'HP']
+                self.reroll_neighbor_tiles(source_tile, self.colors['red'])
+                self.board.gfx.create_ghost(source_tile, self.colors['red'])
+                self.remove_tiles([source_tile])
                 self.board.gfx.draw_arcs([arc_sources])
                 print(f'Dealt {amt * -1} damage from c{source_tile.col}r{source_tile.row} "{source_tile.letter}"')
             else:

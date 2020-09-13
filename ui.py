@@ -392,8 +392,7 @@ class Tile():
         else:
             if self.attack_timer == 0:
                 self.beacon = False
-                self.tile_type = 'stone'
-                self.letter = '__'
+                self.highlighted = False
                 self.marked = False
 
     def build_image(self):
@@ -494,6 +493,17 @@ class Tile():
         self.hovered = True
         self.border_color = self.colors['gold']
         self.update()
+
+    def poison_tick(self):
+        self.attack_timer -= 1
+        if self.first_turn:
+            self.first_turn = False
+        else:
+            if self.attack_timer == 0:
+                self.beacon = False
+                self.tile_type = 'stone'
+                self.letter = '__'
+                self.marked = False
 
     def reset(self):
         self.attack_timer = 5
