@@ -48,6 +48,7 @@ class Game:
             'transparent': pygame.Color('#ff00ff')
         }
 
+        self.animating = False
         self.board = gameboard.Board(dims=dims, coords=(0, 0), colors=self.colors)
         self.dictionary = dictionary
         self.hi_scores = self.load_hi_scores()
@@ -72,7 +73,8 @@ class Game:
             t.coords = (t.coords[0], min(t.coords[1] + t.ay, t.target[1]))
             if t.coords[1] == t.target[1]:
                 t.ay = 0
-        if not to_animate:
+
+        if self.animating and not to_animate:
             self.paused = False
 
         for tile in [t for t in self.tiles if t.attack_timer == 1]:
@@ -524,6 +526,7 @@ class Game:
         print(f'Multiplier set to {self.multiplier}')
 
     def new_game(self):
+        self.animating = False
         self.bonus_counter = 3
         self.history = []
         self.last_five_words = []
@@ -728,6 +731,7 @@ class Game:
         print('----Scramble----')
         self.paused = True
         self.empty_snake()
+        self.unhighlight_all()
         queue = self.create_event_queue()
         self.execute_event_queue(queue)
 
@@ -812,14 +816,16 @@ class Game:
                 elem.mouse_over()
 
     def try_submit_word(self):
+        self.paused = True
         if len(self.snake.tiles) == 1: # Must use this instead of
             self.empty_snake()         # snake.length due to 'Qu' tiles
             self.update_word_display()
+            self.paused = False
         elif self.snake.length > 2:
             if self.check_dictionary():
+                self.animating = True
                 self.submitted_word = self.snake.word
                 self.prev_bonus = self.bonus_word
-                self.paused = True
                 self.last_typed = ''
                 self.unhighlight_all()
                 self.commit_word_to_history()

@@ -59,7 +59,7 @@ def main():
                 elem = get_elem_under_mouse(game, game.mode)
                 if event.__dict__['button'] == mouse_left:
                     left_clicked_elem = elem
-                    if game.mode == 'play':
+                    if game.mode == 'play' and not game.paused:
                         if isinstance(elem, Tile):
                             mouse_mode = 'drag'
                             begin_submit = bool(elem == game.snake.last)
