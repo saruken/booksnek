@@ -124,12 +124,17 @@ if __name__ == '__main__':
 
     '''
     # TODO:
-        When multiple effects will take place in the same "turn", put a 0.2s(?) delay between them
+        New tile properties
+            5 / silver: double score
+            6 / teal: heal
+            7+ / gold: explode surrounding tiles
+            ATK: Do not leave stone
+            PSN: Add 5-turn counter, leave stone if counter expires
         'Game saved' confirmation message
         Add tutorial GIFs, steps
         SFX
         Maybe do marquee effect for bonus word tile ghosts?
-        Make silver/gold tiles blow up neighbors like ATK
+        Make gold tiles blow up neighbors like ATK
 
     BUGS
         Tile selection gets jacked up after loading a gamestate; cols out of order?
