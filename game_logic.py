@@ -196,6 +196,13 @@ class Game:
                     'amount': tile.multiplier
                 }
                 queue.append(event)
+            elif tile.tile_type == 'gold':
+                event = {
+                    'tile': tile,
+                    'event': 'explode',
+                    'amount': 0
+                }
+                queue.append(event)
         if self.snake.length:
             event = {
                 'tiles': [t for t in self.snake.tiles if not t.tile_type == 'heal'],
@@ -290,13 +297,20 @@ class Game:
             self.snake.tiles.pop(index)
             self.remove_tiles([source_tile])
             h.update()
+        elif action == 'explode':
+            self.board.gfx.create_ghost(source_tile, self.colors['gold'])
+            self.reroll_neighbor_tiles(source_tile, color=self.colors['gold'])
+            index = self.snake.tiles.index(source_tile)
+            self.snake.tiles.pop(index)
+            self.remove_tiles([source_tile])
+            print(f'c{source_tile.col}r{source_tile.row} "{source_tile.letter}" blew up its neighbors')
         elif action == 'attack':
             # Don't activate tiles that are part of the just-submitted word
             if not source_tile in self.snake.tiles:
                 source_tile.attack_tick()
                 source_tile.update()
                 h.hp += amt
-                self.reroll_neighbor_tiles(source_tile)
+                self.reroll_neighbor_tiles(source_tile, self.colors['red'])
                 arc_sources = [source_tile.middle, 'bg_attack', amt, 'HP']
                 self.board.gfx.draw_arcs([arc_sources])
                 print(f'Dealt {amt * -1} damage from c{source_tile.col}r{source_tile.row} "{source_tile.letter}"')
@@ -606,11 +620,11 @@ class Game:
             tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
             tile.paused = True
 
-    def reroll_neighbor_tiles(self, atk_tile):
+    def reroll_neighbor_tiles(self, atk_tile, color):
         neighbors = [t for t in self.tiles if self.snake.is_neighbor(new_tile=t, old_tile=atk_tile)]
         neighbors.pop(neighbors.index(atk_tile))
         for tile in neighbors:
-            self.board.gfx.create_ghost(tile, self.colors['red'])
+            self.board.gfx.create_ghost(tile, color)
             tile.reset()
             tile.paused = True
             self.set_row(tile)
@@ -626,9 +640,9 @@ class Game:
         special_index = 0
 
         if snake_length == 5:
-            tile_type = 'heal'
-        elif snake_length == 6:
             tile_type = 'silver'
+        elif snake_length == 6:
+            tile_type = 'heal'
         elif snake_length > 6:
             tile_type = 'gold'
         else:

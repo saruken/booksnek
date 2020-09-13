@@ -125,11 +125,9 @@ if __name__ == '__main__':
     '''
     # TODO:
         New tile properties
-            5 / silver: double score
-            6 / teal: heal
-            7+ / gold: explode surrounding tiles
             ATK: Do not leave stone
             PSN: Add 5-turn counter, leave stone if counter expires
+        Is score from heal tiles actually counting now that they're being removed from snake?
         'Game saved' confirmation message
         Add tutorial GIFs, steps
         SFX
