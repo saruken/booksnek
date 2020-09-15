@@ -4608,8 +4608,10 @@ ballasts,0.44
 ballcock,0.32
 ballcocks,0.37
 balled,0.35
+baller,0.37
 ballerina,0.61
 ballerinas,0.66
+ballers,0.42
 ballet,0.37
 balletic,0.48
 ballets,0.42

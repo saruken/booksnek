@@ -77,7 +77,7 @@ class Game:
         if self.animating and not to_animate:
             self.paused = False
 
-        for tile in [t for t in self.tiles if t.attack_timer == 1]:
+        for tile in [t for t in self.tiles if t.attack_timer == 1 and t.tile_type == 'attack']:
             tile.animate_beacon()
 
         d = self.board.level_display
@@ -266,6 +266,8 @@ class Game:
                     tile.paused = False
                 self.empty_snake()
                 self.update_word_display()
+            else:
+                self.animating = True
             return
         event = queue[0]
         if event['event'] == 'submit':
@@ -323,6 +325,8 @@ class Game:
             if not source_tile in self.snake.tiles:
                 # Ensure tile wasn't destroyed by a neighboring ATK tile
                 if source_tile.tile_type == 'poison':
+                    source_tile.poison_tick()
+                    source_tile.update()
                     h.hp += amt
                     arc_sources = [source_tile.middle, 'poison_bright', amt, 'HP']
                     self.board.gfx.draw_arcs([arc_sources])
@@ -587,7 +591,7 @@ class Game:
         self.board.longest_display.update(self.word_longest)
         self.board.multiplier_display.update(self.multiplier)
         self.board.score_display.update(self.score)
-        self.board.level_display.update(self.level, label=self.player_name)
+        self.board.level_display.update(self.level, label=f'LEVEL: {self.player_name}')
 
         for t in self.tiles:
             t.reset()
@@ -669,6 +673,8 @@ class Game:
             tiles[special_index].tile_type = tile_type
             if tile_type == 'attack':
                 self.set_attack_timer(tiles[special_index])
+            else:
+                tiles[special_index].attack_timer = 3
             tiles[special_index].update()
         else:
             print('No special tiles created for this batch')

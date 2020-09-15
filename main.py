@@ -125,7 +125,6 @@ if __name__ == '__main__':
     '''
     # TODO:
         New tile properties
-            ATK: Do not leave stone
             PSN: Add 5-turn counter, leave stone if counter expires
         Is score from heal tiles actually counting now that they're being removed from snake?
         'Game saved' confirmation message
@@ -136,6 +135,7 @@ if __name__ == '__main__':
 
     BUGS
         Tile selection gets jacked up after loading a gamestate; cols out of order?
+        All ghosts are yellow if 1 is
         Letters are changing point value on match, before ghosts are created
 
     Add words

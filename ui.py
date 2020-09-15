@@ -431,6 +431,11 @@ class Tile():
                 # Align bottom/left
                 timer_offset = (3, self.dims[1] - surf_timer.get_size()[1] - 3)
                 self.surf.blit(surf_timer, dest=timer_offset)
+            elif self.tile_type == 'poison':
+                surf_timer = self.fonts['small'].render(str(self.attack_timer), True, self.colors['light_gray'], self.bg_color)
+                # Align bottom/left
+                timer_offset = (3, self.dims[1] - surf_timer.get_size()[1] - 3)
+                self.surf.blit(surf_timer, dest=timer_offset)
 
         self.surf.blit(surf, dest=offset)
 
@@ -562,7 +567,7 @@ class Tile():
         self.update()
 
     def update(self, level=None, multiplier=None):
-        if self.tile_type not in ('attack', 'heal', 'poison'):
+        if self.tile_type == 'normal':
             if level:
                 self.level = level
             if multiplier:
