@@ -56,6 +56,7 @@ class Game:
         self.max_history_words = 17
         self.mode = 'menu'
         self.player_name = 'SNEK'
+        self.queue = []
         self.snake = tile_snake.Snake()
         tile_offset = gameboard.offset_from_element(self.board.level_display, corner=(0, 1), offset=(0, 10))
         self.tiles = self.board.create_tiles(self.colors, offset=tile_offset)
@@ -234,7 +235,7 @@ class Game:
                         'amount': tile.point_value * -1
                     }
                 queue.append(event)
-        return queue
+        self.queue = queue
 
     def empty_snake(self):
         print(f'empty_snake(): {len(self.snake.tiles)} tiles to empty')
@@ -248,19 +249,19 @@ class Game:
         self.snake.tiles = []
         self.snake.update()
 
-    def execute_event_queue(self, queue):
+    def execute_event_queue(self):
         # ---- DEBUG STUFF ----
         next_event = None
         following_events = []
-        if queue:
-            next_event = queue[0]
-        if len(queue) > 1:
-            following_events = queue[1:]
+        if self.queue:
+            next_event = self.queue[0]
+        if len(self.queue) > 1:
+            following_events = self.queue[1:]
         if next_event:
             print(f'queue: [{next_event["event"]}]{", " if following_events else ""}{", ".join([e["event"] for e in following_events])}')
         # ---- DEBUG STUFF ----
 
-        if not queue:
+        if not self.queue:
             if self.snake.length:
                 self.reroll_tiles(self.snake.length)
                 print('Queue empty; unpausing all tiles')
@@ -271,12 +272,12 @@ class Game:
             else:
                 self.animating = True
             return
-        event = queue[0]
+        event = self.queue[0]
         if event['event'] == 'submit':
             print(f'Removing {len(self.snake.tiles)} snake tiles')
             self.remove_tiles(self.snake.tiles, snake=True)
-            queue.pop(0)
-            threading.Timer(0.2, self.execute_event_queue, [queue]).start()
+            self.queue.pop(0)
+            threading.Timer(0.2, self.execute_event_queue).start()
             return
         source_tile = event['tile']
         action = event['event']
@@ -354,13 +355,13 @@ class Game:
                 print('Attack tile had a tick event, but was removed via word submission')
         print(f'HP: {h.hp} / {h.hp_max}')
 
-        if len(queue):
+        if len(self.queue):
             self.paused = True
-            queue.pop(0)
+            self.queue.pop(0)
             if skip:
-                self.execute_event_queue(queue)
+                self.execute_event_queue()
             if not skip:
-                threading.Timer(0.2, self.execute_event_queue, [queue]).start()
+                threading.Timer(0.2, self.execute_event_queue).start()
         else:
             self.paused = False
             for tile in [t for t in self.tiles if t.paused]:
@@ -637,6 +638,16 @@ class Game:
             tile.paused = True
             self.set_row(tile)
             tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
+            to_pop = []
+            for event in [ev for ev in self.queue if not ev['event'] == 'submit']:
+                if event['tile'] == tile:
+                    to_pop.append(event)
+            for e in to_pop:
+                self.queue.pop(self.queue.index(e))
+                t = e['tile']
+                e_type = e['event']
+                article = 'a' if e_type in ('heal', 'poison', 'tick') else 'an'
+                print(f'Queued tile c{t.col}r{t.row} "{t.letter}" had {article} {e_type} event, but was destroyed')
         atk_tile.row = min(atk_tile.row + 1, 6 + atk_tile.col % 2)
         self.update_tile_rows()
 
@@ -757,8 +768,8 @@ class Game:
         print('----Scramble----')
         self.empty_snake()
         self.unhighlight_all()
-        queue = self.create_event_queue()
-        self.execute_event_queue(queue)
+        self.create_event_queue()
+        self.execute_event_queue()
 
         if new_atk:
             try:
@@ -869,8 +880,8 @@ class Game:
                     self.check_update_best()
                     self.apply_level_progress(score)
                 self.update_history_display()
-                event_queue = self.create_event_queue()
-                self.execute_event_queue(event_queue)
+                self.create_event_queue()
+                self.execute_event_queue()
             else:
                 print(f'Word "{self.snake.word}" not in dictionary')
                 self.empty_snake()

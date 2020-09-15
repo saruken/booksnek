@@ -124,18 +124,13 @@ if __name__ == '__main__':
 
     '''
     # TODO:
-        New tile properties
-            PSN: Add 5-turn counter, leave stone if counter expires
-        Is score from heal tiles actually counting now that they're being removed from snake?
         'Game saved' confirmation message
         Add tutorial GIFs, steps
         SFX
         Maybe do marquee effect for bonus word tile ghosts?
-        Make gold tiles blow up neighbors like ATK
 
     BUGS
         Tile selection gets jacked up after loading a gamestate; cols out of order?
-        All ghosts are yellow if 1 is
         Letters are changing point value on match, before ghosts are created
 
     Add words
