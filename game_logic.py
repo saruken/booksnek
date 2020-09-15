@@ -68,6 +68,8 @@ class Game:
 
     def animate(self):
         to_animate = [t for t in self.tiles if t.target != t.coords and not t.paused]
+        if to_animate:
+            self.animating = True
         for t in to_animate:
             t.ay += .4
             t.coords = (t.coords[0], min(t.coords[1] + t.ay, t.target[1]))
@@ -846,7 +848,6 @@ class Game:
             self.paused = False
         elif self.snake.length > 2:
             if self.check_dictionary():
-                self.animating = True
                 self.submitted_word = self.snake.word
                 self.prev_bonus = self.bonus_word
                 self.last_typed = ''
