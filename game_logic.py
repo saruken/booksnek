@@ -488,7 +488,7 @@ class Game:
         d.flash()
         d.update(self.level)
         buff = self.board.hp_display.level_up(self.level)
-        arc_sources = [[(125, 184), 'teal', str(buff), 'HP', 0], [(135, 180), 'teal', f'{buff} MAX', 'HP_MAX', 0]]
+        arc_sources = [[(125, 184), 'bg_gold', str(buff), 'HP', 0], [(135, 180), 'bg_gold', f'{buff} MAX', 'HP_MAX', 0]]
         self.update_bonus_display()
         self.update_tiles()
         self.board.gfx.draw_arcs(arc_sources)
