@@ -121,19 +121,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-    '''
-    # TODO:
-        Add tutorial GIFs, steps
-        SFX
-        Maybe do marquee effect for bonus word tile ghosts?
-        Limit to 5 gamestate slots; need menu to choose which one to overwrite
-
-    BUGS
-        Tile selection gets jacked up after loading a gamestate; cols out of order?
-
-    Add words
-
-    Remove words
-
-    '''
