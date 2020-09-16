@@ -352,14 +352,17 @@ class GFXSurf:
             if amt < 0:
                 color = self.colors['red']
                 prefix = ''
+                offset_x -= 10
             else:
                 color = self.colors['green']
                 prefix = '+'
+                offset_x += 10
             surf = self.fonts['large'].render(prefix + str(amt), True, color)
+        print(f'Creating delta with offset_x={offset_x}')
         delta = {
             'dims': surf.get_size(),
             'fade_counter': 255 + random.choice(range(50)),
-            'fade_step': 2,
+            'fade_step': 1.5,
             'offset_x': offset_x - (surf.get_size()[0] / 2),
             'offset_y': 130 - surf.get_size()[1],
             'rise': True,
@@ -367,7 +370,7 @@ class GFXSurf:
             'vx': 0,
             'vx_accel': 0,
             'vy': 0,
-            'vy_accel': 0.003
+            'vy_accel': 0.001
         }
 
         self.gfx.append(delta)
@@ -400,7 +403,7 @@ class GFXSurf:
         for source in arc_sources:
             arc_start = source[0]
             if source[3] == 'HP':
-                arc_end = (150, 136)
+                arc_end = (150 + source[4], 136)
             elif source[3] == 'HP_MAX':
                 arc_end = (204, 136)
             pts = [arc_start, arc_end]

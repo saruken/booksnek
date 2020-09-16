@@ -115,6 +115,7 @@ class Game:
         d.update()
 
     def check_dictionary(self):
+        return True
         return bool(self.snake.word.lower() in [x[0] for x in self.dictionary])
 
     def check_level_progress(self):
@@ -288,13 +289,13 @@ class Game:
         if action == 'heal':
             if h.hp == h.hp_max:
                 h.hp_max += amt
-                arc_sources = [source_tile.middle, 'teal', f'{self.multiplier} MAX', 'HP_MAX']
+                arc_sources = [source_tile.middle, 'teal', f'{self.multiplier} MAX', 'HP_MAX', 0]
                 self.board.gfx.create_ghost(source_tile, self.colors['teal'])
                 self.board.gfx.draw_arcs([arc_sources])
                 print(f'Heal effect from c{source_tile.col}r{source_tile.row} "{source_tile.letter}": HP_MAX increased by {self.multiplier}')
             else:
                 h.hp = min(h.hp + amt, h.hp_max)
-                arc_sources = [source_tile.middle, 'teal', amt, 'HP']
+                arc_sources = [source_tile.middle, 'teal', amt, 'HP', 20]
                 self.board.gfx.draw_arcs([arc_sources])
                 print(f'Healed {amt} from c{source_tile.col}r{source_tile.row} "{source_tile.letter}"')
             print(f'Removing heal tile "{source_tile.letter}" from snake.tiles')
@@ -315,7 +316,7 @@ class Game:
                 source_tile.attack_tick()
                 source_tile.update()
                 h.hp += amt
-                arc_sources = [source_tile.middle, 'bg_attack', amt, 'HP']
+                arc_sources = [source_tile.middle, 'bg_attack', amt, 'HP', -20]
                 self.reroll_neighbor_tiles(source_tile, self.colors['red'])
                 self.board.gfx.create_ghost(source_tile, self.colors['red'])
                 self.remove_tiles([source_tile])
@@ -331,7 +332,7 @@ class Game:
                     source_tile.poison_tick()
                     source_tile.update()
                     h.hp += amt
-                    arc_sources = [source_tile.middle, 'poison_bright', amt, 'HP']
+                    arc_sources = [source_tile.middle, 'poison_bright', amt, 'HP', -20]
                     self.board.gfx.draw_arcs([arc_sources])
                     print(f'Poisoned {amt * -1} from c{source_tile.col}r{source_tile.row} "{source_tile.letter}"')
                 else:
@@ -487,7 +488,7 @@ class Game:
         d.flash()
         d.update(self.level)
         buff = self.board.hp_display.level_up(self.level)
-        arc_sources = [[(125, 184), 'teal', str(buff), 'HP'], [(135, 180), 'teal', f'{buff} MAX', 'HP_MAX']]
+        arc_sources = [[(125, 184), 'teal', str(buff), 'HP', 0], [(135, 180), 'teal', f'{buff} MAX', 'HP_MAX', 0]]
         self.update_bonus_display()
         self.update_tiles()
         self.board.gfx.draw_arcs(arc_sources)
