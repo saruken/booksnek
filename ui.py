@@ -340,7 +340,7 @@ class Tile():
         self.dims = (48, 48)
         self.first_turn = True
         self.fonts = fonts
-        self.highlighted = False
+        self.keeb_highlight = False
         self.hovered = False
         self.images = {}
         self.interactive = True
@@ -391,7 +391,7 @@ class Tile():
         else:
             if self.attack_timer == 0:
                 self.beacon = False
-                self.highlighted = False
+                self.keeb_highlight = False
                 self.marked = False
 
     def build_image(self):
@@ -399,7 +399,7 @@ class Tile():
         self.border_color = self.colors['light_gray']
         if self.hovered:
             self.border_color = self.colors['gold']
-        elif self.highlighted:
+        elif self.keeb_highlight:
             self.border_color = self.colors['dark_gray']
         # Set BG color
         if not self.beacon or (self.beacon and self.selected):
@@ -476,13 +476,13 @@ class Tile():
         }
         pop = [key for key in letter_weights]
         weights = [letter_weights[letter] for letter in pop]
-        self.letter = random.choices(population=pop, weights=weights, k=1)
+        self.letter = random.choices(population=pop, weights=weights, k=1)[0]
 
     def get_abs_rect(self):
         return pygame.Rect(self.coords, self.dims)
 
     def highlight(self):
-        self.highlighted = True
+        self.keeb_highlight = True
         self.update()
 
     def load_images(self):
@@ -560,19 +560,16 @@ class Tile():
         self.update()
 
     def unhighlight(self):
-        self.highlighted = False
+        self.keeb_highlight = False
         self.update()
 
     def unselect(self):
         self.selected = False
         self.update()
 
-    def update(self, level=None, multiplier=None):
-        if self.tile_type == 'normal':
-            if level:
-                self.level = level
-            if multiplier:
-                self.multiplier = multiplier
+    def update(self, multiplier=None):
+        if multiplier:
+            self.multiplier = multiplier
 
         self.update_point_value()
         self.set_text_color()

@@ -11,6 +11,18 @@ class Snake():
             self.tiles.append(tile)
             self.update()
 
+    def empty(self):
+        print(f'snake.empty(): {len(self.tiles)} tiles to empty')
+        if not self.tiles:
+            return
+        self.last.mouse_out()
+        for tile in self.tiles:
+            tile.beacon = False
+            tile.keeb_highlight = False
+            tile.unselect()
+        self.tiles = []
+        self.update()
+
     def is_neighbor(self, new_tile, old_tile=None):
 
         '''

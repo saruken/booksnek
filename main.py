@@ -59,7 +59,7 @@ def main():
                 elem = get_elem_under_mouse(game, game.mode)
                 if event.__dict__['button'] == mouse_left:
                     left_clicked_elem = elem
-                    if game.mode == 'play' and not game.paused:
+                    if game.mode == 'play' and not game.input_disabled:
                         if isinstance(elem, Tile):
                             mouse_mode = 'drag'
                             begin_submit = bool(elem == game.snake.last)
@@ -78,7 +78,7 @@ def main():
                             if elem == left_clicked_elem:
                                 game.handle_menu_btn_click(elem)
                         else:
-                            if not game.paused:
+                            if not game.input_disabled:
                                 if elem == left_clicked_elem:
                                     if begin_submit:
                                         game.try_submit_word()
@@ -106,7 +106,7 @@ def main():
                         game.highlight_selected_tiles()
             elif event.type == pygame.KEYDOWN:
                 if game.mode == 'play':
-                    if not game.paused:
+                    if not game.input_disabled:
                         game.highlight_tiles_from_letter(event.key, game.last_typed)
                 elif game.mode == 'name entry':
                     game.handle_name_entry(event.key)

@@ -78,7 +78,7 @@ class Game:
                 t.ay = 0
 
         if self.animating and not to_animate:
-            self.paused = False
+            self.input_disabled = False
 
         for tile in [t for t in self.tiles if t.attack_timer == 1 and t.tile_type == 'attack']:
             tile.animate_beacon()
@@ -133,16 +133,13 @@ class Game:
             }
             self.word_best = obj
             self.board.best_display.set_colored_text(obj)
-            self.board.best_display.flash()
 
-    def check_update_longest(self):
+    def check_update_longest(self, word):
         if self.word_longest:
-            if len(self.history[-1]['word']) > len(self.word_longest):
-                self.word_longest = self.history[-1]['word']
-                self.board.longest_display.flash()
+            if len(word) > len(self.word_longest):
+                self.word_longest = word
         else:
-            self.word_longest = self.history[-1]['word']
-            self.board.longest_display.flash()
+            self.word_longest = word
         self.board.longest_display.set_text(self.word_longest)
 
     def choose_bonus_word(self):
@@ -169,17 +166,13 @@ class Game:
 
         return word
 
-    def commit_word_to_history(self):
-        if self.snake.word == self.bonus_word:
-            color = 'green'
-            value = 'M'
-        else:
-            color = 'beige'
-            value = self.score_word()
+    def commit_word_to_history(self, word):
+        print(f'----Committed word "{word}"----')
+        color = 'green' if word == self.bonus_word else 'beige'
         history_word = {
-            'word': self.snake.word,
-            'value': value,
-            'colors': [color for _ in range(len(self.snake.word))]
+            'word': word,
+            'value': self.score_word(word),
+            'colors': [color for _ in range(len(word))]
         }
         history_word = self.color_letters(history_word)
 
@@ -188,7 +181,7 @@ class Game:
             self.history.pop(0)
         self.last_five_words = [len(w['word']) for w in self.history[-5:]]
 
-    def create_event_queue(self):
+    def create_event_queue(self, color):
         queue = []
 
         for tile in self.snake.tiles:
@@ -210,7 +203,7 @@ class Game:
             event = {
                 'tiles': [t for t in self.snake.tiles if not t.tile_type == 'heal'],
                 'event': 'submit',
-                'amount': 0
+                'color': color
             }
             queue.append(event)
         for tile in self.tiles:
@@ -237,18 +230,6 @@ class Game:
                 queue.append(event)
         self.queue = queue
 
-    def empty_snake(self):
-        print(f'empty_snake(): {len(self.snake.tiles)} tiles to empty')
-        if not self.snake.tiles:
-            return
-        self.snake.last.mouse_out()
-        for tile in [t for t in self.snake.tiles]:
-            tile.beacon = False
-            tile.highlighted = False
-            tile.unselect()
-        self.snake.tiles = []
-        self.snake.update()
-
     def execute_event_queue(self):
         # ---- DEBUG STUFF ----
         next_event = None
@@ -267,7 +248,7 @@ class Game:
                 print('Queue empty; unpausing all tiles')
                 for tile in [t for t in self.tiles if t.paused]:
                     tile.paused = False
-                self.empty_snake()
+                self.snake.empty()
                 self.update_word_display()
             else:
                 self.animating = True
@@ -356,14 +337,14 @@ class Game:
         print(f'HP: {h.hp} / {h.hp_max}')
 
         if len(self.queue):
-            self.paused = True
+            self.input_disabled = True
             self.queue.pop(0)
             if skip:
                 self.execute_event_queue()
             if not skip:
                 threading.Timer(0.2, self.execute_event_queue).start()
         else:
-            self.paused = False
+            self.input_disabled = False
             for tile in [t for t in self.tiles if t.paused]:
                 tile.paused = False
 
@@ -399,7 +380,7 @@ class Game:
         elif elem.name == 'save':
             self.save_game()
         elif elem.name == 'scramble':
-            if not self.paused:
+            if not self.input_disabled:
                 self.scramble()
                 self.last_typed = ''
         elif elem.name == 'clear':
@@ -549,7 +530,6 @@ class Game:
     def mult_up(self):
         self.multiplier += 1
         self.bonus_counter += 1
-        self.board.multiplier_display.flash()
         self.update_tiles()
         print(f'Multiplier set to {self.multiplier}')
 
@@ -563,7 +543,7 @@ class Game:
         self.level_best = 1
         self.mult_best = 1
         self.multiplier = 1
-        self.paused = False
+        self.input_disabled = False
         self.prev_bonus = ''
         self.score = 0
         self.submitted_word = ''
@@ -589,7 +569,7 @@ class Game:
 
         self.board.update_hi_score_display(self.hi_scores)
         self.choose_bonus_word()
-        self.empty_snake()
+        self.snake.empty()
 
         self.board.best_display.update(None)
         self.update_bonus_display()
@@ -755,15 +735,10 @@ class Game:
             json.dump(scores, file)
         print('Hi scores updated')
 
-    def score_word(self, word=None):
+    def score_word(self, word):
         value = 0
-        if word:
-            for l in word:
-                value += self.board.lookup_letter_value(l) * self.multiplier * self.level
-        else:
-            for t in self.snake.tiles:
-                value += t.point_value
-            word = self.snake.word
+        for l in word:
+            value += self.board.lookup_letter_value(l) * self.multiplier * self.level
         if word == self.bonus_word:
             value *= 3
 
@@ -771,7 +746,7 @@ class Game:
 
     def scramble(self, new_atk=True):
         print('----Scramble----')
-        self.empty_snake()
+        self.snake.empty()
         self.unhighlight_all()
         self.create_event_queue()
         self.execute_event_queue()
@@ -835,7 +810,7 @@ class Game:
                 if self.snake.is_neighbor(elem):
                     self.add_tile(elem)
                 else:
-                    self.empty_snake()
+                    self.snake.empty()
                     self.add_tile(elem)
             else:
                 self.add_tile(elem)
@@ -857,44 +832,37 @@ class Game:
                 elem.mouse_over()
 
     def try_submit_word(self):
-        self.paused = True
-        mult_up = False
         if len(self.snake.tiles) == 1: # Must use this instead of
-            self.empty_snake()         # snake.length due to 'Qu' tiles
-            self.update_word_display()
-            self.paused = False
+            self.snake.empty()         # snake.length due to 'Qu' tiles
         elif self.snake.length > 2:
             if self.check_dictionary():
-                self.submitted_word = self.snake.word
+                self.input_disabled = True
+                multUP_flag = True if self.snake.word == self.bonus_word else False
+                word = self.snake.word
                 self.prev_bonus = self.bonus_word
                 self.last_typed = ''
-                self.unhighlight_all()
-                self.commit_word_to_history()
-                print(f'----Committed word "{self.snake.word}"----')
-                self.check_update_longest()
-                if self.snake.word == self.bonus_word:
-                    print(f'Bonus word match')
-                    mult_up = True
-                else:
-                    score = self.score_word()
-                    print(f'Added {score} to score')
-                    self.score += score
-                    self.update_score_display()
-                    self.try_update_hi_scores()
-                    self.check_update_best()
-                    self.apply_level_progress(score)
+                self.commit_word_to_history(word)
+                self.check_update_longest(word)
+                score = self.score_word(word)
+                self.score += score
+                self.update_score_display()
+                self.try_update_hi_scores()
+                self.check_update_best()
+                self.apply_level_progress(score)
                 self.update_history_display()
-                self.create_event_queue()
-                self.execute_event_queue()
-                if mult_up:
+                ghost_color = 'beige'
+                if multUP_flag:
+                    ghost_color = 'gold'
                     self.mult_up()
                     self.update_mult_display()
                     self.choose_bonus_word()
+                self.create_event_queue(ghost_color)
+                self.execute_event_queue()
             else:
                 print(f'Word "{self.snake.word}" not in dictionary')
-                self.empty_snake()
-                self.update_word_display()
+                self.snake.empty()
                 self.animating = True
+        self.update_word_display()
 
     def try_update_hi_scores(self):
         scores = sorted(self.hi_scores, key=lambda k: k['score'])
@@ -977,8 +945,8 @@ class Game:
                         pass
 
     def update_tiles(self):
-        for t in self.tiles:
-            t.update(level=self.level, multiplier=self.multiplier)
+        for tile in [t for t in self.tiles if t.tile_type == 'normal']:
+            t.update(multiplier=self.multiplier)
 
     def update_word_display(self):
         color = 'mid_gray'
@@ -989,12 +957,11 @@ class Game:
         if self.snake.length:
             if len(word) > 2:
                 if self.check_dictionary():
+                    value = format(self.score_word(word), ',d')
                     if word == self.bonus_word:
                         color = 'green'
-                        value = 'M'
                     else:
                         color = 'teal'
-                        value = format(self.score_word(), ',d')
                 else:
                     color = 'red'
 
