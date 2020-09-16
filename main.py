@@ -124,11 +124,11 @@ if __name__ == '__main__':
 
     '''
     # TODO:
-        'Game saved' confirmation message
         Add tutorial GIFs, steps
         SFX
         Maybe do marquee effect for bonus word tile ghosts?
         Remove fade/float from HP FXS; add shadow/background so they're more readable
+        Limit to 5 gamestate slots; need menu to choose which one to overwrite
 
     BUGS
         Tile selection gets jacked up after loading a gamestate; cols out of order?
