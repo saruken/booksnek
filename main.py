@@ -128,10 +128,10 @@ if __name__ == '__main__':
         Add tutorial GIFs, steps
         SFX
         Maybe do marquee effect for bonus word tile ghosts?
+        Remove fade/float from HP FXS; add shadow/background so they're more readable
 
     BUGS
         Tile selection gets jacked up after loading a gamestate; cols out of order?
-        Letters are changing point value on match, before ghosts are created
 
     Add words
 

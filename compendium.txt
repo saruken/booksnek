@@ -34024,7 +34024,6 @@ inbreed,0.51
 inbreeding,0.69
 inbreeds,0.56
 inbuilt,0.4
-inc,0.17
 incalculable,0.67
 incalculably,0.57
 incandescence,0.87

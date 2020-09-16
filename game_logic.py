@@ -853,6 +853,7 @@ class Game:
 
     def try_submit_word(self):
         self.paused = True
+        mult_up = False
         if len(self.snake.tiles) == 1: # Must use this instead of
             self.empty_snake()         # snake.length due to 'Qu' tiles
             self.update_word_display()
@@ -868,9 +869,7 @@ class Game:
                 self.check_update_longest()
                 if self.snake.word == self.bonus_word:
                     print(f'Bonus word match')
-                    self.mult_up()
-                    self.update_mult_display()
-                    self.choose_bonus_word()
+                    mult_up = True
                 else:
                     score = self.score_word()
                     print(f'Added {score} to score')
@@ -882,6 +881,10 @@ class Game:
                 self.update_history_display()
                 self.create_event_queue()
                 self.execute_event_queue()
+                if mult_up:
+                    self.mult_up()
+                    self.update_mult_display()
+                    self.choose_bonus_word()
             else:
                 print(f'Word "{self.snake.word}" not in dictionary')
                 self.empty_snake()
