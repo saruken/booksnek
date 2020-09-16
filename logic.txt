@@ -1,0 +1,87 @@
+animate():
+    # Called every frame
+    to_animate = all tiles on board where y != target
+    For tile in to_animate:
+        Move tile toward target
+    If to_animate is empty and player input is disabled:
+        Enable player input
+    Animate HP bar
+    If displayed HP == 0:
+        Game over
+    Animate experience bar
+    If experience bar ratio == 1:
+        Level up
+
+attack(tile):
+    Create red arc from tile to HP
+    Create red delta text on HP
+    remove(tile, red)
+
+explode(tiles):
+    For tile in tiles:
+        remove(tile, gold)
+
+heal(tile):
+    Determine if tile will affect HP or HPMAX
+    Create teal arc from tile to HP/HPMAX
+    Create green/gold delta text on HP/HPMAX
+    remove(tile, teal)
+
+poison(tile):
+    Create purple arc from tile to HP
+    Create red delta text on HP
+    If tile counter == 0:
+        tile becomes stone
+
+remove(tile, color):
+    Move tile up off screen
+    Reset tile properties
+    Choose new letter for tile
+    Create color tile ghost
+
+try_submit():
+    If snake.word in dictionary:
+        Disable player input
+        If snake.word == bonus word:
+            Set MultUP flag
+        Score += value of snake.tiles
+        For heal tile in snake.tiles:
+            heal(tile)
+            Pop tile from snake.tiles
+        For gold tile in snake.tiles:
+            Get neighbor tiles
+            If any tiles in neighbors are heal or gold:
+                For tile in heal/gold neighbors:
+                    If tile == heal tile:
+                        heal(tile)
+                        Pop tile from neighbors
+                    Elif tile == gold tile:
+                        tile_neighbors = gold tile and neighboring tiles
+                        If any in tile_neighbors are gold:
+                            Append tiles to main neighbor list
+                            Pop from tile_neighbors
+                        Pop from main neighbor list any tiles also in tile_neighbors
+                        explode(tile_neighbors)
+                Pop tile from snake.tiles
+            If any of the neighboring tiles were in snake.tiles, pop them too
+        For tile left in snake.tiles:
+            remove(tile, beige)
+        For attack tile on board where tile.row > 0:
+            tile counter --
+            If tile counter == 0:
+                attack(tile)
+            Else:
+                Update tile display
+        For poison tile on board where tile.row > 0:
+            tile counter --
+            poison(tile)
+        If MultUp flag:
+            Multiplier ++
+            Bonus counter ++
+            Choose new bonus word
+            Update bonus display
+            For non-special tile on board:
+                Update tile values, display
+    else:
+        Print message
+    Clear word display
