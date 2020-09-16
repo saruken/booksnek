@@ -2,7 +2,7 @@
 
 🐍 **Booksnek** is an updated Pygame implementation of PopCap's classic Flash game Bookworm.
 
-![](./img/preview.png)
+![](./img/preview.PNG)
 
 ### Features
 - Load & save gamestates
