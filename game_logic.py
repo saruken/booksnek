@@ -714,15 +714,14 @@ class Game:
             }
             tiles.append(tile)
 
-        username = 'SHAT'
         stamp = datetime.today()
         timestamp_long =  datetime.strftime(stamp, '%b %d, %Y %H:%M:%S')
         timestamp_short =  datetime.strftime(stamp, '%Y-%m-%d-%H-%M-%S')
 
         gamestate = {
-            'id': f'{username}_{timestamp_short}',
+            'id': f'{self.player_name}_{timestamp_short}',
             'timestamp': timestamp_long,
-            'username': username,
+            'username': self.player_name,
             'best_word': self.word_best,
             'bonus_counter': self.bonus_counter,
             'bonus_word': self.bonus_word,
@@ -747,7 +746,7 @@ class Game:
             json.dump(saved_gamestates, file)
 
         self.mode = 'menu'
-        self.board.create_game_saved_menu()
+        self.board.create_game_saved_menu(gamestate['id'])
         self.board.ui_elements += self.board.splash_elements
         print('Gamestate saved')
 
@@ -895,6 +894,7 @@ class Game:
                 print(f'Word "{self.snake.word}" not in dictionary')
                 self.empty_snake()
                 self.update_word_display()
+                self.animating = True
 
     def try_update_hi_scores(self):
         scores = sorted(self.hi_scores, key=lambda k: k['score'])

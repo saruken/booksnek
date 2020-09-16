@@ -79,15 +79,18 @@ class Board():
         btn = ui.Interactive(name='game over ok', dims=(63, 40), coords=(149, coords[1]), fonts=self.fonts, text='OK', colors=self.colors, text_color='light_gray')
         self.splash_elements = [menu_bg, btn]
 
-    def create_game_saved_menu(self):
+    def create_game_saved_menu(self, id):
         self.hide_splash_menu()
-        header = self.fonts['medium'].render('GAME SAVED', True, self.colors['light_gray'], None)
+        header = self.fonts['medium'].render('GAME SAVED AS:', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
-        surf_dims = (284, 120)
-        menu_bg = ui.Display(dims=surf_dims, coords=(38, 290), fonts=self.fonts, colors=self.colors)
+        surf_dims = (304, 140)
+        menu_bg = ui.Display(dims=surf_dims, coords=(18, 290), fonts=self.fonts, colors=self.colors)
         menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
-        coords = offset_from_element(menu_bg, corner=(0, 0), offset=(0, 60))
-        btn = ui.Interactive(name='game saved ok', dims=(63, 40), coords=(149, coords[1]), fonts=self.fonts, text='OK', colors=self.colors, text_color='light_gray')
+        id_text = self.fonts['medium'].render(id, True, self.colors['bg_gold'], None)
+        w = id_text.get_size()[0]
+        h = header.get_size()[1]
+        menu_bg.surf.blit(id_text, dest=(surf_dims[0] / 2 - w / 2, 20 + h))
+        btn = ui.Interactive(name='game saved ok', dims=(64, 40), coords=(136, 380), fonts=self.fonts, text='OK', colors=self.colors, text_color='light_gray')
         self.splash_elements = [menu_bg, btn]
 
     def create_load_menu(self, gamestates):
