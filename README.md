@@ -20,7 +20,7 @@
 ### Requires
 - Python 3.8.3
 - Pygame 2.0.0.dev10
-- Numpy 1.18.5 (will probably replace this dependency)
+- Numpy 1.18.5
 
 ### TODO
 - Add tutorial GIFs and documentation
@@ -28,6 +28,7 @@
 - SFX
 - Music?
 - Marquee effect for bonus word tile ghosts?
+- Big refactor #2
 
 ### Known bugs
 - Tile rows get messed up after save / reload

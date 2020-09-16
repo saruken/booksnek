@@ -1,6 +1,5 @@
 import os, pygame, random
 from math import ceil, floor, sqrt
-from numpy.random import choice
 
 class BaseObj:
     def __init__(self, dims, coords, fonts, colors):
@@ -475,7 +474,9 @@ class Tile():
             'Y': 0.02,
             'Z': 0.01,
         }
-        self.letter = str(choice([key for key in letter_weights], 1, p=[letter_weights[key] for key in letter_weights])[0])
+        pop = [key for key in letter_weights]
+        weights = [letter_weights[letter] for letter in pop]
+        self.letter = random.choices(population=pop, weights=weights, k=1)
 
     def get_abs_rect(self):
         return pygame.Rect(self.coords, self.dims)
