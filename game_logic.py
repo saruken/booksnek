@@ -653,28 +653,6 @@ class Game:
         tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
         tile.paused = True
 
-    def reroll_neighbor_tiles(self, atk_tile, color):
-        neighbors = [t for t in self.tiles if self.board.is_neighbor(new_tile=t, old_tile=atk_tile)]
-        neighbors.pop(neighbors.index(atk_tile))
-        for tile in neighbors:
-            self.board.gfx.create_ghost(tile, color)
-            tile.reset()
-            tile.paused = True
-            self.set_row(tile)
-            tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
-            to_pop = []
-            for event in [ev for ev in self.queue if not ev['event'] == 'submit']:
-                if event['tile'] == tile:
-                    to_pop.append(event)
-            for e in to_pop:
-                self.queue.pop(self.queue.index(e))
-                t = e['tile']
-                e_type = e['event']
-                article = 'a' if e_type in ('heal', 'poison', 'tick') else 'an'
-                print(f'Queued tile c{t.col}r{t.row} "{t.letter}" had {article} {e_type} event, but was destroyed')
-        atk_tile.row = min(atk_tile.row + 1, 6 + atk_tile.col % 2)
-        self.update_tile_rows()
-
     def reroll_tiles(self, snake_length):
         self.update_tile_rows()
         tiles = [t for t in self.tiles if t.paused]
