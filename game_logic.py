@@ -1,7 +1,6 @@
 import json, pygame, random, threading
 from datetime import datetime
 from math import ceil, floor
-from numpy.random import choice
 
 import gameboard, tile_snake
 from ui import Interactive, Tile
@@ -80,7 +79,7 @@ class Game:
         if self.animating and not to_animate:
             self.input_disabled = False
 
-        for tile in [t for t in self.tiles if t.attack_timer == 1 and t.tile_type == 'attack']:
+        for tile in [t for t in self.tiles if t.event_timer == 1 and t.tile_type == 'attack']:
             tile.animate_beacon()
 
         d = self.board.level_display
@@ -163,7 +162,6 @@ class Game:
                 word['colors'][i] = 'poison'
             elif tile.tile_type == 'silver':
                 word['colors'][i] = 'silver'
-
         return word
 
     def commit_word_to_history(self, word):
@@ -218,7 +216,7 @@ class Game:
                 }
                 queue.append(event)
             elif tile.tile_type == 'attack':
-                if tile.attack_timer > 1:
+                if tile.event_timer > 1:
                     print(f'Creating tick event from board tile: {tile.identify()}')
                     event = {
                         'tile': tile,
@@ -239,8 +237,7 @@ class Game:
                         print(f'Creating remove event from attack tile neighbor: {tile.identify()}')
                         event = {
                             'tile': t,
-                            'event': 'remove',
-                            'ghost_color': 'red',
+                            'event': 'kill',
                             'turn': 3
                         }
                         queue.append(event)
@@ -257,6 +254,23 @@ class Game:
             self.queue.append(event)
         print('Event queue complete')
 
+    def create_tile_from_last_5(self):
+        # Based on len of last 5 words
+        # avg = 5; attack = 10%
+        # avg = 3; attack = 85%
+        if len(self.last_five_words) == 5:
+            avg = round(sum(self.last_five_words) / len(self.last_five_words), 1)
+            atk_weight = max(self.get_attack_weight(avg), 0)
+            normal_weight = 1 - atk_weight
+            special = random.choices(population=[True, False], weights=[atk_weight, normal_weight], k=1)[0]
+            if special:
+                tile_type = random.choices(population=['attack', 'poison'], weights=[0.8, 0.2], k=1)[0]
+            else:
+                tile_type = 'normal'
+        else:
+            tile_type = 'normal'
+        return tile_type
+
     def execute_event_queue(self):
         # ---- DEBUG STUFF ----
         next_event = None
@@ -271,8 +285,9 @@ class Game:
 
         if not self.queue:
             if self.snake.length:
+                self.update_tile_rows()
+                self.roll_create_special_tile(self.snake.length)
                 print('Queue empty; unpausing all tiles')
-                self.reroll_tiles(self.snake.length)
                 for tile in [t for t in self.tiles if t.paused]:
                     tile.paused = False
                 self.snake.empty()
@@ -293,7 +308,7 @@ class Game:
                 color = 'silver'
             else:
                 try:
-                    color = event['ghost_color']
+                    color = event['ghost_color'] # Special bonus word color
                 except AttributeError:
                     color = 'beige'
             self.board.gfx.create_ghost(tile, self.colors[color])
@@ -317,7 +332,11 @@ class Game:
         elif action == 'explode':
             self.board.gfx.create_ghost(tile, self.colors['gold'])
             self.remove_tile(tile)
-            print(f'{tile.identify()} blew up')
+            print(f'{tile.identify()} was blown up by a gold tile')
+        elif action == 'kill':
+            self.board.gfx.create_ghost(tile, self.colors['red'])
+            self.remove_tile(tile)
+            print(f'{tile.identify()} was blown up by an attack tile')
         elif action == 'attack':
             # Don't activate tiles that are part of the just-submitted word
             if not tile in self.snake.tiles:
@@ -355,7 +374,7 @@ class Game:
                 if tile.tile_type == 'attack': # Ensure tile wasn't
                     tile.attack_tick()         # destroyed by a
                     tile.update()              # neighbor ATK tile
-                    print(f'Attack tile {tile.identify()} counted down to "{tile.attack_timer}"')
+                    print(f'Attack tile {tile.identify()} counted down to "{tile.event_timer}"')
                 else:
                     # Tile has already been destroyed
                     print(f'Queued tile {tile.identify()} had a tick event, but was destroyed')
@@ -403,10 +422,10 @@ class Game:
             else:
                 print(f'Gold tile {tile.identify()} already in queue')
         else:
-            print(f'Creating remove tile event from gold tile neighbor: {tile.identify()}')
+            print(f'Creating explode tile event from gold tile neighbor: {tile.identify()}')
             event = {
                 'tile': tile,
-                'event': 'remove',
+                'event': 'explode',
                 'turn': index
             }
         queue.append(event)
@@ -414,7 +433,7 @@ class Game:
         self.get_gold_tile_events(tiles, index, queue)
 
     def get_neighbors(self, base_tile):
-        neighbors = [t for t in self.tiles if self.board.is_neighbor(new_tile=t, old_tile=base_tile)]
+        neighbors = [t for t in self.tiles if self.board.is_neighbor(new_tile=t, old_tile=base_tile) and not t == base_tile]
         print(f'Getting neighbors of {base_tile.tile_type} tile {base_tile.identify()}')
         print(f'Neighbors are: {", ".join([t.identify() for t in neighbors])}')
         return neighbors
@@ -557,7 +576,7 @@ class Game:
 
         for n, tile in enumerate(self.tiles):
             tile = gamestate['tiles'][n]
-            tile.attack_timer = tile['attack_timer']
+            tile.event_timer = tile['attack_timer']
             tile.col = tile['col']
             tile.first_turn = tile['first_turn']
             tile.letter = tile['letter']
@@ -653,10 +672,20 @@ class Game:
         tile.set_coords(dy = tile.offset[1] * -1 - tile.dims[1])
         tile.paused = True
 
-    def reroll_tiles(self, snake_length):
-        self.update_tile_rows()
+    def roll_create_special_tile(self, snake_length):
+        '''
+        Creates spcial tiles based on:
+            1. The number of tiles in player's last word, or
+            2. The average number of tiles in player's last 5 words
+
+        If player submits a valid word of length 5+, a special (silver,
+        heal or gold) tile will always be created. If player submits a
+        valid word of length < 5, a negative special (attack, poison)
+        tile may be created; the odds of this are determined by a
+        rolling average of player's last 5 word lengths.
+        '''
         tiles = [t for t in self.tiles if t.paused]
-        print(f'reroll_tiles(): Rerolling {len(tiles)} tiles')
+        print(f'roll_create_special_tile(): Rerolling {len(tiles)} tiles')
         tile_type = 'normal'
         special_index = 0
 
@@ -667,29 +696,17 @@ class Game:
         elif snake_length > 6:
             tile_type = 'gold'
         else:
-            # Based on len of last 5 words
-            # avg = 5; attack = 10%
-            # avg = 3; attack = 85%
-            if len(self.last_five_words) == 5:
-                avg = round(sum(self.last_five_words) / len(self.last_five_words), 1)
-                atk_weight = max(self.get_attack_weight(avg), 0)
-                normal_weight = 1 - atk_weight
-                atk_tile = choice([True, False], 1, p=[atk_weight, normal_weight])[0]
-                if atk_tile:
-                    tile_type = choice(['attack', 'poison'], 1, p=[0.8, 0.2])[0]
-                else:
-                    tile_type = 'normal'
+            tile_type = self.create_tile_from_last_5()
 
         if tile_type != 'normal':
-            # Randomly choose which new tile will have special type
-            print(f'Special tile to be chosen from: {[t.letter for t in tiles]}')
+            # Randomly choose which new tile will have the special type
             special_index = random.choice(range(len(tiles)))
             print(f'"{tiles[special_index].letter}" (i={special_index}) chosen for {tile_type} tile')
             tiles[special_index].tile_type = tile_type
             if tile_type == 'attack':
-                self.set_attack_timer(tiles[special_index])
+                self.set_tile_timer(tiles[special_index])
             else:
-                tiles[special_index].attack_timer = 3
+                tiles[special_index].event_timer = 3
             tiles[special_index].update()
         else:
             print('No special tiles created for this batch')
@@ -701,7 +718,7 @@ class Game:
         tiles = []
         for t in self.tiles:
             tile = {
-                'attack_timer': t.attack_timer,
+                'attack_timer': t.event_timer,
                 'col': t.col,
                 'first_turn': t.first_turn,
                 'letter': t.letter,
@@ -774,7 +791,7 @@ class Game:
             try:
                 atk = random.choice([t for t in self.tiles if (t.row == 0 and t.tile_type == 'normal')])
                 atk.tile_type = 'attack'
-                self.set_attack_timer(atk)
+                self.set_tile_timer(atk)
             except IndexError: # No normal tiles on top row
                 pass
         for tile in [t for t in self.tiles if t.tile_type == 'normal']:
@@ -783,17 +800,17 @@ class Game:
 
         self.update_tiles()
 
-    def set_attack_timer(self, tile):
+    def set_tile_timer(self, tile):
         if tile.tile_type == 'attack':
             letter_value = self.board.lookup_letter_value(tile.letter)
             if letter_value < 3:
-                tile.attack_timer = 2
+                tile.event_timer = 2
             elif letter_value < 8:
-                tile.attack_timer = 3
+                tile.event_timer = 3
             else:
-                tile.attack_timer = 4
+                tile.event_timer = 4
         else:
-            tile.attack_timer = 4
+            tile.event_timer = 4
 
     def set_row(self, tile):
         tile.row = min([t.row for t in self.tiles if t.col == tile.col]) - 1
@@ -871,10 +888,10 @@ class Game:
                 self.update_history_display()
                 ghost_color = 'beige'
                 if multUP_flag:
-                    ghost_color = 'gold'
                     self.mult_up()
                     self.update_mult_display()
                     self.choose_bonus_word()
+                    ghost_color = 'gold'
                 self.create_event_queue(ghost_color)
                 self.execute_event_queue()
             else:

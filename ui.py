@@ -330,7 +330,7 @@ class Interactive(BaseObj):
 class Tile():
     def __init__(self, fonts, colors, col=None, row=None, offset=None, letter=None):
         self.ay = 0
-        self.attack_timer = 5
+        self.event_timer = 5
         self.beacon = False
         self.beacon_counter = 0
         self.beacon_counter_dir = 1
@@ -385,11 +385,11 @@ class Tile():
         self.build_image()
 
     def attack_tick(self):
-        self.attack_timer -= 1
+        self.event_timer -= 1
         if self.first_turn:
             self.first_turn = False
         else:
-            if self.attack_timer == 0:
+            if self.event_timer == 0:
                 self.beacon = False
                 self.keeb_highlight = False
                 self.marked = False
@@ -426,12 +426,12 @@ class Tile():
             offset = tuple([offset[0], offset[1] - 4])
             # Countdown timer
             if self.tile_type == 'attack':
-                surf_timer = self.fonts['small'].render(str(self.attack_timer), True, self.colors['black'], self.bg_color)
+                surf_timer = self.fonts['small'].render(str(self.event_timer), True, self.colors['black'], self.bg_color)
                 # Align bottom/left
                 timer_offset = (3, self.dims[1] - surf_timer.get_size()[1] - 3)
                 self.surf.blit(surf_timer, dest=timer_offset)
             elif self.tile_type == 'poison':
-                surf_timer = self.fonts['small'].render(str(self.attack_timer), True, self.colors['light_gray'], self.bg_color)
+                surf_timer = self.fonts['small'].render(str(self.event_timer), True, self.colors['light_gray'], self.bg_color)
                 # Align bottom/left
                 timer_offset = (3, self.dims[1] - surf_timer.get_size()[1] - 3)
                 self.surf.blit(surf_timer, dest=timer_offset)
@@ -504,18 +504,18 @@ class Tile():
         self.update()
 
     def poison_tick(self):
-        self.attack_timer -= 1
+        self.event_timer -= 1
         if self.first_turn:
             self.first_turn = False
         else:
-            if self.attack_timer == 0:
+            if self.event_timer == 0:
                 self.beacon = False
                 self.tile_type = 'stone'
                 self.letter = '__'
                 self.marked = False
 
     def reset(self):
-        self.attack_timer = 5
+        self.event_timer = 5
         self.beacon = False
         self.first_turn = True
         self.marked = False
