@@ -285,7 +285,8 @@ class Game:
         action = event['event']
         if action == 'remove':
             print(f'Removing tile @ c{tile.col}r{tile.row} "{tile.letter}"')
-            self.board.gfx.create_ghost(tile, self.colors[event['ghost_color']])
+            color = 'silver' if tile.tile_type == 'silver' else 'beige'
+            self.board.gfx.create_ghost(tile, self.colors[color])
             self.remove_tile(tile)
         elif action == 'heal':
             h = self.board.hp_display
@@ -312,6 +313,7 @@ class Game:
             if not tile in self.snake.tiles:
                 tile.attack_tick()
                 tile.update()
+                h = self.board.hp_display
                 h.hp += event['amount']
                 arc_sources = [tile.middle, 'bg_attack', event['amount'], 'HP', -20]
                 self.board.gfx.create_ghost(tile, self.colors['red'])
@@ -327,6 +329,7 @@ class Game:
                 if tile.tile_type == 'poison':
                     tile.poison_tick()
                     tile.update()
+                    h = self.board.hp_display
                     h.hp += event['amount']
                     arc_sources = [tile.middle, 'poison_bright', event['amount'], 'HP', -20]
                     self.board.gfx.draw_arcs([arc_sources])
@@ -379,13 +382,16 @@ class Game:
                 'turn': index
             }
         elif tile.tile_type == 'gold':
-            print(f'Creating gold tile event: {tile.identify()}')
-            tiles += self.get_neighbors(tile)
-            event = {
-                'tile': tile,
-                'event': 'explode',
-                'turn': 1 + index
-            }
+            if tile not in queue:
+                print(f'Creating gold tile event: {tile.identify()}')
+                tiles += self.get_neighbors(tile)
+                event = {
+                    'tile': tile,
+                    'event': 'explode',
+                    'turn': 1 + index
+                }
+            else:
+                print(f'Gold tile {tile.identify()} already in queue')
         else:
             print(f'Creating remove tile event from gold tile neighbor: {tile.identify()}')
             event = {
@@ -970,7 +976,7 @@ class Game:
 
     def update_tiles(self):
         for tile in [t for t in self.tiles if t.tile_type == 'normal']:
-            t.update(multiplier=self.multiplier)
+            tile.update(multiplier=self.multiplier)
 
     def update_word_display(self):
         color = 'mid_gray'

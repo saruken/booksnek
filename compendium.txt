@@ -23303,7 +23303,6 @@ esophagi,0.5
 esophagus,0.5
 esoteric,0.6
 esoterically,0.79
-esp,0.19
 espadrille,0.67
 espadrilles,0.72
 espalier,0.59
@@ -27963,6 +27962,7 @@ gamekeepers,0.77
 gamely,0.33
 gameness,0.55
 gamer,0.33
+gamers,0.38
 games,0.32
 gamesmanship,0.68
 gamest,0.38
@@ -38923,6 +38923,8 @@ lint,0.25
 linted,0.41
 lintel,0.41
 lintels,0.46
+linter,0.43
+linters,0.48
 lintier,0.52
 lintiest,0.57
 linting,0.43
