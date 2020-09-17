@@ -24,6 +24,7 @@
 
 ### TODO
 - Add tutorial GIFs and documentation
+- "Word not in dictionary" popup
 - Limit to 5 saved gamestates; create menu to choose/overwrite
 - SFX
 - Music?

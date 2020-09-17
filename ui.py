@@ -485,6 +485,9 @@ class Tile():
         self.keeb_highlight = True
         self.update()
 
+    def identify(self):
+        return f'c{self.col}r{self.row} "{self.letter}"'
+
     def load_images(self):
         for img_name in ('attack', 'heal', 'poison'):
             self.images[img_name] = pygame.image.load(os.path.join('img', img_name + '.png'))
