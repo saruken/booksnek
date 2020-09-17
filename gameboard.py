@@ -244,7 +244,7 @@ class Board():
             elem = None
         self.splash_elements = []
 
-    def is_neighbor(self, new_tile, old_tile=None, snake=None):
+    def is_neighbor(self, new_tile, old_tile):
 
         '''
         There are 4 'false' neighbors, depending on which col old_tile
@@ -279,8 +279,6 @@ class Board():
         'A' and 'C' are false neighbors for odd column 'X' tiles
         '''
 
-        if not old_tile:
-            old_tile = snake.last
         new_c, old_c = new_tile.col, old_tile.col
         new_r, old_r = new_tile.row, old_tile.row
 

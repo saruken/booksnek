@@ -21540,12 +21540,10 @@ ecstasies,0.65
 ecstasy,0.41
 ecstatic,0.51
 ecstatically,0.7
-ecu,0.18
 ecumenical,0.63
 ecumenically,0.69
 ecumenicism,0.67
 ecumenism,0.56
-ecus,0.23
 eczema,0.39
 edamame,0.52
 eddied,0.45
@@ -44342,6 +44340,7 @@ nettled,0.5
 nettles,0.51
 nettlesome,0.74
 nettling,0.52
+netty,0.32
 network,0.41
 networked,0.57
 networking,0.59

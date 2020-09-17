@@ -238,7 +238,7 @@ class Game:
                     for t in self.get_neighbors(tile):
                         print(f'Creating remove event from attack tile neighbor: {tile.identify()}')
                         event = {
-                            'tile': tile,
+                            'tile': t,
                             'event': 'remove',
                             'ghost_color': 'red',
                             'turn': 3
@@ -285,7 +285,17 @@ class Game:
         action = event['event']
         if action == 'remove':
             print(f'Removing tile @ c{tile.col}r{tile.row} "{tile.letter}"')
-            color = 'silver' if tile.tile_type == 'silver' else 'beige'
+            if tile.tile_type == 'attack':
+                color = 'red'
+            elif tile.tile_type == 'poison':
+                color = 'poison'
+            elif tile.tile_type == 'silver':
+                color = 'silver'
+            else:
+                try:
+                    color = event['ghost_color']
+                except AttributeError:
+                    color = 'beige'
             self.board.gfx.create_ghost(tile, self.colors[color])
             self.remove_tile(tile)
         elif action == 'heal':
@@ -404,10 +414,10 @@ class Game:
         self.get_gold_tile_events(tiles, index, queue)
 
     def get_neighbors(self, base_tile):
-        return [t for t in self.tiles if self.board.is_neighbor(new_tile=t, old_tile=base_tile)]
-
-    def get_special_neighbors(self, base_tile):
-        return [t for t in self.tiles if self.board.is_neighbor(new_tile=t, old_tile=base_tile) and t.tile_type in ('heal', 'gold')]
+        neighbors = [t for t in self.tiles if self.board.is_neighbor(new_tile=t, old_tile=base_tile)]
+        print(f'Getting neighbors of {base_tile.tile_type} tile {base_tile.identify()}')
+        print(f'Neighbors are: {", ".join([t.identify() for t in neighbors])}')
+        return neighbors
 
     def handle_menu_btn_click(self, elem):
         if not isinstance(elem, Interactive):
@@ -838,7 +848,7 @@ class Game:
             self.trim_snake(elem)
         else:
             if self.snake.length:
-                if self.board.is_neighbor(new_tile=elem, snake=self.snake):
+                if self.board.is_neighbor(new_tile=elem, old_tile=self.snake.last):
                     self.add_tile(elem)
                 else:
                     self.snake.empty()
