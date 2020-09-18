@@ -43854,7 +43854,6 @@ nacre,0.35
 nacreous,0.52
 nadir,0.34
 nadirs,0.39
-nae,0.27
 naff,0.19
 naffer,0.37
 naffest,0.42

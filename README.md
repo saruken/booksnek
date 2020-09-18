@@ -27,7 +27,9 @@
 - Limit to 5 saved gamestates; create menu to choose/overwrite
 - SFX
 - Music?
-- Marquee effect for bonus word tile ghosts?
+- Marquee effect for bonus word & word display borders when matching
+- Marquee effect for bonus word tile ghosts
+- Gold ghosts should get intial impetus away from bomb
 - Big refactor #2
 
 ### Known bugs

@@ -63,6 +63,40 @@ class Game:
         self.board.create_splash_menu(self.hi_scores)
         self.board.ui_elements = self.board.splash_elements
 
+    def add_gold_tile_event(self, tile, turn_index=1, traversed=None):
+        if not traversed:  # Have to use this workaround due to behavior
+            traversed = [] # of mutable defaults in Python
+        traversed.append(tile.identify())
+        if tile.tile_type == 'heal':
+            print(f'Creating heal event @ {tile.identify()} from gold tile neighbor')
+            event = {
+                'tile': tile,
+                'event': 'heal',
+                'amount': tile.multiplier,
+                'turn': turn_index
+            }
+            return event
+        elif tile.tile_type == 'gold':
+            print(f'Creating gold tile event @ {tile.identify()}')
+            turn_index += 1
+            event = {
+                'tile': tile,
+                'event': 'explode',
+                'turn': turn_index
+            }
+            for t in self.get_neighbors(tile):
+                if not t.identify() in traversed:
+                    self.queue.append(self.add_gold_tile_event(t, turn_index, traversed))
+            return event
+        else:
+            print(f'Creating explode tile event @ {tile.identify()} from gold tile neighbor')
+            event = {
+                'tile': tile,
+                'event': 'explode',
+                'turn': turn_index
+            }
+            return event
+
     def add_tile(self, tile):
         self.snake.add(tile)
 
@@ -204,45 +238,47 @@ class Game:
                     'turn': 1
                 }
                 self.queue.append(event)
-        for tile in self.tiles:
-            if tile.tile_type == 'poison':
-                print(f'Creating poison event from board tile: {tile.identify()}')
+        turn = 2
+        for tile in [t for t in self.tiles if t.tile_type == 'poison']:
+            print(f'Creating poison event from board tile: {tile.identify()}')
+            event = {
+                'tile': tile,
+                'event': 'poison',
+                'amount': tile.multiplier * -1,
+                'turn': turn
+            }
+            self.queue.append(event)
+            turn += 1
+        for tile in [t for t in self.tiles if t.tile_type == 'attack' and t.event_timer == 1 and t not in self.snake.tiles]:
+            print(f'Creating attack event from board tile: {tile.identify()}')
+            event = {
+                'tile': tile,
+                'event': 'attack',
+                'amount': tile.point_value * -1,
+                'turn': turn
+            }
+            self.queue.append(event)
+            for t in self.get_neighbors(tile):
+                print(f'Creating remove event from attack tile neighbor: {tile.identify()}')
                 event = {
-                    'tile': tile,
-                    'event': 'poison',
-                    'amount': tile.multiplier * -1,
-                    'turn': 2
+                    'tile': t,
+                    'event': 'kill',
+                    'turn': turn
                 }
                 self.queue.append(event)
-            elif tile.tile_type == 'attack':
-                if tile.event_timer > 1:
-                    print(f'Creating tick event from board tile: {tile.identify()}')
-                    event = {
-                        'tile': tile,
-                        'event': 'tick',
-                        'turn': 3
-                    }
-                    self.queue.append(event)
-                else:
-                    print(f'Creating attack event from board tile: {tile.identify()}')
-                    event = {
-                        'tile': tile,
-                        'event': 'attack',
-                        'amount': tile.point_value * -1,
-                        'turn': 3
-                    }
-                    self.queue.append(event)
-                    for t in self.get_neighbors(tile):
-                        print(f'Creating remove event from attack tile neighbor: {tile.identify()}')
-                        event = {
-                            'tile': t,
-                            'event': 'kill',
-                            'turn': 3
-                        }
-                        self.queue.append(event)
+        for tile in [t for t in self.tiles if t.tile_type == 'attack' and t.event_timer > 1]:
+            print(f'Creating tick event from board tile: {tile.identify()}')
+            event = {
+                'tile': tile,
+                'event': 'tick',
+                'turn': turn
+            }
+            self.queue.append(event)
+            turn += 1
         event_tiles = list(set([e['tile'] for e in self.queue]))
         print(f'Queue contains {len(self.queue)} event(s) for {len(event_tiles)} unique tile(s)')
-        print(f'    Unique tile(s) in event queue: {", ".join([t.identify() for t in event_tiles])}')
+        if self.queue:
+            print(f'    Unique tile(s) in event queue: {", ".join([t.identify() for t in event_tiles])}')
         # Drop potential null events from gold tiles
         self.queue = [e for e in self.queue if e]
         print('Sorting event queue by turn')
@@ -258,6 +294,8 @@ class Game:
                 print(f'    Adding {event["event"]} event for {event["tile"].identify()} to event queue')
         # Drop potential null events from repeated tiles
         self.queue = [e for e in self.queue if e]
+        if self.queue:
+            self.group_queue_by_turns()
         print('Event queue complete')
 
     def create_tile_from_last_5(self):
@@ -279,14 +317,12 @@ class Game:
 
     def execute_event_queue(self):
         # ---- DEBUG STUFF ----
-        next_event = None
-        following_events = []
         if self.queue:
-            next_event = self.queue[0]
-        if len(self.queue) > 1:
-            following_events = self.queue[1:]
-        if next_event:
-            print(f'queue: [{next_event["event"]} {next_event["tile"].identify()}]{", " if following_events else ""}{", ".join([e["event"] for e in following_events])}')
+            current_turn = self.queue[0][0]['turn']
+            print(f'Current turn: {current_turn}')
+            print(f'Remaining turns: {len(self.queue) - 1}')
+            print('Things happening this turn:')
+            print('    ' + '; '.join([e['event'] + ' ' + e['tile'].identify() for e in self.queue[0]]))
         # ---- DEBUG STUFF ----
 
         if not self.queue:
@@ -301,93 +337,93 @@ class Game:
             for tile in [t for t in self.tiles if t.paused]:
                 tile.paused = False
             return
-        event = self.queue.pop(0)
-        tile = event['tile']
-        action = event['event']
-        if action == 'remove':
-            if tile.tile_type == 'attack':
-                color = 'red'
-            elif tile.tile_type == 'poison':
-                color = 'poison'
-            elif tile.tile_type == 'silver':
-                color = 'silver'
-            else:
-                try:
-                    color = event['ghost_color'] # Special bonus word color
-                except AttributeError:
-                    color = 'beige'
-            self.board.gfx.create_ghost(tile, self.colors[color])
-            print(f'Removing tile @ c{tile.col}r{tile.row} "{tile.letter}"')
-            self.remove_tile(tile)
-        elif action == 'heal':
-            h = self.board.hp_display
-            if h.hp == h.hp_max:
-                h.hp_max += event['amount']
-                arc_sources = [tile.middle, 'teal', f'{self.multiplier} MAX', 'HP_MAX', 0]
-                self.board.gfx.create_ghost(tile, self.colors['teal'])
-                self.board.gfx.draw_arcs([arc_sources])
-                print(f'Heal effect from {tile.identify()}: HP_MAX increased by {self.multiplier}')
-            else:
-                h.hp = min(h.hp + event['amount'], h.hp_max)
-                arc_sources = [tile.middle, 'teal', event['amount'], 'HP', 20]
-                self.board.gfx.draw_arcs([arc_sources])
-                print(f'Healed {event["amount"]} from {tile.identify()}')
-            self.board.gfx.create_ghost(tile, self.colors['teal'])
-            self.remove_tile(tile)
-            h.update()
-        elif action == 'explode':
-            self.board.gfx.create_ghost(tile, self.colors['gold'])
-            print(f'{tile.identify()} blew up')
-            self.remove_tile(tile)
-        elif action == 'kill':
-            self.board.gfx.create_ghost(tile, self.colors['red'])
-            print(f'{tile.identify()} was blown up by an attack tile')
-            self.remove_tile(tile)
-        elif action == 'attack':
-            # Don't activate tiles that are part of the just-submitted word
-            if not tile in self.snake.tiles:
-                tile.attack_tick()
-                tile.update()
-                h = self.board.hp_display
-                h.hp += event['amount']
-                arc_sources = [tile.middle, 'bg_attack', event['amount'], 'HP', -20]
-                self.board.gfx.create_ghost(tile, self.colors['red'])
-                print(f'Dealt {event["amount"] * -1} damage from {tile.identify()}')
-                self.board.gfx.draw_arcs([arc_sources])
+        for event in self.queue.pop(0):
+            tile = event['tile']
+            action = event['event']
+            if action == 'remove':
+                if tile.tile_type == 'attack':
+                    color = 'red'
+                elif tile.tile_type == 'poison':
+                    color = 'poison'
+                elif tile.tile_type == 'silver':
+                    color = 'silver'
+                else:
+                    try:
+                        color = event['ghost_color'] # Special bonus word color
+                    except AttributeError:
+                        color = 'beige'
+                self.board.gfx.create_ghost(tile, self.colors[color])
+                print(f'Removing tile @ c{tile.col}r{tile.row} "{tile.letter}"')
                 self.remove_tile(tile)
-            else:
-                print('Attack tile removed via word submission')
-        elif action == 'poison':
-            # Don't activate tiles that are part of the just-submitted word
-            if not tile in self.snake.tiles:
-                # Ensure tile wasn't destroyed by a neighboring ATK tile
-                if tile.tile_type == 'poison':
-                    tile.poison_tick()
+            elif action == 'heal':
+                h = self.board.hp_display
+                if h.hp == h.hp_max:
+                    h.hp_max += event['amount']
+                    arc_sources = [tile.middle, 'teal', f'{self.multiplier} MAX', 'HP_MAX', 0]
+                    self.board.gfx.create_ghost(tile, self.colors['teal'])
+                    self.board.gfx.draw_arcs([arc_sources])
+                    print(f'Heal effect from {tile.identify()}: HP_MAX increased by {self.multiplier}')
+                else:
+                    h.hp = min(h.hp + event['amount'], h.hp_max)
+                    arc_sources = [tile.middle, 'teal', event['amount'], 'HP', 20]
+                    self.board.gfx.draw_arcs([arc_sources])
+                    print(f'Healed {event["amount"]} from {tile.identify()}')
+                self.board.gfx.create_ghost(tile, self.colors['teal'])
+                self.remove_tile(tile)
+                h.update()
+            elif action == 'explode':
+                self.board.gfx.create_ghost(tile, self.colors['gold'])
+                print(f'{tile.identify()} blew up')
+                self.remove_tile(tile)
+            elif action == 'kill':
+                self.board.gfx.create_ghost(tile, self.colors['red'])
+                print(f'{tile.identify()} was blown up by an attack tile')
+                self.remove_tile(tile)
+            elif action == 'attack':
+                # Don't activate tiles that are part of the just-submitted word
+                if not tile in self.snake.tiles:
+                    tile.attack_tick()
                     tile.update()
                     h = self.board.hp_display
                     h.hp += event['amount']
-                    arc_sources = [tile.middle, 'poison_bright', event['amount'], 'HP', -20]
+                    arc_sources = [tile.middle, 'bg_attack', event['amount'], 'HP', -20]
+                    self.board.gfx.create_ghost(tile, self.colors['red'])
+                    print(f'Dealt {event["amount"] * -1} damage from {tile.identify()}')
                     self.board.gfx.draw_arcs([arc_sources])
-                    print(f'Poisoned {event["amount"] * -1} from {tile.identify()}')
+                    self.remove_tile(tile)
                 else:
-                    # Tile has already been destroyed
-                    print(f'Queued tile {tile.identify()} had a poison event, but was destroyed')
-            else:
-                print('Poison tile removed via word submission')
-        elif action == 'tick':
-            # Don't activate tiles that are part of the just-submitted word
-            if not tile in self.snake.tiles:
-                if tile.tile_type == 'attack': # Ensure tile wasn't
-                    tile.attack_tick()         # destroyed by a
-                    tile.update()              # neighbor ATK tile
-                    print(f'Attack tile {tile.identify()} counted down to "{tile.event_timer}"')
+                    print('Attack tile removed via word submission')
+            elif action == 'poison':
+                # Don't activate tiles that are part of the just-submitted word
+                if not tile in self.snake.tiles:
+                    # Ensure tile wasn't destroyed by a neighboring ATK tile
+                    if tile.tile_type == 'poison':
+                        tile.poison_tick()
+                        tile.update()
+                        h = self.board.hp_display
+                        h.hp += event['amount']
+                        arc_sources = [tile.middle, 'poison_bright', event['amount'], 'HP', -20]
+                        self.board.gfx.draw_arcs([arc_sources])
+                        print(f'Poisoned {event["amount"] * -1} from {tile.identify()}')
+                    else:
+                        # Tile has already been destroyed
+                        print(f'Queued tile {tile.identify()} had a poison event, but was destroyed')
                 else:
-                    # Tile has already been destroyed
-                    print(f'Queued tile {tile.identify()} had a tick event, but was destroyed')
-            else:
-                print('Attack tile had a tick event, but was removed via word submission')
-        h = self.board.hp_display
-        print(f'HP: {h.hp} / {h.hp_max}')
+                    print('Poison tile removed via word submission')
+            elif action == 'tick':
+                # Don't activate tiles that are part of the just-submitted word
+                if not tile in self.snake.tiles:
+                    if tile.tile_type == 'attack': # Ensure tile wasn't
+                        tile.attack_tick()         # destroyed by a
+                        tile.update()              # neighbor ATK tile
+                        print(f'Attack tile {tile.identify()} counted down to "{tile.event_timer}"')
+                    else:
+                        # Tile has already been destroyed
+                        print(f'Queued tile {tile.identify()} had a tick event, but was destroyed')
+                else:
+                    print('Attack tile had a tick event, but was removed via word submission')
+            h = self.board.hp_display
+            print(f'HP: {h.hp} / {h.hp_max}')
         threading.Timer(0.2, self.execute_event_queue).start()
 
     def fetch_gamestates(self):
@@ -403,45 +439,17 @@ class Game:
     def get_attack_weight(self, avg):
         return -0.375 * avg + 1.975
 
-    def add_gold_tile_event(self, tile, turn_index=1, traversed=None):
-        if not traversed:  # Have to use this workaround due to behavior
-            traversed = [] # of mutable defaults in Python
-        traversed.append(tile.identify())
-        if tile.tile_type == 'heal':
-            print(f'Creating heal event @ {tile.identify()} from gold tile neighbor')
-            event = {
-                'tile': tile,
-                'event': 'heal',
-                'amount': tile.multiplier,
-                'turn': turn_index
-            }
-            return event
-        elif tile.tile_type == 'gold':
-            print(f'Creating gold tile event @ {tile.identify()}')
-            turn_index += 1
-            event = {
-                'tile': tile,
-                'event': 'explode',
-                'turn': turn_index
-            }
-            for t in self.get_neighbors(tile):
-                if not t.identify() in traversed:
-                    self.queue.append(self.add_gold_tile_event(t, turn_index, traversed))
-            return event
-        else:
-            print(f'Creating explode tile event @ {tile.identify()} from gold tile neighbor')
-            event = {
-                'tile': tile,
-                'event': 'explode',
-                'turn': turn_index
-            }
-            return event
-
     def get_neighbors(self, base_tile):
         neighbors = [t for t in self.tiles if self.board.is_neighbor(new_tile=t, old_tile=base_tile) and not t == base_tile]
         print(f'get_neighbors(): Neighbors of {base_tile.tile_type} tile {base_tile.identify()} are: {", ".join([t.identify() for t in neighbors])}')
         return neighbors
 
+    def group_queue_by_turns(self):
+        print('Grouping queue events by turn')
+        queue = [[] for _ in range(max([e['turn'] for e in self.queue]) + 1)]
+        for event in self.queue:
+            queue[event['turn']].append(event)
+        self.queue = [e for e in queue if e] # Ditch empty turns
     def handle_menu_btn_click(self, elem):
         if not isinstance(elem, Interactive):
             return
