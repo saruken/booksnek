@@ -495,6 +495,9 @@ class Game:
             self.try_update_hi_score_file()
             self.board.create_splash_menu(self.hi_scores)
             self.board.ui_elements = self.board.splash_elements
+        elif elem.name == 'invalid word ok':
+            self.board.ui_elements = self.tiles + self.board.game_elements
+            self.mode = 'play'
         elif elem.name == 'game saved ok':
             self.mode = 'play'
             self.board.ui_elements = self.tiles + self.board.game_elements
@@ -898,6 +901,9 @@ class Game:
                 self.execute_event_queue()
             else:
                 print(f'Word "{self.snake.word}" not in dictionary')
+                self.mode = 'menu'
+                self.board.create_invalid_word_menu(self.snake.word)
+                self.board.ui_elements += self.board.splash_elements
                 self.snake.empty()
         self.update_word_display()
 

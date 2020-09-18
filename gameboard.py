@@ -93,6 +93,20 @@ class Board():
         btn = ui.Interactive(name='game saved ok', dims=(64, 40), coords=(136, 380), fonts=self.fonts, text='OK', colors=self.colors, text_color='light_gray')
         self.splash_elements = [menu_bg, btn]
 
+    def create_invalid_word_menu(self, word):
+        self.hide_splash_menu()
+        header = self.fonts['medium'].render('INVALID WORD:', True, self.colors['light_gray'], None)
+        w = header.get_size()[0]
+        surf_dims = (304, 140)
+        menu_bg = ui.Display(dims=surf_dims, coords=(18, 290), fonts=self.fonts, colors=self.colors)
+        menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
+        text = self.fonts['medium'].render(word, True, self.colors['red'], None)
+        w = text.get_size()[0]
+        h = header.get_size()[1]
+        menu_bg.surf.blit(text, dest=(surf_dims[0] / 2 - w / 2, 20 + h))
+        btn = ui.Interactive(name='invalid word ok', dims=(64, 40), coords=(136, 380), fonts=self.fonts, text='OK', colors=self.colors, text_color='light_gray')
+        self.splash_elements = [menu_bg, btn]
+
     def create_load_menu(self, gamestates):
         self.hide_splash_menu()
         header = self.fonts['medium'].render('LOAD GAMESTATE', True, self.colors['light_gray'], None)
