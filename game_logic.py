@@ -812,7 +812,7 @@ class Game:
             else:
                 tile.event_timer = 4
         else:
-            tile.event_timer = 4
+            tile.event_timer = 5 # Default for poison tiles
 
     def set_row(self, tile):
         tile.row = min([t.row for t in self.tiles if t.col == tile.col]) - 1
