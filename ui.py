@@ -486,7 +486,7 @@ class Tile():
         self.update()
 
     def identify(self):
-        return f'c{self.col}r{self.row} "{self.letter}"'
+        return f'c{self.col}r{self.row}'
 
     def load_images(self):
         for img_name in ('attack', 'heal', 'poison'):
