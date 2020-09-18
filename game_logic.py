@@ -179,14 +179,10 @@ class Game:
             self.history.pop(0)
         self.last_five_words = [len(w['word']) for w in self.history[-5:]]
 
-    def create_event_queue(self, ghost_color):
+    def create_event_queue(self, ghost_color=None):
         print('Creating event queue...')
         self.queue = []
         event_tiles = []
-        print(f'Length of snake.tiles: {len(self.snake.tiles)}')
-        print(f'Length of self.queue: {len(self.queue)}')
-        print(f'Length of event_tiles: {len(event_tiles)}')
-
         for tile in self.snake.tiles:
             if tile.tile_type == 'heal':
                 print(f'Creating heal event from snake tile: {tile.identify()}')
@@ -245,8 +241,8 @@ class Game:
                         }
                         self.queue.append(event)
         event_tiles = list(set([e['tile'] for e in self.queue]))
-        print(f'Queue contains {len(self.queue)} events for {len(event_tiles)} unique tiles')
-        print(f'    Unique tiles in event queue: {", ".join([t.identify() for t in event_tiles])}')
+        print(f'Queue contains {len(self.queue)} event(s) for {len(event_tiles)} unique tile(s)')
+        print(f'    Unique tile(s) in event queue: {", ".join([t.identify() for t in event_tiles])}')
         # Drop potential null events from gold tiles
         self.queue = [e for e in self.queue if e]
         print('Sorting event queue by turn')
@@ -297,13 +293,13 @@ class Game:
             if self.snake.length:
                 self.update_tile_rows()
                 self.roll_create_special_tile(self.snake.length)
-                print('Queue empty; unpausing all tiles')
-                for tile in [t for t in self.tiles if t.paused]:
-                    tile.paused = False
                 self.snake.empty()
                 self.update_word_display()
             else:
                 self.animating = True
+            print('Queue empty; unpausing all tiles')
+            for tile in [t for t in self.tiles if t.paused]:
+                tile.paused = False
             return
         event = self.queue.pop(0)
         tile = event['tile']
@@ -411,7 +407,6 @@ class Game:
         if not traversed:  # Have to use this workaround due to behavior
             traversed = [] # of mutable defaults in Python
         traversed.append(tile.identify())
-        print(traversed)
         if tile.tile_type == 'heal':
             print(f'Creating heal event @ {tile.identify()} from gold tile neighbor')
             event = {
@@ -783,26 +778,24 @@ class Game:
     def score_word(self, word):
         value = 0
         for l in word:
-            value += self.board.lookup_letter_value(l) * self.multiplier * self.level
-        if word == self.bonus_word:
-            value *= 3
-
+            value += self.board.lookup_letter_value(l) * self.multiplier
         return value * len(word)
 
-    def scramble(self, new_atk=True):
+    def scramble(self):
         print('----Scramble----')
         self.snake.empty()
         self.unhighlight_all()
         self.create_event_queue()
         self.execute_event_queue()
 
-        if new_atk:
-            try:
-                atk = random.choice([t for t in self.tiles if (t.row == 0 and t.tile_type == 'normal')])
-                atk.tile_type = 'attack'
-                self.set_tile_timer(atk)
-            except IndexError: # No normal tiles on top row
-                pass
+        try:
+            atk = random.choice([t for t in self.tiles if (t.row == 0 and t.tile_type == 'normal')])
+            atk.tile_type = 'attack'
+            self.set_tile_timer(atk)
+            atk.update()
+        except IndexError:
+            print('scramble(): No "normal" type tiles on top row')
+            pass
         for tile in [t for t in self.tiles if t.tile_type == 'normal']:
             tile.marked = False
             tile.choose_letter()
