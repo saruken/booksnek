@@ -422,8 +422,6 @@ class Game:
                         print(f'Queued tile {tile.identify()} had a tick event, but was destroyed')
                 else:
                     print('Attack tile had a tick event, but was removed via word submission')
-            h = self.board.hp_display
-            print(f'HP: {h.hp} / {h.hp_max}')
         threading.Timer(0.2, self.execute_event_queue).start()
 
     def fetch_gamestates(self):

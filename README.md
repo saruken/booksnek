@@ -30,7 +30,6 @@
 - Marquee effect for bonus word & word display borders when matching
 - Marquee effect for bonus word tile ghosts
 - Gold ghosts should get intial impetus away from bomb
-- Big refactor #2
 
 ### Known bugs
 - Tile rows get messed up after save / reload
