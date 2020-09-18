@@ -408,10 +408,8 @@ class Game:
         return -0.375 * avg + 1.975
 
     def add_gold_tile_event(self, tile, turn_index=1, traversed=None):
-        # Have to use this 'workaround' due to behavior of mutable
-        # default args in Python
-        if not traversed:
-            traversed = []
+        if not traversed:  # Have to use this workaround due to behavior
+            traversed = [] # of mutable defaults in Python
         traversed.append(tile.identify())
         print(traversed)
         if tile.tile_type == 'heal':
@@ -834,8 +832,6 @@ class Game:
                 return
         if end_click_elem == start_click_elem:
             elem.toggle_mark()
-            elem.tile_type = 'gold' # Remove
-            elem.update() # Remove
             self.unhighlight_all()
 
     def trim_snake(self, tile):
