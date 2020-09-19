@@ -25,7 +25,7 @@
 ### TODO
 - Add tutorial GIFs and documentation
 - Limit to 5 saved gamestates; create menu to choose/overwrite
-- SFX
+- SFX (and menu to control)
 - Music?
 - Marquee effect for bonus word & word display borders when matching
 - Marquee effect for bonus word tile ghosts

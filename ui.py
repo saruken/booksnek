@@ -579,7 +579,7 @@ class Tile():
         self.build_image()
 
     def update_point_value(self):
-        if self.tile_type == 'poison':
+        if self.tile_type in ('heal', 'poison'):
             self.point_value = self.multiplier
         else:
             if self.letter in 'AEILNORSTU':
