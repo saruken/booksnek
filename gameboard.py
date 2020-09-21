@@ -31,7 +31,7 @@ class Board():
         coords = offset_from_element(self.bonus_display, corner=(0, 1), offset=(0, 10))
         self.hp_display = ui.HPDisplay(dims=(336, 34), coords=coords, fonts=self.fonts, colors=colors)
         coords = offset_from_element(self.hp_display, corner=(0, 1), offset=(0, 10))
-        self.level_display = ui.Display(dims=(246, 40), coords=coords, fonts=self.fonts, colors=colors, label='LEVEL: ', text_prefix='Lv. ', text_color='light_gray', center=True, show_progress=True)
+        self.level_display = ui.Display(dims=(246, 40), coords=coords, fonts=self.fonts, colors=colors, label='LEVEL / EXP: ', text_prefix='Lv. ', text_color='light_gray', center=True, show_progress=True)
         coords = offset_from_element(self.level_display, corner=(1, 0), offset=(10, 0))
         self.multiplier_display = ui.Display(dims=(80, 40), coords=coords, fonts=self.fonts, colors=colors, label='MULT.', text_prefix='x', text_color='light_gray', center=True)
         coords = offset_from_element(self.menu_bg, corner=(1, 0), offset=(10, 10))
