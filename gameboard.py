@@ -366,11 +366,14 @@ class Board():
             surf = self.fonts['medium'].render(f'{n + 1}. {entry["username"]}', True, color)
             h = surf.get_size()[1]
             self.hi_score_display.surf.blit(surf, dest=(10, 14 + h * n + 5 * n))
+            level = f'Lv {entry["level"]}'
+            surf = self.fonts['medium'].render(level, True, self.colors['beige'])
+            self.hi_score_display.surf.blit(surf, dest=(130, 14 + h * n + 5 * n))
             score = '{:,}'.format(entry['score'])
             surf = self.fonts['medium'].render(score, True, color)
             w = surf.get_size()[0]
             pos_x = self.hi_score_display.surf.get_size()[0] - 10 - w
-            self.hi_score_display.surf.blit(surf, dest=(pos_x, 12 + h * n + 4 * n))
+            self.hi_score_display.surf.blit(surf, dest=(pos_x, 14 + h * n + 5 * n))
 
     def update_name(self, player_name, letter):
         name = list(player_name)

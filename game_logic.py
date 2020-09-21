@@ -993,6 +993,7 @@ class Game:
             scores.pop(0)
             entry = {
                 'username': self.player_name,
+                'level': self.level,
                 'score': self.score,
                 'current': True
             }
