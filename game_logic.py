@@ -346,6 +346,7 @@ class Game:
             if tile.paused:
                 # Skip this event if another event has already removed
                 # the tile
+                print(f'{tile.identify()} already removed')
                 continue
             action = event['event']
             if event['ghost_color_override']:
@@ -716,7 +717,7 @@ class Game:
         if tile_type != 'normal':
             # Randomly choose which new tile will have the special type
             special_index = random.choice(range(len(tiles)))
-            print(f'"{tiles[special_index].letter}" (i={special_index}) chosen for {tile_type} tile')
+            print(f'New {tile_type} tile @ {tiles[special_index].identify()}')
             tiles[special_index].tile_type = tile_type
             if tile_type == 'attack':
                 self.set_tile_timer(tiles[special_index])
@@ -789,7 +790,6 @@ class Game:
     def score_word(self, word):
         value = 0
         for l in word:
-            print(f'score_word(): "{l.upper()}" is worth {self.board.lookup_letter_value(l.upper())} pts')
             value += self.board.lookup_letter_value(l.upper()) * self.multiplier
         return value * len(word)
 

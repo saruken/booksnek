@@ -477,7 +477,7 @@ class GFXSurf:
     def create_ghost(self, tile, ghost_color):
         surf = pygame.Surface(tile.dims)
         surfarray = pygame.surfarray.array2d(tile.surf)
-        transparent_c = surf.map_rgb(pygame.Color('#ff00ff'))
+        transparent_c = surf.map_rgb(self.colors['transparent'])
         wireframe = numpy.full_like(surfarray, transparent_c)
         bg_c = surf.map_rgb(tile.bg_color)
         wireframe_c = surf.map_rgb(ghost_color)
@@ -508,7 +508,7 @@ class GFXSurf:
             pts = [arc_start, arc_end]
             left = min(pts[0][0], pts[1][0])
             top = min(pts[0][1], pts[1][1])
-            width = (max(pts[0][0], pts[1][0]) - min(pts[0][0], pts[1][0])) * 2
+            width = max((max(pts[0][0], pts[1][0]) - min(pts[0][0], pts[1][0])) * 2, 20)
             height = (max(pts[0][1], pts[1][1]) - min(pts[0][1], pts[1][1])) * 2
             if pts[0][0] < pts[1][0]:
                 start_angle = pi/2
@@ -535,6 +535,7 @@ class GFXSurf:
                 'vy_accel': 0
             }
             pygame.draw.arc(surf, color, pygame.Rect(left, top, width, height), start_angle, stop_angle, width=3)
+            print(f'Drew arc: l={left}, t={top}, w={width}, h={height}, c={color}')
             self.gfx.append(arc)
 
             self.create_delta(amt=source[2], offset_x=arc_end[0])
