@@ -503,7 +503,11 @@ class Game:
         elif elem.name == 'load':
             self.open_load_menu()
         elif elem.name == 'save':
-            self.save_game()
+            self.mode = 'menu'
+            gamestates = [f'{s["username"]} {s["timestamp"]}' for s in self.fetch_gamestates()]
+            self.board.create_save_menu(gamestates)
+            self.board.ui_elements += self.board.splash_elements
+            # self.save_game()
         elif elem.name == 'scramble':
             if not self.input_disabled:
                 self.scramble()

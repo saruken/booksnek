@@ -268,13 +268,14 @@ class HPDisplay():
         self.build_image()
 
 class Interactive(BaseObj):
-    def __init__(self, name, dims, coords, fonts, colors, text, text_color=None, enabled=True):
+    def __init__(self, name, dims, coords, fonts, colors, text, text_color=None, label=None, enabled=True):
         super(Interactive, self).__init__(dims=dims, coords=coords, fonts=fonts, colors=colors)
         self.bg_color = self.colors['ocean']
         self.border_color = None
         self.enabled = enabled
         self.hovered = False
         self.interactive = True
+        self.label = label
         self.name = name
         self.selected = False
         self.text = text
@@ -289,8 +290,9 @@ class Interactive(BaseObj):
         surf = self.fonts['medium'].render(self.text, True, self.text_color, self.bg_color)
         # Horiz/vert align center
         offset = tuple([floor((self.dims[i]) - surf.get_size()[i]) / 2 for i in range(2)])
-
         self.surf.blit(surf, dest=offset)
+        if self.label:
+            self.set_label()
 
     def mouse_out(self):
         self.hovered = False
@@ -311,6 +313,13 @@ class Interactive(BaseObj):
         else:
             self.border_color = self.colors['ocean']
             self.text_color = self.colors['poison']
+
+    def set_label(self):
+        text = self.fonts['small'].render(str(self.label), True, self.colors['light_gray'], self.bg_color)
+        surf = pygame.Surface((text.get_size()[0] + 20, text.get_size()[1]))
+        surf.fill(self.bg_color)
+        surf.blit(text, (10, 0))
+        self.surf.blit(surf, (14, -2))
 
     def update(self):
         self.set_colors()
