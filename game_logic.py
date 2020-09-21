@@ -875,6 +875,7 @@ class Game:
         self.snake.update()
 
     def try_add_tile(self, elem):
+        self.unhighlight_all()
         if not isinstance(elem, Tile):
             return
         if elem in self.snake.tiles:
@@ -939,7 +940,6 @@ class Game:
                 self.board.ui_elements += self.board.splash_elements
                 self.snake.empty()
         self.update_word_display()
-        self.unhighlight_all()
 
     def try_update_hi_scores(self):
         scores = sorted(self.hi_scores, key=lambda k: k['score'])
