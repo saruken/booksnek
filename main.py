@@ -107,7 +107,7 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if game.mode == 'play':
                     if not game.input_disabled:
-                        game.highlight_tiles_from_letter(event.key, game.last_typed)
+                        game.highlight_tiles_from_letter(event.key)
                 elif game.mode == 'name entry':
                     game.handle_name_entry(event.key)
             if game.mode == 'play':

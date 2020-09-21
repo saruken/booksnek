@@ -157,6 +157,8 @@ class Game:
         d.update()
 
     def check_dictionary(self):
+        if self.god_mode:
+            return True
         return bool(self.snake.word.lower() in [x[0] for x in self.dictionary])
 
     def check_level_progress(self):
@@ -519,13 +521,24 @@ class Game:
         for tile in self.snake.tiles:
             tile.select()
 
-    def highlight_tiles_from_letter(self, key, last_typed):
+    def highlight_tiles_from_letter(self, key):
         letter = pygame.key.name(key).upper()
         if letter == 'Q':
             letter = 'Qu'
 
+        if letter == '/' and self.last_typed == '/':
+            self.unhighlight_all()
+            self.last_typed = ''
+            if self.god_mode:
+                print('God mode disabled')
+                self.god_mode = False
+            else:
+                print('God mode enabled')
+                self.god_mode = True
+            return
+
         # Type currently highlighted key or ESC to unhighlight all tiles
-        if letter in (last_typed, 'ESCAPE'):
+        if letter in (self.last_typed, 'ESCAPE'):
             self.unhighlight_all()
             self.last_typed = ''
         else:
@@ -614,6 +627,7 @@ class Game:
     def new_game(self):
         self.animating = False
         self.bonus_counter = 3
+        self.god_mode = False
         self.history = []
         self.last_five_words = []
         self.last_typed = ''
@@ -824,6 +838,26 @@ class Game:
         if end_click_elem == start_click_elem:
             elem.toggle_mark()
             self.unhighlight_all()
+
+            if self.god_mode:
+                if self.last_typed == 'A':
+                    elem.reset()
+                    elem.tile_type = 'attack'
+                    self.set_tile_timer(elem)
+                    elem.update()
+                elif self.last_typed == 'G':
+                    elem.reset()
+                    elem.tile_type = 'gold'
+                    elem.update()
+                elif self.last_typed == 'H':
+                    elem.reset()
+                    elem.tile_type = 'heal'
+                    elem.update()
+                elif self.last_typed == 'P':
+                    elem.reset()
+                    elem.tile_type = 'poison'
+                    self.set_tile_timer(elem)
+                    elem.update()
 
     def trim_snake(self, tile):
         index = len(self.snake.tiles) # Must use this instead of snake.length
