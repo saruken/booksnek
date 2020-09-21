@@ -36567,6 +36567,7 @@ jeweling,0.49
 jewelries,0.63
 jewelry,0.39
 jewels,0.36
+jewry,0.22999999999999998
 jews,0.2
 jib,0.12
 jibbed,0.3

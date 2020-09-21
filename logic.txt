@@ -1,87 +1,47 @@
-animate():
-    # Called every frame
-    to_animate = all tiles on board where y != target
-    For tile in to_animate:
-        Move tile toward target
-    If to_animate is empty and player input is disabled:
-        Enable player input
-    Animate HP bar
-    If displayed HP == 0:
-        Game over
-    Animate experience bar
-    If experience bar ratio == 1:
-        Level up
+Tile event precedence
+    (0:n = order of occurrence)
 
-attack(tile):
-    Create red arc from tile to HP
-    Create red delta text on HP
-    remove(tile, red)
+Name: 'heal'
+Description: Heals HP / boosts MAX HP
+Base precence: 1
+Ghost color override: None
 
-explode(tiles):
-    For tile in tiles:
-        remove(tile, gold)
+Name: 'gold'
+Description: Creates 'explode' events for neighboring tiles
+Base precedence: 2 (always in snake)
+Ghost color override: None
 
-heal(tile):
-    Determine if tile will affect HP or HPMAX
-    Create teal arc from tile to HP/HPMAX
-    Create green/gold delta text on HP/HPMAX
-    remove(tile, teal)
+Name: 'explode'
+Description: Removes tile from board
+Base precedence: Same as triggering event
+Ghost color override: Gold
 
-poison(tile):
-    Create purple arc from tile to HP
-    Create red delta text on HP
-    If tile counter == 0:
-        tile becomes stone
+Name: 'remove'
+Description: Removes tile from board
+Base precedence: 3
+Ghost color override: None
 
-remove(tile, color):
-    Move tile up off screen
-    Reset tile properties
-    Choose new letter for tile
-    Create color tile ghost
+Name: 'poison'
+Description: Deals damage; depletes tile_timer; if tile_timer == 0, tile_type = stone
+Base precedence: 4
+Ghost color override: N/A (does not destroy tile)
 
-try_submit():
-    If snake.word in dictionary:
-        Disable player input
-        If snake.word == bonus word:
-            Set MultUP flag
-        Score += value of snake.tiles
-        For heal tile in snake.tiles:
-            heal(tile)
-            Pop tile from snake.tiles
-        For gold tile in snake.tiles:
-            Get neighbor tiles
-            If any tiles in neighbors are heal or gold:
-                For tile in heal/gold neighbors:
-                    If tile == heal tile:
-                        heal(tile)
-                        Pop tile from neighbors
-                    Elif tile == gold tile:
-                        tile_neighbors = gold tile and neighboring tiles
-                        If any in tile_neighbors are gold:
-                            Append tiles to main neighbor list
-                            Pop from tile_neighbors
-                        Pop from main neighbor list any tiles also in tile_neighbors
-                        explode(tile_neighbors)
-                Pop tile from snake.tiles
-            If any of the neighboring tiles were in snake.tiles, pop them too
-        For tile left in snake.tiles:
-            remove(tile, beige)
-        For attack tile on board where tile.row > 0:
-            tile counter --
-            If tile counter == 0:
-                attack(tile)
-            Else:
-                Update tile display
-        For poison tile on board where tile.row > 0:
-            tile counter --
-            poison(tile)
-        If MultUp flag:
-            Multiplier ++
-            Bonus counter ++
-            Choose new bonus word
-            Update bonus display
-            For non-special tile on board:
-                Update tile values, display
-    else:
-        Print message
-    Clear word display
+Name: 'attack'
+Description: Deals damage; creates 'kill' events for neighboring tiles
+Base precedence: 5
+Ghost color override: None
+
+Name: 'kill'
+Description: Removes tile from board
+Base precedence: 5
+Ghost color override: Red
+
+Name: 'tick'
+Description: Depletes tile_timer (Attack tiles only)
+Base precedence: 6
+Ghost color override: N/A (does not destroy tile)
+
+If tile is in snake:
+    Event precedence -= 1
+
+If multiple events are in the queue with the same tile, the one with the lowest precedence value is executed first. If the tile in question has not been removed (paused), the next event(s) can continue execution; otherwise they are removed from the queue.
