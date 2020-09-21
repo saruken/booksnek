@@ -189,6 +189,7 @@ class Game:
         self.board.longest_display.set_text(self.word_longest)
 
     def choose_bonus_word(self):
+        self.prev_bonus = self.bonus_word
         r_values = [0, 0, 0, 0.16, 0.22, 0.28, 0.36, 0.42, 0.48, 0.55, 0.61, 0.68, 0.74, 0.8, 0.87, 0.93, 0.99, 1.07, 1.13, 1.28, 1.31, 1.38]
         word_pool = [w[0] for w in self.dictionary if len(w[0]) == self.bonus_counter and w[1] > r_values[self.bonus_counter]]
         self.bonus_word = random.choice(word_pool).upper()
@@ -245,12 +246,13 @@ class Game:
                 self.queue.append(self.add_gold_tile_event(tile))
             else:
                 print(f'Creating remove event @ {tile.identify()}')
+                ghost_color_override = 'green' if self.snake.word == self.prev_bonus else None
                 event = {
                     'event': 'remove',
                     'tile': tile,
                     'source_tile': tile,
                     'precedence': 2,
-                    'ghost_color_override': None,
+                    'ghost_color_override': ghost_color_override,
                     'active': True
                 }
                 self.queue.append(event)
@@ -632,6 +634,7 @@ class Game:
     def new_game(self):
         self.animating = False
         self.bonus_counter = 3
+        self.bonus_word = ''
         self.god_mode = False
         self.history = []
         self.last_five_words = []
