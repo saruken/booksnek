@@ -30,3 +30,5 @@
 
 ### Known bugs
 - Tile rows get messed up after save / reload
+
+deke/s/d/-ing

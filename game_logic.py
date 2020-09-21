@@ -636,16 +636,16 @@ class Game:
         self.word_longest = gamestate['longest_word']
 
         for n, tile in enumerate(self.tiles):
-            tile = gamestate['tiles'][n]
-            tile.event_timer = tile['attack_timer']
-            tile.col = tile['col']
-            tile.first_turn = tile['first_turn']
-            tile.letter = tile['letter']
-            tile.marked = tile['marked']
-            tile.multiplier = tile['multiplier']
-            tile.point_value = tile['point_value']
-            tile.row = tile['row']
-            tile.tile_type = tile['tile_type']
+            load_tile = [t for t in gamestate['tiles'] if t['col'] == tile.col and t['row'] == tile.row][0]
+            tile.event_timer = load_tile['event_timer']
+            tile.col = load_tile['col']
+            tile.first_turn = load_tile['first_turn']
+            tile.letter = load_tile['letter']
+            tile.marked = load_tile['marked']
+            tile.multiplier = load_tile['multiplier']
+            tile.point_value = load_tile['point_value']
+            tile.row = load_tile['row']
+            tile.tile_type = load_tile['tile_type']
             tile.update()
 
         self.board.best_display.set_colored_text(self.word_best)
@@ -784,7 +784,7 @@ class Game:
         tiles = []
         for t in self.tiles:
             tile = {
-                'attack_timer': t.event_timer,
+                'event_timer': t.event_timer,
                 'col': t.col,
                 'first_turn': t.first_turn,
                 'letter': t.letter,
