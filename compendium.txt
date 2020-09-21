@@ -17499,6 +17499,10 @@ dejectedly,0.59
 dejecting,0.55
 dejection,0.6
 dejects,0.42
+deke,0.29000000000000004
+deked,0.33
+dekes,0.34
+deking,0.35
 delay,0.31
 delayed,0.47
 delayer,0.49
