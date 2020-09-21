@@ -77,7 +77,8 @@ class Game:
                 'source_tile': tile,
                 'precedence': precedence,
                 'ghost_color_override': None,
-                'active': True
+                'active': True,
+                'direction': None
             }
             return event
         elif tile.tile_type == 'gold':
@@ -89,7 +90,8 @@ class Game:
                 'source_tile': tile,
                 'precedence': precedence,
                 'ghost_color_override': None,
-                'active': True
+                'active': True,
+                'direction': None
             }
             source_tile = tile
             for t in self.get_neighbors(tile):
@@ -104,7 +106,8 @@ class Game:
                 'source_tile': source_tile,
                 'precedence': precedence,
                 'ghost_color_override': 'gold',
-                'active': True
+                'active': True,
+                'direction': self.get_ghost_direction(tile, source_tile)
             }
             return event
 
@@ -239,7 +242,8 @@ class Game:
                     'source_tile': tile,
                     'precedence': 0,
                     'ghost_color_override': None,
-                    'active': True
+                    'active': True,
+                    'direction': None
                 }
                 self.queue.append(event)
             elif tile.tile_type == 'gold':
@@ -253,7 +257,8 @@ class Game:
                     'source_tile': tile,
                     'precedence': 2,
                     'ghost_color_override': ghost_color_override,
-                    'active': True
+                    'active': True,
+                    'direction': None
                 }
                 self.queue.append(event)
         for tile in self.tiles:
@@ -265,7 +270,8 @@ class Game:
                     'source_tile': tile,
                     'precedence': 4,
                     'ghost_color_override': None,
-                    'active': True
+                    'active': True,
+                    'direction': None
                 }
                 self.queue.append(event)
             elif tile.tile_type == 'attack':
@@ -277,7 +283,8 @@ class Game:
                         'tile': tile,
                         'precedence': 5,
                         'ghost_color_override': None,
-                        'active': True
+                        'active': True,
+                        'direction': None
                     }
                     self.queue.append(event)
                     for t in self.get_neighbors(tile):
@@ -288,7 +295,8 @@ class Game:
                             'tile': t,
                             'precedence': 5,
                             'ghost_color_override': 'red',
-                            'active': True
+                            'active': True,
+                            'direction': self.get_ghost_direction(t, tile)
                         }
                         self.queue.append(event)
                 else:
@@ -299,7 +307,8 @@ class Game:
                         'source_tile': tile,
                         'precedence': 6,
                         'ghost_color_override': None,
-                        'active': True
+                        'active': True,
+                        'direction': None
                     }
                     self.queue.append(event)
         # Sort event queue by precedence
@@ -386,7 +395,11 @@ class Game:
                 h.update()
             elif action in ('explode', 'gold', 'kill', 'remove'):
                 if event['active']:
-                    self.board.gfx.create_ghost(tile, self.colors[color])
+                    if action in ('gold', 'remove'):
+                        motion = 'rise'
+                    else:
+                        motion = 'burst'
+                    self.board.gfx.create_ghost(tile, self.colors[color], motion, event['direction'])
                     print(f'{action} event: {tile.identify()} was removed')
                     self.remove_tile(tile)
                     for precedence in self.queue:
@@ -431,6 +444,36 @@ class Game:
 
     def get_attack_weight(self, avg):
         return -0.375 * avg + 1.975
+
+    def get_ghost_direction(self, ghost_tile, source_tile):
+        if ghost_tile.col == source_tile.col:
+            if ghost_tile.row > source_tile.row:
+                direction = 's'
+            else:
+                direction = 'n'
+        elif source_tile.col % 2:
+            if ghost_tile.col < source_tile.col:
+                if ghost_tile.row == source_tile.row:
+                    direction = 'sw'
+                else:
+                    direction = 'nw'
+            elif ghost_tile.col > source_tile.col:
+                if ghost_tile.row == source_tile.row:
+                    direction = 'se'
+                else:
+                    direction = 'ne'
+        else: # Source tile on even col
+            if ghost_tile.col < source_tile.col:
+                if ghost_tile.row == source_tile.row:
+                    direction = 'nw'
+                else:
+                    direction = 'sw'
+            else:
+                if ghost_tile.row == source_tile.row:
+                    direction = 'ne'
+                else:
+                    direction = 'se'
+        return direction
 
     def get_neighbors(self, base_tile):
         neighbors = [t for t in self.tiles if self.board.is_neighbor(new_tile=t, old_tile=base_tile) and not t == base_tile]

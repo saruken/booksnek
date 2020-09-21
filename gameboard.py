@@ -430,8 +430,13 @@ class GFXSurf:
         for g in self.gfx:
             g['fade_counter'] = max(0, g['fade_counter'] - g['fade_step'] * step)
             if g['fade_counter'] > 0:
-                if g['rise']:
+                if g['motion'] == 'rise':
                     g['vx'] += g['vx_accel']
+                    g['vy'] -= g['vy_accel']
+                    g['offset_x'] += g['vx'] * step
+                    g['offset_y'] += g['vy'] * step
+                elif g['motion'] == 'burst':
+                    g['vx'] *= 0.985
                     g['vy'] -= g['vy_accel']
                     g['offset_x'] += g['vx'] * step
                     g['offset_y'] += g['vy'] * step
@@ -463,7 +468,7 @@ class GFXSurf:
             'fade_step': 1.5,
             'offset_x': offset_x - (surf.get_size()[0] / 2),
             'offset_y': 130 - surf.get_size()[1],
-            'rise': True,
+            'motion': 'rise',
             'surf': surf,
             'vx': 0,
             'vx_accel': 0,
@@ -473,7 +478,7 @@ class GFXSurf:
 
         self.gfx.append(delta)
 
-    def create_ghost(self, tile, ghost_color):
+    def create_ghost(self, tile, ghost_color, motion='rise', direction=None):
         surf = pygame.Surface(tile.dims)
         surfarray = pygame.surfarray.array2d(tile.surf)
         transparent_c = surf.map_rgb(self.colors['transparent'])
@@ -483,16 +488,36 @@ class GFXSurf:
         wireframe = numpy.array([[transparent_c if c == bg_c else wireframe_c for c in row] for row in surfarray])
         pygame.surfarray.blit_array(surf, wireframe)
         surf.set_colorkey(self.colors['transparent'])
+        vx = 0
+        vy = 0
+        amt = .6
+        if motion == 'burst':
+            if direction == 'n':
+                vy = -amt * 2 + (random.choice(range(5)) - 2) / 100
+            elif direction == 'ne':
+                vx = amt + (random.choice(range(5)) - 2) / 100
+                vy = -amt + (random.choice(range(5)) - 2) / 100
+            elif direction == 'se':
+                vx = amt + (random.choice(range(5)) - 2) / 100
+                vy = amt + (random.choice(range(5)) - 2) / 100
+            elif direction == 's':
+                vy = amt * 2 + (random.choice(range(5)) - 2) / 100
+            elif direction == 'sw':
+                vx = -amt + (random.choice(range(5)) - 2) / 100
+                vy = amt + (random.choice(range(5)) - 2) / 100
+            elif direction == 'nw':
+                vx = -amt + (random.choice(range(5)) - 2) / 100
+                vy = -amt + (random.choice(range(5)) - 2) / 100
         ghost = {
             'fade_counter': 200 + random.choice(range(155)),
             'fade_step': 3,
             'offset_x': tile.coords[0],
             'offset_y': tile.coords[1],
-            'rise': True,
+            'motion': motion,
             'surf': surf,
-            'vx': 0,
+            'vx': vx,
             'vx_accel': (random.choice(range(3)) - 1) / 100,
-            'vy': 0,
+            'vy': vy,
             'vy_accel': 0.03 + ((random.choice(range(5)) - 2) / 100)
         }
         self.gfx.append(ghost)
@@ -526,7 +551,7 @@ class GFXSurf:
                 'fade_step': 2,
                 'offset_x': 0,
                 'offset_y': 0,
-                'rise': False,
+                'motion': None,
                 'surf': surf,
                 'vx': 0,
                 'vx_accel': 0,

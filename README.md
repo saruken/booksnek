@@ -27,7 +27,6 @@
 - Limit to 5 saved gamestates; create menu to choose/overwrite
 - SFX (and menu to control)
 - Music?
-- Gold/attack ghosts should get intial impetus away from source
 
 ### Known bugs
 - Tile rows get messed up after save / reload
