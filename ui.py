@@ -18,6 +18,7 @@ class BaseObj:
 class Display(BaseObj):
     def __init__(self, dims, coords, fonts, colors, text=None, text_color=None, text_prefix='', center=False, vert_center=True, text_offset=[0, 0], label=None, show_progress=None, multicolor=False):
         super(Display, self).__init__(dims=dims, coords=coords, fonts=fonts, colors=colors)
+        self.border_color_override = self.colors['mid_gray']
         self.bg_color = self.colors['bg_main']
         self.bg_progress = self.colors['bg_progress']
         self.border_color = self.colors['mid_gray']
@@ -200,7 +201,8 @@ class Display(BaseObj):
         if self.marquee:
             self.cycle_marquee()
         else:
-            self.border_color = self.colors['mid_gray']
+            if self.marquee_timer == -1:
+                self.border_color = self.border_color_override
         if self.multicolor:
             self.set_colored_text()
         else:

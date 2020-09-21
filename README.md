@@ -27,8 +27,6 @@
 - Limit to 5 saved gamestates; create menu to choose/overwrite
 - SFX (and menu to control)
 - Music?
-- Marquee effect for bonus word & word display borders when matching
-- Marquee effect for multiplier display on MultUP
 - Gold ghosts should get intial impetus away from bomb
 - Add level to high scores
 

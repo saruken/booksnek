@@ -626,6 +626,7 @@ class Game:
         self.update_tiles()
         self.board.multiplier_display.marquee = True
         self.board.multiplier_display.marquee_timer = 1
+        self.board.bonus_display.border_color = self.colors['mid_gray']
         print(f'Multiplier set to {self.multiplier}')
 
     def new_game(self):
@@ -1026,11 +1027,14 @@ class Game:
             if len(word) > 2:
                 if self.check_dictionary():
                     value = format(self.score_word(word), ',d')
-                    self.board.word_display.border_color = self.colors['teal']
+                    self.board.word_display.border_color_override = self.colors['teal']
                     if word == self.bonus_word:
                         self.board.bonus_display.marquee = True
                 else:
-                    self.board.word_display.border_color = self.colors['red']
-
+                    self.board.word_display.border_color_override = self.colors['red']
+            else:
+                self.board.word_display.border_color_override = self.colors['mid_gray']
             text = f"{word} (+{value})"
+        else:
+            self.board.word_display.border_color_override = self.colors['mid_gray']
         self.board.word_display.set_text(text)
