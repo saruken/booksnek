@@ -201,8 +201,8 @@ class Board():
         scores_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
         label = self.fonts['medium'].render('Name', True, self.colors['mid_gray'], None)
         scores_bg.surf.blit(label, dest=(66, 60))
-        label = self.fonts['medium'].render('Date', True, self.colors['mid_gray'], None)
-        scores_bg.surf.blit(label, dest=(320, 60))
+        label = self.fonts['medium'].render('Level', True, self.colors['mid_gray'], None)
+        scores_bg.surf.blit(label, dest=(388, 60))
         label = self.fonts['medium'].render('Score', True, self.colors['mid_gray'], None)
         scores_bg.surf.blit(label, dest=(550, 60))
         for n, entry in enumerate(scores):
@@ -213,8 +213,8 @@ class Board():
                 tile = ui.Tile(fonts=self.fonts, colors=self.colors, letter=letter)
                 tile.mouse_out()
                 scores_bg.surf.blit(tile.surf, dest=(34 + i * 48, 86 + n * 48 + n * 10))
-            val = self.fonts['medium'].render(entry['date'], True, color, None)
-            scores_bg.surf.blit(val, dest=(300, 110 + n * 48 + n * 10))
+            val = self.fonts['medium'].render(str(entry['level']), True, color, None)
+            scores_bg.surf.blit(val, dest=(400, 110 + n * 48 + n * 10))
             val = self.fonts['medium'].render('{:,}'.format(entry['score']), True, color, None)
             w = val.get_size()[0]
             scores_bg.surf.blit(val, dest=(636 - w, 110 + n * 48 + n * 10))
@@ -227,7 +227,6 @@ class Board():
         for col in range(7):
             for row in range(7 + col % 2):
                 tiles.append(ui.Tile(fonts=self.fonts, col=col, row=row, colors=colors, offset=offset))
-
         return tiles
 
     def create_tutorial(self):
