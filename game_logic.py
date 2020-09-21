@@ -1006,7 +1006,7 @@ class Game:
             scores.pop(0)
             entry = {
                 'username': self.player_name,
-                'date': datetime.strftime(datetime.today(), '%b %d, %Y'),
+                'level': self.level,
                 'score': self.score,
                 'current': True
             }
