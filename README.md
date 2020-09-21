@@ -30,7 +30,6 @@
 - Marquee effect for bonus word & word display borders when matching
 - Marquee effect for multiplier display on MultUP
 - Gold ghosts should get intial impetus away from bomb
-- Add "+n" to history words with heal tiles
 - Add level to high scores
 
 ### Known bugs

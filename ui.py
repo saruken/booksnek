@@ -25,11 +25,14 @@ class Display(BaseObj):
         self.label = label
         self.letter_height = 19
         self.letter_width = 19
+        self.marquee = False
+        self.marquee_colors = [self.colors['marquee_on'], self.colors['marquee_off']]
+        self.marquee_counter = 0
+        self.marquee_current = 0
+        self.marquee_timer = -1
         self.multicolor = multicolor
         self.progress = 0
         self.progress_actual = 0
-        self.fade_counter = 0
-        self.fade_counter_speed = 1.2
         self.progress_lv_increment = 100
         self.progress_max = self.progress_lv_increment
         self.show_progress = show_progress
@@ -77,15 +80,20 @@ class Display(BaseObj):
         if self.label:
             self.set_label()
 
-    def fade_border(self):
-        try:
-            self.border_color = self.colors['bg_heal'].lerp(self.colors['mid_gray'], self.fade_counter / 100.0)
-            self.fade_counter += self.fade_counter_speed
-        except ValueError:
-            self.fade_counter = 0
-
-    def flash(self):
-        self.fade_counter = 1
+    def cycle_marquee(self):
+        if self.marquee_timer > 0:
+            self.marquee_timer += 1
+            if self.marquee_timer >= 100:
+                self.marquee_timer = 0
+                self.marquee = False
+                self.border_color = self.colors['mid_gray']
+                return
+        if self.marquee_counter < 6:
+            self.marquee_counter += 1
+        else:
+            self.marquee_counter = 0
+            self.marquee_current = int(not self.marquee_current)
+        self.border_color = self.marquee_colors[self.marquee_current]
 
     def set_colored_text(self, text_obj=None):
         self.surf.fill(self.border_color)
@@ -189,8 +197,10 @@ class Display(BaseObj):
                 self.text = self.text_prefix + str(text)
         if label:
             self.label = label
-        if self.fade_counter:
-            self.fade_border()
+        if self.marquee:
+            self.cycle_marquee()
+        else:
+            self.border_color = self.colors['mid_gray']
         if self.multicolor:
             self.set_colored_text()
         else:
@@ -201,9 +211,6 @@ class HPDisplay():
         self.dims = dims
         self.colors = colors
         self.coords = coords
-        self.fade_color = self.colors['red']
-        self.fade_counter = 0
-        self.fade_counter_speed = 1.2
         self.fonts = fonts
         self.hp = 1
         self.hp_color = self.colors['hp_green']
@@ -219,15 +226,6 @@ class HPDisplay():
         self.border_color = self.colors['mid_gray']
 
     def build_image(self):
-        if self.fade_counter:
-            try:
-                self.border_color = self.fade_color.lerp(self.colors['mid_gray'], self.fade_counter / 100.0)
-                self.fade_counter += self.fade_counter_speed
-            except ValueError:
-                if self.hp_displayed == self.hp:
-                    self.fade_counter = 0
-                else:
-                    self.fade_counter = -1
         self.surf.fill(self.border_color)
         pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
         bar_width = floor((self.hp_displayed / self.hp_max) * self.bar_max_width)
@@ -239,14 +237,6 @@ class HPDisplay():
         label = self.fonts['small'].render('HP', True, self.colors['mid_gray'])
         pygame.draw.line(self.surf, self.bg_color, (14, 0), (label.get_size()[0] + 14 + 20, 0), width=2)
         self.surf.blit(label, (24, -2))
-
-    def flash(self, color=None):
-        if not self.fade_counter:
-            self.fade_counter = 1
-        if color:
-            self.fade_color = self.colors[color]
-        else:
-            self.fade_color = self.colors['red']
 
     def level_up(self, lv):
         buff = random.choice([1, 2, 3])
@@ -272,9 +262,6 @@ class HPDisplay():
             self.hp_color = color0.lerp(color1, ratio)
 
     def update(self):
-        if self.fade_counter == -1:
-            if self.hp_displayed == self.hp:
-                self.fade_counter = 0
         self.set_hp_color()
         self.build_image()
 

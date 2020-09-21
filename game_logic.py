@@ -36,6 +36,8 @@ class Game:
             'hp_red': pygame.Color('#b3281e'),
             'hp_yellow': pygame.Color('#d16411'),
             'light_gray': pygame.Color('#bfb9a8'),
+            'marquee_off': pygame.Color('#dfbb35'),
+            'marquee_on': pygame.Color('#f8eae5'),
             'mid_gray': pygame.Color('#546c7a'),
             'ocean': pygame.Color('#244254'),
             'poison': pygame.Color('#7c6e8a'),
@@ -138,7 +140,7 @@ class Game:
 
         h = self.board.hp_display
         amt = (h.hp - h.hp_displayed) / 20
-        if h.fade_counter or not h.hp_displayed == h.hp:
+        if not h.hp_displayed == h.hp:
             if abs(h.hp - h.hp_displayed) < .03:
                 amt = h.hp - h.hp_displayed
             h.hp_displayed += amt
@@ -147,8 +149,8 @@ class Game:
             if self.mode == 'play':
                 self.game_over()
 
-        for elem in [self.board.multiplier_display, self.board.longest_display, self.board.best_display]:
-            if elem.fade_counter:
+        for elem in (self.board.multiplier_display, self.board.bonus_display):
+            if elem.marquee:
                 elem.update()
 
     def apply_level_progress(self, exp):
@@ -557,7 +559,6 @@ class Game:
         d.progress_max += self.level * d.progress_lv_increment
         self.level += 1
         print(f'Level up: Lv{self.level}')
-        d.flash()
         d.update(self.level)
         buff = self.board.hp_display.level_up(self.level)
         arc_sources = [[(125, 184), 'bg_gold', str(buff), 'HP', 0], [(135, 180), 'bg_gold', f'{buff} MAX', 'HP_MAX', 0]]
@@ -623,6 +624,8 @@ class Game:
         self.multiplier += 1
         self.bonus_counter += 1
         self.update_tiles()
+        self.board.multiplier_display.marquee = True
+        self.board.multiplier_display.marquee_timer = 1
         print(f'Multiplier set to {self.multiplier}')
 
     def new_game(self):
@@ -978,14 +981,6 @@ class Game:
         self.board.update_bonus_color(self.bonus_word, self.snake.word, self.colors)
 
     def update_bonus_display(self):
-        if self.board.word_display.text:
-            if self.board.word_display.text.split(' ')[0] == self.bonus_word:
-                self.board.bonus_display.border_color = self.colors['green']
-            else:
-                self.board.bonus_display.border_color = self.colors['mid_gray']
-        else:
-            self.board.bonus_display.border_color = self.colors['mid_gray']
-
         self.board.bonus_display.set_text(self.bonus_word)
 
     def update_btn_clear_marked(self):
@@ -1022,23 +1017,20 @@ class Game:
             tile.update(multiplier=self.multiplier)
 
     def update_word_display(self):
-        color = 'mid_gray'
         text = None
         value = 0
         word = self.snake.word
+        self.board.bonus_display.marquee = False
 
         if self.snake.length:
             if len(word) > 2:
                 if self.check_dictionary():
                     value = format(self.score_word(word), ',d')
+                    self.board.word_display.border_color = self.colors['teal']
                     if word == self.bonus_word:
-                        color = 'green'
-                    else:
-                        color = 'teal'
+                        self.board.bonus_display.marquee = True
                 else:
-                    color = 'red'
+                    self.board.word_display.border_color = self.colors['red']
 
             text = f"{word} (+{value})"
-
-        self.board.word_display.border_color = self.colors[color]
         self.board.word_display.set_text(text)
