@@ -70,49 +70,53 @@ class Board():
 
     def create_game_over_menu(self):
         self.hide_splash_menu()
+        shade = self.create_shade()
         header = self.fonts['medium'].render('GAME OVER', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
         surf_dims = (284, 120)
-        menu_bg = ui.Display(dims=surf_dims, coords=(38, 290), fonts=self.fonts, colors=self.colors)
+        menu_bg = ui.Display(dims=surf_dims, coords=self.get_centered_coords(surf_dims), fonts=self.fonts, colors=self.colors)
         menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
         coords = offset_from_element(menu_bg, corner=(0, 0), offset=(0, 60))
         btn = ui.Interactive(name='game over ok', dims=(63, 40), coords=(149, coords[1]), fonts=self.fonts, text='OK', colors=self.colors, text_color='light_gray')
-        self.splash_elements = [menu_bg, btn]
+        self.splash_elements = [shade, menu_bg, btn]
 
     def create_game_saved_menu(self, id):
         self.hide_splash_menu()
+        shade = self.create_shade()
         header = self.fonts['medium'].render('GAME SAVED AS:', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
         surf_dims = (304, 140)
-        menu_bg = ui.Display(dims=surf_dims, coords=(18, 290), fonts=self.fonts, colors=self.colors)
+        menu_bg = ui.Display(dims=surf_dims, coords=self.get_centered_coords(surf_dims), fonts=self.fonts, colors=self.colors)
         menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
         id_text = self.fonts['medium'].render(id, True, self.colors['bg_gold'], None)
         w = id_text.get_size()[0]
         h = header.get_size()[1]
         menu_bg.surf.blit(id_text, dest=(surf_dims[0] / 2 - w / 2, 20 + h))
         btn = ui.Interactive(name='game saved ok', dims=(64, 40), coords=(136, 380), fonts=self.fonts, text='OK', colors=self.colors, text_color='light_gray')
-        self.splash_elements = [menu_bg, btn]
+        self.splash_elements = [shade, menu_bg, btn]
 
     def create_invalid_word_menu(self, word):
         self.hide_splash_menu()
+        shade = self.create_shade()
         header = self.fonts['medium'].render('INVALID WORD:', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
         surf_dims = (304, 140)
-        menu_bg = ui.Display(dims=surf_dims, coords=(18, 290), fonts=self.fonts, colors=self.colors)
+        menu_bg = ui.Display(dims=surf_dims, coords=self.get_centered_coords(surf_dims), fonts=self.fonts, colors=self.colors)
         menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
         text = self.fonts['medium'].render(word, True, self.colors['red'], None)
         w = text.get_size()[0]
         h = header.get_size()[1]
         menu_bg.surf.blit(text, dest=(surf_dims[0] / 2 - w / 2, 20 + h))
         btn = ui.Interactive(name='invalid word ok', dims=(64, 40), coords=(136, 380), fonts=self.fonts, text='OK', colors=self.colors, text_color='light_gray')
-        self.splash_elements = [menu_bg, btn]
+        self.splash_elements = [shade, menu_bg, btn]
 
     def create_load_menu(self, slot_info):
         self.hide_splash_menu()
+        shade = self.create_shade()
         header = self.fonts['medium'].render('LOAD GAMESTATE', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
         surf_dims = (330, 350)
-        menu_bg = ui.Display(dims=surf_dims, coords=(13, 230), fonts=self.fonts, colors=self.colors)
+        menu_bg = ui.Display(dims=surf_dims, coords=self.get_centered_coords(surf_dims), fonts=self.fonts, colors=self.colors)
         menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
         coords = offset_from_element(menu_bg, corner=(0, 0), offset=(10, 40))
         slots = []
@@ -126,14 +130,14 @@ class Board():
             coords = offset_from_element(slot, corner=(0, 1), offset=(0, 0))
         coords = offset_from_element(menu_bg, corner=(0, 1), offset=(10, -50))
         btn = ui.Interactive(name='back to game', dims=(140, 40), coords=coords, fonts=self.fonts, text='BACK', colors=self.colors, text_color='light_gray')
-        self.splash_elements = [menu_bg, btn] + slots
+        self.splash_elements = [shade, menu_bg, btn] + slots
 
     def create_name_menu(self, player_name):
         self.hide_splash_menu()
         header = self.fonts['medium'].render('PLAYER NAME', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
         surf_dims = (350, 200)
-        menu_bg = ui.Display(dims=surf_dims, coords=(163, 90), fonts=self.fonts, colors=self.colors)
+        menu_bg = ui.Display(dims=surf_dims, coords=self.get_centered_coords(surf_dims), fonts=self.fonts, colors=self.colors)
         menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
         coords = offset_from_element(menu_bg, corner=(1, 1), offset=(-150, -50))
         btn_start = ui.Interactive(name='name start', dims=(140, 40), coords=coords, fonts=self.fonts, text='START', colors=self.colors, text_color='light_gray')
@@ -162,23 +166,25 @@ class Board():
 
     def create_quit_menu(self):
         self.hide_splash_menu()
+        shade = self.create_shade()
         header = self.fonts['medium'].render('REALLY QUIT?', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
         surf_dims = (284, 140)
-        quit_menu_bg = ui.Display(dims=surf_dims, coords=(38, 290), fonts=self.fonts, colors=self.colors)
-        quit_menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
-        coords = offset_from_element(quit_menu_bg, corner=(0, 0), offset=(10, 60))
-        quit_menu_no = ui.Interactive(name='quit no', dims=(127, 40), coords=coords, fonts=self.fonts, text='NO', colors=self.colors, text_color='light_gray')
-        coords = offset_from_element(quit_menu_bg, corner=(1, 0), offset=(-137, 60))
-        quit_menu_yes = ui.Interactive(name='quit yes', dims=(127, 40), coords=coords, fonts=self.fonts, text='YES', colors=self.colors, text_color='light_gray')
-        self.splash_elements = [quit_menu_bg, quit_menu_no, quit_menu_yes]
+        menu_bg = ui.Display(dims=surf_dims, coords=self.get_centered_coords(surf_dims), fonts=self.fonts, colors=self.colors)
+        menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
+        coords = offset_from_element(menu_bg, corner=(0, 0), offset=(10, 60))
+        btn_no = ui.Interactive(name='quit no', dims=(127, 40), coords=coords, fonts=self.fonts, text='NO', colors=self.colors, text_color='light_gray')
+        coords = offset_from_element(menu_bg, corner=(1, 0), offset=(-137, 60))
+        btn_yes = ui.Interactive(name='quit yes', dims=(127, 40), coords=coords, fonts=self.fonts, text='YES', colors=self.colors, text_color='light_gray')
+        self.splash_elements = [shade, menu_bg, btn_no, btn_yes]
 
     def create_save_menu(self, slot_info):
         self.hide_splash_menu()
+        shade = self.create_shade()
         header = self.fonts['medium'].render('SAVE GAMESTATE', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
         surf_dims = (330, 350)
-        menu_bg = ui.Display(dims=surf_dims, coords=(13, 230), fonts=self.fonts, colors=self.colors)
+        menu_bg = ui.Display(dims=surf_dims, coords=self.get_centered_coords(surf_dims), fonts=self.fonts, colors=self.colors)
         menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
         coords = offset_from_element(menu_bg, corner=(0, 0), offset=(10, 40))
         slots = []
@@ -192,14 +198,21 @@ class Board():
             coords = offset_from_element(slot, corner=(0, 1), offset=(0, 0))
         coords = offset_from_element(menu_bg, corner=(0, 1), offset=(10, -50))
         btn = ui.Interactive(name='back to game', dims=(140, 40), coords=coords, fonts=self.fonts, text='BACK', colors=self.colors, text_color='light_gray')
-        self.splash_elements = [menu_bg, btn] + slots
+        self.splash_elements = [shade, menu_bg, btn] + slots
+
+    def create_shade(self):
+        shade = ui.Display(dims=(676, 608), coords=(0, 0), fonts=self.fonts, colors=self.colors)
+        shade.border_color_override = self.colors['bg_main']
+        shade.update()
+        shade.surf.set_alpha(150)
+        return shade
 
     def create_splash_load_menu(self, slot_info):
         self.hide_splash_menu()
         header = self.fonts['medium'].render('LOAD GAMESTATE', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
         surf_dims = (330, 350)
-        menu_bg = ui.Display(dims=surf_dims, coords=(173, 154), fonts=self.fonts, colors=self.colors)
+        menu_bg = ui.Display(dims=surf_dims, coords=self.get_centered_coords(surf_dims), fonts=self.fonts, colors=self.colors)
         menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
         coords = offset_from_element(menu_bg, corner=(0, 0), offset=(10, 40))
         slots = []
@@ -289,6 +302,11 @@ class Board():
         btn_done = ui.Interactive(name='tutorial done', dims=(63, 40), coords=coords, fonts=self.fonts, text='DONE', text_color='light_gray', colors=self.colors)
 
         self.splash_elements = [tut_menu_bg, demo_bg, display, btn_next, btn_done]
+
+    def get_centered_coords(self, dims):
+        x = dims[0] / 2
+        y = dims[1] / 2
+        return (676 / 2 - x, 608 / 2 - y)
 
     def hide_splash_menu(self):
         for elem in self.splash_elements:
