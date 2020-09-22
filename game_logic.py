@@ -543,13 +543,10 @@ class Game:
             slot = int(elem.name.split(' ')[-1]) - 1
             self.load_game(slot)
         # Quit
-        if elem.name == 'quit':
+        elif elem.name == 'quit':
             self.mode = 'menu'
             self.board.create_quit_menu()
             self.board.ui_elements += self.board.splash_elements
-        elif elem.name == 'quit no':
-            self.board.ui_elements = self.tiles + self.board.game_elements
-            self.mode = 'play'
         elif elem.name == 'quit yes':
             self.try_update_hi_score_file()
             self.board.create_splash_menu(self.hi_scores)
@@ -569,9 +566,12 @@ class Game:
             self.mode = 'play'
             self.board.ui_elements = self.tiles + self.board.game_elements
         # Other
-        elif elem.name in ('tutorial done', 'load back'):
+        elif elem.name in ('tutorial done', 'back to splash'):
             self.board.create_splash_menu(self.hi_scores)
             self.board.ui_elements = self.board.splash_elements
+        elif elem.name in ('quit no', 'back to game'):
+            self.board.ui_elements = self.tiles + self.board.game_elements
+            self.mode = 'play'
 
     def handle_name_entry(self, key):
         letter = pygame.key.name(key).upper()

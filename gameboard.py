@@ -111,8 +111,8 @@ class Board():
         self.hide_splash_menu()
         header = self.fonts['medium'].render('LOAD GAMESTATE', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
-        surf_dims = (330, 300)
-        menu_bg = ui.Display(dims=surf_dims, coords=(13, 250), fonts=self.fonts, colors=self.colors)
+        surf_dims = (330, 350)
+        menu_bg = ui.Display(dims=surf_dims, coords=(13, 230), fonts=self.fonts, colors=self.colors)
         menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
         coords = offset_from_element(menu_bg, corner=(0, 0), offset=(10, 40))
         slots = []
@@ -124,7 +124,9 @@ class Board():
             slot = ui.Interactive(name=f'load slot {slot_num + 1}', dims=(310, 40), coords=(coords[0], coords[1] + 10), fonts=self.fonts, text=text, colors=self.colors, text_color='bg_gold', label=f'SLOT {slot_num + 1}')
             slots.append(slot)
             coords = offset_from_element(slot, corner=(0, 1), offset=(0, 0))
-        self.splash_elements = [menu_bg] + slots
+        coords = offset_from_element(menu_bg, corner=(0, 1), offset=(10, -50))
+        btn = ui.Interactive(name='back to game', dims=(140, 40), coords=coords, fonts=self.fonts, text='BACK', colors=self.colors, text_color='light_gray')
+        self.splash_elements = [menu_bg, btn] + slots
 
     def create_name_menu(self, player_name):
         self.hide_splash_menu()
@@ -194,7 +196,7 @@ class Board():
         self.hide_splash_menu()
         header = self.fonts['medium'].render('LOAD GAMESTATE', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
-        surf_dims = (330, 300) # 676, 608
+        surf_dims = (330, 350)
         menu_bg = ui.Display(dims=surf_dims, coords=(173, 154), fonts=self.fonts, colors=self.colors)
         menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
         coords = offset_from_element(menu_bg, corner=(0, 0), offset=(10, 40))
@@ -207,7 +209,9 @@ class Board():
             slot = ui.Interactive(name=f'load slot {slot_num + 1}', dims=(310, 40), coords=(coords[0], coords[1] + 10), fonts=self.fonts, text=text, colors=self.colors, text_color='bg_gold', label=f'SLOT {slot_num + 1}')
             slots.append(slot)
             coords = offset_from_element(slot, corner=(0, 1), offset=(0, 0))
-        self.splash_elements = [menu_bg] + slots
+        coords = offset_from_element(menu_bg, corner=(0, 1), offset=(10, -50))
+        btn = ui.Interactive(name='back to splash', dims=(140, 40), coords=coords, fonts=self.fonts, text='BACK', colors=self.colors, text_color='light_gray')
+        self.splash_elements = [menu_bg, btn] + slots
 
     def create_splash_menu(self, scores):
         self.hide_splash_menu()
