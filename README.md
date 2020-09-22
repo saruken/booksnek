@@ -24,7 +24,7 @@
 
 ### TODO
 - Add tutorial GIFs and documentation
-- Limit to 5 saved gamestates; create menu to choose/overwrite
+- Continue building out load/save menus
 - SFX (and menu to control)
 - Music?
 
