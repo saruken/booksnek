@@ -24,7 +24,6 @@
 
 ### TODO
 - Add tutorial GIFs and documentation
-- Continue building out load/save menus
 - SFX (and menu to control)
 - Music?
 
