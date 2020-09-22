@@ -59,7 +59,18 @@ class Board():
     def advance_tutorial(self):
         self.tutorial_current_step += 1
         self.show_gif()
-        self.splash_elements[2].set_text(self.tutorial_steps[self.tutorial_current_step])
+        textbox = self.splash_elements[2]
+        # Write 2nd line of text, if it exists
+        if self.tutorial_steps_extra[self.tutorial_current_step]:
+            textbox.vert_center = False
+            textbox.text_offset = (8, 10)
+            textbox.set_text(self.tutorial_steps[self.tutorial_current_step])
+            line = self.fonts['medium'].render(self.tutorial_steps_extra[self.tutorial_current_step], True, self.colors['bg_gold'], None)
+            textbox.surf.blit(line, dest=(10, 30))
+        else:
+            textbox.vert_center = True
+            textbox.text_offset = (8, 0)
+            textbox.set_text(self.tutorial_steps[self.tutorial_current_step])
 
         if self.tutorial_current_step == len(self.tutorial_steps) - 1:
             self.splash_elements.pop(3) # Remove 'Next' button
@@ -275,33 +286,89 @@ class Board():
 
     def create_tiles(self, colors, offset):
         tiles = []
-        # Columns alternate between 7 and 8 tiles, starting and ending with 7s
+        # Columns alternate between 7 and 8 rows; first & last are 7s
         for col in range(7):
             for row in range(7 + col % 2):
                 tiles.append(ui.Tile(fonts=self.fonts, col=col, row=row, colors=colors, offset=offset))
         return tiles
 
     def create_tutorial(self):
-        self.tutorial_steps = ['Connect adjacent letters to form a word', 'Creating valid words yields points and EXP']
+        self.tutorial_steps = [
+            'Connect adjacent letters to submit a word.',
+            'Submitting valid words yields points and EXP.',
+            'With enough EXP, you can level up; this increases HP.',
+            'Each letter tile has a point value in the bottom right.',
+            'The total point value of a word is calculated as the sum',
+            'See the special word listed in the \'MULTIPLIER+\'',
+            'Submit a 5-letter word to receive a SILVER tile. These',
+            'Submit a 6-letter word to receive a HEAL tile. These',
+            'If your HP is already full, HP tiles raise the MAX HP.',
+            'Submit a word 7+ letters long to receive a GOLD tile.',
+            'There are also negative special tiles: the ATTACK and',
+            'ATTACK tiles enter the board with a timer in the bottom',
+            'If it reaches 0, it blows up, dealing damage equal to',
+            'POISON tiles work similarly, except they deal damage',
+            'Once their timer hits 0, they turn into inert STONE',
+            'If you feel stuck or want a fresh board, hit the',
+            'SCRAMBLE only affects normal tiles, so you won\'t lose',
+            'However, a new ATTACK tile is spawned every time you',
+            'As you submit words, the most recent 17 are displayed',
+            'Booksnek also keeps track of your longest and highest',
+            'You can save your gamestate at any time in one of five',
+            'Load a gamestate from the main menu, or via the LOAD',
+            'When your HP is reduced to 0, the game is over.',
+            'If your score is one of the top five, you\'ll see it',
+            'While playing, you can type a letter on your keyboard',
+            'Right click a tile to add a blue marker on the top'
+        ]
+        self.tutorial_steps_extra = [
+            '',
+            '',
+            '',
+            '',
+            'of its letters\' point values * its length.',
+            'field? Submit this word to increase letter point values.',
+            'are worth double the normal point value.',
+            'restore HP equal to the current Multiplier value.',
+            '',
+            'These explode when matched, taking out all neighbors.',
+            'POISON tiles.',
+            'left. The timer will count down every turn.',
+            'its point value and destroying neighboring tiles.',
+            'EVERY turn.',
+            'tiles, which cannot be matched with anything.',
+            'SCRAMBLE button.',
+            'any bonus tiles you\'ve created.',
+            'SCRAMBLE, so proceed with caution.',
+            'in the WORD LIST area, along with their values.',
+            'scoring words.',
+            'available save slots.',
+            'button while playing.',
+            '',
+            'added to the HI SCORES list on the splash screen.',
+            'and Booksnek will highlight all matching tiles.',
+            'right of it. Click again or UNMARK to remove it.'
+        ]
         self.tutorial_gifs = [None for t in self.tutorial_steps]
         self.tutorial_current_step = 0
         self.hide_splash_menu()
         header = self.fonts['medium'].render('BOOKSNEK TUTORIAL', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
         h = header.get_size()[1]
-        surf_dims = (656, 588)
+        surf_dims = (656, h + 294 + (40 + h) + 40 + 50)
         tutorial_text = self.tutorial_steps[self.tutorial_current_step]
-        tut_menu_bg = ui.Display(dims=surf_dims, coords=(10, 10), fonts=self.fonts, colors=self.colors)
-        tut_menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
-        demo_bg = ui.Display(dims=(328, 294), coords=(178, 30 + h), fonts=self.fonts, colors=self.colors, label="DEMO", text="GIF HERE", center=True)
+        menu_bg = ui.Display(dims=surf_dims, coords=self.get_centered_coords(surf_dims), fonts=self.fonts, colors=self.colors)
+        menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
+        coords = offset_from_element(menu_bg, corner=(0, 0), offset=(656 / 2 - 328 / 2, 20 + h))
+        demo_bg = ui.Display(dims=(328, 294), coords=coords, fonts=self.fonts, colors=self.colors, label="DEMO", text="GIF HERE", center=True)
         coords = offset_from_element(demo_bg, corner=(0, 1), offset=(0, 10))
-        display = ui.Display(dims=(surf_dims[0] - 20, 20 + h), coords=(20, coords[1]), fonts=self.fonts, colors=self.colors, text_color='light_gray', label="SNEK TIP", text=tutorial_text, text_offset=(8, 10), vert_center=False)
-        coords = offset_from_element(tut_menu_bg, corner=(1, 1), offset=(-73, -50))
+        display = ui.Display(dims=(surf_dims[0] - 20, 40 + h), coords=(20, coords[1]), fonts=self.fonts, colors=self.colors, text_color='bg_gold', label="SNEK TIP", text=tutorial_text, text_offset=(8, 0), vert_center=True)
+        coords = offset_from_element(menu_bg, corner=(1, 1), offset=(-73, -50))
         btn_next = ui.Interactive(name='tutorial next', dims=(63, 40), coords=coords, fonts=self.fonts, text='NEXT', text_color='light_gray', colors=self.colors)
-        coords = offset_from_element(tut_menu_bg, corner=(0, 1), offset=(10, -50))
+        coords = offset_from_element(menu_bg, corner=(0, 1), offset=(10, -50))
         btn_done = ui.Interactive(name='tutorial done', dims=(63, 40), coords=coords, fonts=self.fonts, text='DONE', text_color='light_gray', colors=self.colors)
 
-        self.splash_elements = [tut_menu_bg, demo_bg, display, btn_next, btn_done]
+        self.splash_elements = [menu_bg, demo_bg, display, btn_next, btn_done]
 
     def get_centered_coords(self, dims):
         x = dims[0] / 2
