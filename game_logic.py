@@ -489,6 +489,60 @@ class Game:
     def handle_menu_btn_click(self, elem):
         if not isinstance(elem, Interactive):
             return
+        # New game
+        if elem.name == 'splash new':
+            self.board.create_name_menu(self.player_name)
+            self.board.ui_elements = self.board.splash_elements
+            self.mode = 'name entry'
+        # Name entry
+        elif elem.name == 'name start':
+            if self.player_name:
+                self.new_game()
+                self.board.ui_elements = self.tiles + self.board.game_elements
+                self.mode = 'play'
+        elif elem.name == 'name clear':
+            self.player_name = ''
+            self.board.clear_name()
+            self.board.ui_elements = self.board.splash_elements
+        # Tutorial
+        elif elem.name == 'splash tutorial':
+            self.board.create_tutorial()
+            self.board.ui_elements = self.board.splash_elements
+        elif elem.name == 'tutorial next':
+            self.board.advance_tutorial()
+        # Game action buttons
+        elif elem.name == 'clear':
+            if self.board.btn_clear_marked.enabled:
+                self.clear_marked()
+                self.board.btn_clear_marked.update()
+                self.last_typed = ''
+        elif elem.name == 'scramble':
+            if not self.input_disabled:
+                self.scramble()
+                self.last_typed = ''
+        # Game over
+        elif elem.name == 'game over ok':
+            self.try_update_hi_score_file()
+            self.board.create_splash_menu(self.hi_scores)
+            self.board.ui_elements = self.board.splash_elements
+        # Invalid word
+        elif elem.name == 'invalid word ok':
+            self.board.ui_elements = self.tiles + self.board.game_elements
+            self.mode = 'play'
+        # Load
+        elif elem.name == 'splash load':
+            gamestates = [f'{s["username"]} {s["timestamp"]}' if s else 'EMPTY' for s in self.fetch_gamestates()]
+            self.board.create_splash_load_menu(gamestates)
+            self.board.ui_elements = self.board.splash_elements
+        elif elem.name == 'load':
+            self.mode = 'menu'
+            gamestates = [f'{s["username"]} {s["timestamp"]}' if s else 'EMPTY' for s in self.fetch_gamestates()]
+            self.board.create_load_menu(gamestates)
+            self.board.ui_elements += self.board.splash_elements
+        elif 'load slot' in elem.name:
+            slot = int(elem.name.split(' ')[-1]) - 1
+            self.load_game(slot)
+        # Quit
         if elem.name == 'quit':
             self.mode = 'menu'
             self.board.create_quit_menu()
@@ -500,11 +554,7 @@ class Game:
             self.try_update_hi_score_file()
             self.board.create_splash_menu(self.hi_scores)
             self.board.ui_elements = self.board.splash_elements
-        elif elem.name == 'load':
-            self.mode = 'menu'
-            gamestates = [f'{s["username"]} {s["timestamp"]}' if s else 'EMPTY' for s in self.fetch_gamestates()]
-            self.board.create_load_menu(gamestates)
-            self.board.ui_elements += self.board.splash_elements
+        # Save
         elif elem.name == 'save':
             self.mode = 'menu'
             gamestates = [f'{s["username"]} {s["timestamp"]}' if s else 'EMPTY' for s in self.fetch_gamestates()]
@@ -515,53 +565,13 @@ class Game:
             self.save_game(slot)
             self.board.ui_elements = self.tiles + self.board.game_elements
             self.mode = 'play'
-        elif elem.name == 'scramble':
-            if not self.input_disabled:
-                self.scramble()
-                self.last_typed = ''
-        elif elem.name == 'clear':
-            if self.board.btn_clear_marked.enabled:
-                self.clear_marked()
-                self.board.btn_clear_marked.update()
-                self.last_typed = ''
-        elif elem.name == 'splash load':
-            gamestates = [f'{s["username"]} {s["timestamp"]}' if s else 'EMPTY' for s in self.fetch_gamestates()]
-            self.board.create_splash_load_menu(gamestates)
-            self.board.ui_elements = self.board.splash_elements
-        elif elem.name == 'splash tutorial':
-            self.board.create_tutorial()
-            self.board.ui_elements = self.board.splash_elements
-        elif elem.name == 'splash new':
-            self.board.create_name_menu(self.player_name)
-            self.board.ui_elements = self.board.splash_elements
-            self.mode = 'name entry'
-        elif elem.name == 'name start':
-            if self.player_name:
-                self.new_game()
-                self.board.ui_elements = self.tiles + self.board.game_elements
-                self.mode = 'play'
-        elif elem.name == 'name clear':
-            self.player_name = ''
-            self.board.clear_name()
-            self.board.ui_elements = self.board.splash_elements
-        elif elem.name == 'tutorial next':
-            self.board.advance_tutorial()
-        elif elem.name == 'game over ok':
-            self.try_update_hi_score_file()
-            self.board.create_splash_menu(self.hi_scores)
-            self.board.ui_elements = self.board.splash_elements
-        elif elem.name == 'invalid word ok':
-            self.board.ui_elements = self.tiles + self.board.game_elements
-            self.mode = 'play'
         elif elem.name == 'game saved ok':
             self.mode = 'play'
             self.board.ui_elements = self.tiles + self.board.game_elements
+        # Other
         elif elem.name in ('tutorial done', 'load back'):
             self.board.create_splash_menu(self.hi_scores)
             self.board.ui_elements = self.board.splash_elements
-        elif 'load slot' in elem.name:
-            slot = int(elem.name.split(' ')[-1]) - 1
-            self.load_game(slot)
 
     def handle_name_entry(self, key):
         letter = pygame.key.name(key).upper()
