@@ -501,13 +501,20 @@ class Game:
             self.board.create_splash_menu(self.hi_scores)
             self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'load':
-            self.open_load_menu()
+            self.mode = 'menu'
+            gamestates = [f'{s["username"]} {s["timestamp"]}' if s else 'EMPTY' for s in self.fetch_gamestates()]
+            self.board.create_load_menu(gamestates)
+            self.board.ui_elements += self.board.splash_elements
         elif elem.name == 'save':
             self.mode = 'menu'
-            gamestates = [f'{s["username"]} {s["timestamp"]}' for s in self.fetch_gamestates()]
+            gamestates = [f'{s["username"]} {s["timestamp"]}' if s else 'EMPTY' for s in self.fetch_gamestates()]
             self.board.create_save_menu(gamestates)
             self.board.ui_elements += self.board.splash_elements
-            # self.save_game()
+        elif 'save slot' in elem.name:
+            slot = int(elem.name.split(' ')[-1]) - 1
+            self.save_game(slot)
+            self.board.ui_elements = self.tiles + self.board.game_elements
+            self.mode = 'play'
         elif elem.name == 'scramble':
             if not self.input_disabled:
                 self.scramble()
@@ -518,8 +525,8 @@ class Game:
                 self.board.btn_clear_marked.update()
                 self.last_typed = ''
         elif elem.name == 'splash load':
-            gamestates = self.fetch_gamestates()
-            self.board.create_load_menu(gamestates)
+            gamestates = [f'{s["username"]} {s["timestamp"]}' if s else 'EMPTY' for s in self.fetch_gamestates()]
+            self.board.create_splash_load_menu(gamestates)
             self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'splash tutorial':
             self.board.create_tutorial()
@@ -552,9 +559,9 @@ class Game:
         elif elem.name in ('tutorial done', 'load back'):
             self.board.create_splash_menu(self.hi_scores)
             self.board.ui_elements = self.board.splash_elements
-        elif 'gamestate' in elem.name:
-            game_id = elem.name.split(' ')[-1]
-            self.load_game(game_id)
+        elif 'load slot' in elem.name:
+            slot = int(elem.name.split(' ')[-1]) - 1
+            self.load_game(slot)
 
     def handle_name_entry(self, key):
         letter = pygame.key.name(key).upper()
@@ -615,16 +622,13 @@ class Game:
         self.update_tiles()
         self.board.gfx.draw_arcs(arc_sources)
 
-    def load_game(self, game_id):
+    def load_game(self, slot):
         self.new_game()
 
-        with open('saved_gamestates.json') as file:
-            saved_gamestates = json.load(file)
-        gamestate = [g for g in saved_gamestates if g['id'] == game_id][0]
-
+        print(f'Loading gamestate from slot {slot}')
+        gamestate = self.fetch_gamestates()[slot]
         h = self.board.hp_display
         d = self.board.level_display
-
         d.progress_actual = gamestate['exp']
         d.progress_max = gamestate['next_level']
         h.hp = gamestate['hp']
@@ -635,6 +639,7 @@ class Game:
         self.last_five_words = gamestate['last_five_words']
         self.level = gamestate['level']
         self.level_best = gamestate['level_best']
+        self.player_name = gamestate['username']
         self.score = gamestate['score']
         self.word_best = gamestate['best_word']
         self.word_longest = gamestate['longest_word']
@@ -657,7 +662,7 @@ class Game:
         self.board.longest_display.update(self.word_longest)
         self.board.multiplier_display.update(self.multiplier)
         self.board.score_display.update(self.score)
-        self.board.level_display.update(self.level)
+        self.board.level_display.update(self.level, label=f'LEVEL / EXP: {self.player_name}')
         if self.history:
             self.board.history_display.set_multiline_text(self.history)
 
@@ -729,12 +734,6 @@ class Game:
         for t in self.tiles:
             t.reset()
 
-    def open_load_menu(self):
-        self.mode = 'menu'
-        gamestates = self.fetch_gamestates()
-        self.board.create_load_menu(gamestates)
-        self.board.ui_elements = self.board.splash_elements
-
     def remove_tile(self, tile):
         tile.reset()
         self.set_row(tile)
@@ -781,10 +780,9 @@ class Game:
         else:
             print('No special tiles created for this batch')
 
-    def save_game(self):
+    def save_game(self, slot):
         h = self.board.hp_display
         d = self.board.level_display
-
         tiles = []
         for t in self.tiles:
             tile = {
@@ -803,7 +801,6 @@ class Game:
         stamp = datetime.today()
         timestamp_long =  datetime.strftime(stamp, '%b %d, %Y %H:%M:%S')
         timestamp_short =  datetime.strftime(stamp, '%Y-%m-%d-%H-%M-%S')
-
         gamestate = {
             'id': f'{self.player_name}_{timestamp_short}',
             'timestamp': timestamp_long,
@@ -826,15 +823,15 @@ class Game:
 
         with open('saved_gamestates.json') as file:
             saved_gamestates = [g for g in json.load(file)]
-
-        saved_gamestates.append(gamestate)
+        saved_gamestates += [None for _ in range(5 - len(saved_gamestates))]
+        saved_gamestates[slot] = gamestate
         with open('saved_gamestates.json', 'w') as file:
             json.dump(saved_gamestates, file)
 
         self.mode = 'menu'
         self.board.create_game_saved_menu(gamestate['id'])
         self.board.ui_elements += self.board.splash_elements
-        print('Gamestate saved')
+        print(f'Gamestate saved to slot {slot}')
 
     def save_hi_scores(self, scores):
         with open('scores.json', 'w') as file:

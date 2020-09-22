@@ -107,29 +107,24 @@ class Board():
         btn = ui.Interactive(name='invalid word ok', dims=(64, 40), coords=(136, 380), fonts=self.fonts, text='OK', colors=self.colors, text_color='light_gray')
         self.splash_elements = [menu_bg, btn]
 
-    def create_load_menu(self, gamestates):
+    def create_load_menu(self, slot_info):
         self.hide_splash_menu()
         header = self.fonts['medium'].render('LOAD GAMESTATE', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
-        h = header.get_size()[1]
-        surf_dims = (400, 400)
-        load_menu_bg = ui.Display(dims=surf_dims, coords=(138, 60), fonts=self.fonts, colors=self.colors)
-        load_menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
-        btn_back = ui.Interactive(name='load back', dims=(63, 40), coords=(10, 558), fonts=self.fonts, text='BACK', text_color='light_gray', colors=self.colors)
-        gamestate_btns = []
-
-        coords = offset_from_element(load_menu_bg, corner=(0, 0), offset=(10, 20 + h))
-        if gamestates:
-            for n, gamestate in enumerate(gamestates):
-                username = gamestate['username'] if gamestate['username'] else 'SNEK'
-                game_id = gamestate['username'] + ' ' + gamestate['timestamp']
-                btn = ui.Interactive(name=f'gamestate {gamestate["id"]}', dims=(380, 40), coords=coords, fonts=self.fonts, text=game_id, colors=self.colors, text_color='light_gray')
-                coords = (coords[0], coords[1] + 50)
-                gamestate_btns.append(btn)
-        else:
-            btn = ui.Display(dims=(264, 40), coords=coords, fonts=self.fonts, text='NO SAVED GAMESTATES', colors=self.colors, center=True)
-            gamestate_btns.append(btn)
-        self.splash_elements = [load_menu_bg, btn_back] + gamestate_btns
+        surf_dims = (330, 300)
+        menu_bg = ui.Display(dims=surf_dims, coords=(13, 250), fonts=self.fonts, colors=self.colors)
+        menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
+        coords = offset_from_element(menu_bg, corner=(0, 0), offset=(10, 40))
+        slots = []
+        for slot_num in range(5):
+            try:
+                text = slot_info[slot_num]
+            except IndexError:
+                text = 'EMPTY'
+            slot = ui.Interactive(name=f'load slot {slot_num + 1}', dims=(310, 40), coords=(coords[0], coords[1] + 10), fonts=self.fonts, text=text, colors=self.colors, text_color='bg_gold', label=f'SLOT {slot_num + 1}')
+            slots.append(slot)
+            coords = offset_from_element(slot, corner=(0, 1), offset=(0, 0))
+        self.splash_elements = [menu_bg] + slots
 
     def create_name_menu(self, player_name):
         self.hide_splash_menu()
@@ -163,6 +158,19 @@ class Board():
         menu_bg.surf.blit(tile_surf, dest=(175 - w / 2, 50))
         self.splash_elements = [menu_bg, btn_start, btn_clear]
 
+    def create_quit_menu(self):
+        self.hide_splash_menu()
+        header = self.fonts['medium'].render('REALLY QUIT?', True, self.colors['light_gray'], None)
+        w = header.get_size()[0]
+        surf_dims = (284, 140)
+        quit_menu_bg = ui.Display(dims=surf_dims, coords=(38, 290), fonts=self.fonts, colors=self.colors)
+        quit_menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
+        coords = offset_from_element(quit_menu_bg, corner=(0, 0), offset=(10, 60))
+        quit_menu_no = ui.Interactive(name='quit no', dims=(127, 40), coords=coords, fonts=self.fonts, text='NO', colors=self.colors, text_color='light_gray')
+        coords = offset_from_element(quit_menu_bg, corner=(1, 0), offset=(-137, 60))
+        quit_menu_yes = ui.Interactive(name='quit yes', dims=(127, 40), coords=coords, fonts=self.fonts, text='YES', colors=self.colors, text_color='light_gray')
+        self.splash_elements = [quit_menu_bg, quit_menu_no, quit_menu_yes]
+
     def create_save_menu(self, slot_info):
         self.hide_splash_menu()
         header = self.fonts['medium'].render('SAVE GAMESTATE', True, self.colors['light_gray'], None)
@@ -177,23 +185,29 @@ class Board():
                 text = slot_info[slot_num]
             except IndexError:
                 text = 'EMPTY'
-            slot = ui.Interactive(name=f'slot {slot_num + 1}', dims=(310, 40), coords=(coords[0], coords[1] + 10), fonts=self.fonts, text=text, colors=self.colors, text_color='light_gray', label=f'SLOT {slot_num + 1}')
+            slot = ui.Interactive(name=f'save slot {slot_num + 1}', dims=(310, 40), coords=(coords[0], coords[1] + 10), fonts=self.fonts, text=text, colors=self.colors, text_color='bg_gold', label=f'SLOT {slot_num + 1}')
             slots.append(slot)
             coords = offset_from_element(slot, corner=(0, 1), offset=(0, 0))
         self.splash_elements = [menu_bg] + slots
 
-    def create_quit_menu(self):
+    def create_splash_load_menu(self, slot_info):
         self.hide_splash_menu()
-        header = self.fonts['medium'].render('REALLY QUIT?', True, self.colors['light_gray'], None)
+        header = self.fonts['medium'].render('LOAD GAMESTATE', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
-        surf_dims = (284, 140)
-        quit_menu_bg = ui.Display(dims=surf_dims, coords=(38, 290), fonts=self.fonts, colors=self.colors)
-        quit_menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
-        coords = offset_from_element(quit_menu_bg, corner=(0, 0), offset=(10, 60))
-        quit_menu_no = ui.Interactive(name='quit no', dims=(127, 40), coords=coords, fonts=self.fonts, text='NO', colors=self.colors, text_color='light_gray')
-        coords = offset_from_element(quit_menu_bg, corner=(1, 0), offset=(-137, 60))
-        quit_menu_yes = ui.Interactive(name='quit yes', dims=(127, 40), coords=coords, fonts=self.fonts, text='YES', colors=self.colors, text_color='light_gray')
-        self.splash_elements = [quit_menu_bg, quit_menu_no, quit_menu_yes]
+        surf_dims = (330, 300) # 676, 608
+        menu_bg = ui.Display(dims=surf_dims, coords=(173, 154), fonts=self.fonts, colors=self.colors)
+        menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
+        coords = offset_from_element(menu_bg, corner=(0, 0), offset=(10, 40))
+        slots = []
+        for slot_num in range(5):
+            try:
+                text = slot_info[slot_num]
+            except IndexError:
+                text = 'EMPTY'
+            slot = ui.Interactive(name=f'load slot {slot_num + 1}', dims=(310, 40), coords=(coords[0], coords[1] + 10), fonts=self.fonts, text=text, colors=self.colors, text_color='bg_gold', label=f'SLOT {slot_num + 1}')
+            slots.append(slot)
+            coords = offset_from_element(slot, corner=(0, 1), offset=(0, 0))
+        self.splash_elements = [menu_bg] + slots
 
     def create_splash_menu(self, scores):
         self.hide_splash_menu()
