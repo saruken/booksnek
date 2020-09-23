@@ -56,8 +56,8 @@ class Board():
         self.menu_btns = [self.menu_open, self.menu_save, self.btn_clear_marked, self.btn_scramble, self.menu_quit]
         self.game_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.hi_score_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.menu_bg, self.menu_quit, self.menu_open, self.menu_save, self.btn_clear_marked, self.btn_scramble]
 
-    def advance_tutorial(self):
-        self.tutorial_current_step += 1
+    def advance_tutorial(self, adv=1):
+        self.tutorial_current_step += adv
         self.show_gif()
         textbox = self.splash_elements[2]
         # Write 2nd line of text, if it exists
@@ -72,8 +72,16 @@ class Board():
             textbox.text_offset = (8, 0)
             textbox.set_text(self.tutorial_steps[self.tutorial_current_step])
 
-        if self.tutorial_current_step == len(self.tutorial_steps) - 1:
-            self.splash_elements.pop(3) # Remove 'Next' button
+        btn_prev = self.splash_elements[3]
+        btn_next = self.splash_elements[4]
+        btn_prev.enabled = True
+        btn_next.enabled = True
+        if self.tutorial_current_step == 0:
+            btn_prev.enabled = False
+        elif self.tutorial_current_step == len(self.tutorial_steps) - 1:
+            btn_next.enabled = False
+        btn_prev.update()
+        btn_next.update()
 
     def clear_name(self):
         self.name_entry_pos = 0
@@ -347,7 +355,7 @@ class Board():
             '',
             'added to the HI SCORES list on the splash screen.',
             'and Booksnek will highlight all matching tiles.',
-            'right of it. Click again or UNMARK to remove it.'
+            'right of it. Click again or click UNMARK to remove it.'
         ]
         self.tutorial_gifs = [None for t in self.tutorial_steps]
         self.tutorial_current_step = 0
@@ -365,10 +373,12 @@ class Board():
         display = ui.Display(dims=(surf_dims[0] - 20, 40 + h), coords=(20, coords[1]), fonts=self.fonts, colors=self.colors, text_color='bg_gold', label="SNEK TIP", text=tutorial_text, text_offset=(8, 0), vert_center=True)
         coords = offset_from_element(menu_bg, corner=(1, 1), offset=(-73, -50))
         btn_next = ui.Interactive(name='tutorial next', dims=(63, 40), coords=coords, fonts=self.fonts, text='NEXT', text_color='light_gray', colors=self.colors)
+        coords = offset_from_element(btn_next, corner=(0, 0), offset=(-73, 0))
+        btn_back = ui.Interactive(name='tutorial back', dims=(63, 40), coords=coords, fonts=self.fonts, text='PREV', text_color='light_gray', colors=self.colors, enabled=False)
         coords = offset_from_element(menu_bg, corner=(0, 1), offset=(10, -50))
         btn_done = ui.Interactive(name='tutorial done', dims=(63, 40), coords=coords, fonts=self.fonts, text='DONE', text_color='light_gray', colors=self.colors)
 
-        self.splash_elements = [menu_bg, demo_bg, display, btn_next, btn_done]
+        self.splash_elements = [menu_bg, demo_bg, display, btn_back, btn_next, btn_done]
 
     def get_centered_coords(self, dims):
         x = dims[0] / 2

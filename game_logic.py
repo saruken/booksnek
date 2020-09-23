@@ -509,7 +509,11 @@ class Game:
             self.board.create_tutorial()
             self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'tutorial next':
-            self.board.advance_tutorial()
+            if elem.enabled:
+                self.board.advance_tutorial()
+        elif elem.name == 'tutorial back':
+            if elem.enabled:
+                self.board.advance_tutorial(-1)
         # Game action buttons
         elif elem.name == 'clear':
             if self.board.btn_clear_marked.enabled:
