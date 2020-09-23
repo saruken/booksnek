@@ -302,7 +302,7 @@ class Board():
 
     def create_tutorial(self):
         self.tutorial_steps = [
-            'Connect adjacent letters to submit a word.',
+            'Connect adjacent letters to form a word. Click the last',
             'Submitting valid words yields points and EXP.',
             'With enough EXP, you can level up; this increases HP.',
             'Each letter tile has a point value in the bottom right.',
@@ -330,7 +330,7 @@ class Board():
             'Right click a tile to add a blue marker on the top'
         ]
         self.tutorial_steps_extra = [
-            '',
+            'one again to submit it.',
             '',
             '',
             '',
