@@ -679,6 +679,7 @@ class Game:
         self.board.level_display.update(self.level, label=f'LEVEL / EXP: {self.player_name}')
         if self.history:
             self.board.history_display.set_multiline_text(self.history)
+        self.try_update_hi_scores()
 
         self.board.ui_elements = self.tiles + self.board.game_elements
         self.mode = 'play'
