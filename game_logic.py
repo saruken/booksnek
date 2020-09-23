@@ -690,9 +690,8 @@ class Game:
             scores = json.load(file)
         return scores
 
-    def load_tutorial_frames(self):
-        imgs = [pygame.image.load(f) for f in glob.glob(('./tutorial/*.png'))]
-        self.tutorial_images = [imgs]
+    def load_tutorial_images(self):
+        self.tutorial_images = [pygame.image.load(f) for f in glob.glob(('./tutorial/*.png'))]
 
     def mult_up(self):
         self.multiplier += 1
