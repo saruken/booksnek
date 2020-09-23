@@ -56,9 +56,10 @@ class Board():
         self.menu_btns = [self.menu_open, self.menu_save, self.btn_clear_marked, self.btn_scramble, self.menu_quit]
         self.game_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.hi_score_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.menu_bg, self.menu_quit, self.menu_open, self.menu_save, self.btn_clear_marked, self.btn_scramble]
 
-    def advance_tutorial(self, adv=1):
+    def advance_tutorial(self, gifs, adv=1):
         self.tutorial_current_step += adv
-        self.show_gif()
+        demo_bg = self.splash_elements[1]
+        demo_bg.surf.blit(gifs[self.tutorial_current_step], dest=(0, 0))
         textbox = self.splash_elements[2]
         # Write 2nd line of text, if it exists
         if self.tutorial_steps_extra[self.tutorial_current_step]:
@@ -300,7 +301,7 @@ class Board():
                 tiles.append(ui.Tile(fonts=self.fonts, col=col, row=row, colors=colors, offset=offset))
         return tiles
 
-    def create_tutorial(self):
+    def create_tutorial(self, img):
         self.tutorial_steps = [
             'Connect adjacent letters to form a word. Click the last',
             'Submitting valid words yields points and EXP.',
@@ -368,7 +369,8 @@ class Board():
         menu_bg = ui.Display(dims=surf_dims, coords=self.get_centered_coords(surf_dims), fonts=self.fonts, colors=self.colors)
         menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
         coords = offset_from_element(menu_bg, corner=(0, 0), offset=(656 / 2 - 328 / 2, 20 + h))
-        demo_bg = ui.Display(dims=(328, 294), coords=coords, fonts=self.fonts, colors=self.colors, label="DEMO", text="GIF HERE", center=True)
+        demo_bg = ui.Display(dims=(328, 294), coords=coords, fonts=self.fonts, colors=self.colors, label="DEMO", center=True)
+        demo_bg.surf.blit(img, dest=(0, 0))
         coords = offset_from_element(demo_bg, corner=(0, 1), offset=(0, 10))
         display = ui.Display(dims=(surf_dims[0] - 20, 40 + h), coords=(20, coords[1]), fonts=self.fonts, colors=self.colors, text_color='bg_gold', label="SNEK TIP", text=tutorial_text, text_offset=(8, 0), vert_center=True)
         coords = offset_from_element(menu_bg, corner=(1, 1), offset=(-73, -50))
@@ -488,10 +490,6 @@ class Board():
             return 8
         else:
             return 10
-
-    def show_gif(self):
-        # TODO: Load & display self.tutorial_gifs[self.tutorial_current_step]
-        pass
 
     def update_hi_score_display(self, scores):
         self.hi_score_display.update()

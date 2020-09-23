@@ -16,12 +16,14 @@ class BaseObj:
         return pygame.Rect(self.coords, self.dims)
 
 class Display(BaseObj):
-    def __init__(self, dims, coords, fonts, colors, text=None, text_color=None, text_prefix='', center=False, vert_center=True, text_offset=[0, 0], label=None, show_progress=None, multicolor=False):
+    def __init__(self, dims, coords, fonts, colors, text=None, text_color=None, text_prefix='', center=False, vert_center=True, text_offset=[0, 0], label=None, show_progress=None, multicolor=False, gif=None):
         super(Display, self).__init__(dims=dims, coords=coords, fonts=fonts, colors=colors)
         self.border_color_override = self.colors['mid_gray']
         self.bg_color = self.colors['bg_main']
         self.bg_progress = self.colors['bg_progress']
         self.border_color = self.colors['mid_gray']
+        self.gif = gif
+        self.gif_frame = 0
         self.hovered = False
         self.label = label
         self.letter_height = 19

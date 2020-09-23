@@ -1,4 +1,4 @@
-import json, pygame, random, threading
+import glob, json, pygame, random, threading
 from datetime import datetime
 from math import ceil, floor
 
@@ -64,6 +64,7 @@ class Game:
 
         self.board.create_splash_menu(self.hi_scores)
         self.board.ui_elements = self.board.splash_elements
+        self.load_tutorial_images()
 
     def add_gold_tile_event(self, tile, precedence=2, traversed=None, source_tile=None):
         if not traversed:  # Have to use this workaround due to behavior
@@ -506,14 +507,14 @@ class Game:
             self.board.ui_elements = self.board.splash_elements
         # Tutorial
         elif elem.name == 'splash tutorial':
-            self.board.create_tutorial()
+            self.board.create_tutorial(self.tutorial_images[0])
             self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'tutorial next':
             if elem.enabled:
-                self.board.advance_tutorial()
+                self.board.advance_tutorial(self.tutorial_images)
         elif elem.name == 'tutorial back':
             if elem.enabled:
-                self.board.advance_tutorial(-1)
+                self.board.advance_tutorial(self.tutorial_images, -1)
         # Game action buttons
         elif elem.name == 'clear':
             if self.board.btn_clear_marked.enabled:
@@ -688,6 +689,10 @@ class Game:
         with open('scores.json') as file:
             scores = json.load(file)
         return scores
+
+    def load_tutorial_frames(self):
+        imgs = [pygame.image.load(f) for f in glob.glob(('./tutorial/*.png'))]
+        self.tutorial_images = [imgs]
 
     def mult_up(self):
         self.multiplier += 1
