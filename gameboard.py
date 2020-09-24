@@ -56,10 +56,11 @@ class Board():
         self.menu_btns = [self.menu_open, self.menu_save, self.btn_clear_marked, self.btn_scramble, self.menu_quit]
         self.game_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.hi_score_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.menu_bg, self.menu_quit, self.menu_open, self.menu_save, self.btn_clear_marked, self.btn_scramble]
 
-    def advance_tutorial(self, gifs, adv=1):
+    def advance_tutorial(self, images, adv=1):
         self.tutorial_current_step += adv
         demo_bg = self.splash_elements[1]
-        demo_bg.surf.blit(gifs[self.tutorial_current_step], dest=(0, 0))
+        current_image = [i['surf'] for i in images if i['name'] == f'tut{self.tutorial_current_step}.png'][0]
+        demo_bg.surf.blit(current_image, dest=(0, 0))
         textbox = self.splash_elements[2]
         # Write 2nd line of text, if it exists
         if self.tutorial_steps_extra[self.tutorial_current_step]:
@@ -96,8 +97,8 @@ class Board():
         surf_dims = (284, 120)
         menu_bg = ui.Display(dims=surf_dims, coords=self.get_centered_coords(surf_dims), fonts=self.fonts, colors=self.colors)
         menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
-        coords = offset_from_element(menu_bg, corner=(0, 0), offset=(0, 60))
-        btn = ui.Interactive(name='game over ok', dims=(63, 40), coords=(149, coords[1]), fonts=self.fonts, text='OK', colors=self.colors, text_color='light_gray')
+        coords = offset_from_element(menu_bg, corner=(0, 0), offset=(111, 60))
+        btn = ui.Interactive(name='game over ok', dims=(63, 40), coords=coords, fonts=self.fonts, text='OK', colors=self.colors, text_color='light_gray')
         self.splash_elements = [shade, menu_bg, btn]
 
     def create_game_saved_menu(self, id):
@@ -301,7 +302,7 @@ class Board():
                 tiles.append(ui.Tile(fonts=self.fonts, col=col, row=row, colors=colors, offset=offset))
         return tiles
 
-    def create_tutorial(self, img):
+    def create_tutorial(self, images):
         self.tutorial_steps = [
             'Connect adjacent letters to form a word. Click the last',
             'Submitting valid words yields points and EXP.',
@@ -358,7 +359,6 @@ class Board():
             'and Booksnek will highlight all matching tiles.',
             'right of it. Click again or click UNMARK to remove it.'
         ]
-        self.tutorial_gifs = [None for t in self.tutorial_steps]
         self.tutorial_current_step = 0
         self.hide_splash_menu()
         header = self.fonts['medium'].render('BOOKSNEK TUTORIAL', True, self.colors['light_gray'], None)
@@ -370,7 +370,6 @@ class Board():
         menu_bg.surf.blit(header, dest=(surf_dims[0] / 2 - w / 2, 10))
         coords = offset_from_element(menu_bg, corner=(0, 0), offset=(656 / 2 - 328 / 2, 20 + h))
         demo_bg = ui.Display(dims=(328, 294), coords=coords, fonts=self.fonts, colors=self.colors, label="DEMO", center=True)
-        demo_bg.surf.blit(img, dest=(0, 0))
         coords = offset_from_element(demo_bg, corner=(0, 1), offset=(0, 10))
         display = ui.Display(dims=(surf_dims[0] - 20, 40 + h), coords=(20, coords[1]), fonts=self.fonts, colors=self.colors, text_color='bg_gold', label="SNEK TIP", text=tutorial_text, text_offset=(8, 0), vert_center=True)
         coords = offset_from_element(menu_bg, corner=(1, 1), offset=(-73, -50))
@@ -381,6 +380,7 @@ class Board():
         btn_done = ui.Interactive(name='tutorial done', dims=(63, 40), coords=coords, fonts=self.fonts, text='DONE', text_color='light_gray', colors=self.colors)
 
         self.splash_elements = [menu_bg, demo_bg, display, btn_back, btn_next, btn_done]
+        self.advance_tutorial(images, 0)
 
     def get_centered_coords(self, dims):
         x = dims[0] / 2

@@ -507,7 +507,7 @@ class Game:
             self.board.ui_elements = self.board.splash_elements
         # Tutorial
         elif elem.name == 'splash tutorial':
-            self.board.create_tutorial(self.tutorial_images[0])
+            self.board.create_tutorial(self.tutorial_images)
             self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'tutorial next':
             if elem.enabled:
@@ -691,7 +691,13 @@ class Game:
         return scores
 
     def load_tutorial_images(self):
-        self.tutorial_images = [pygame.image.load(f) for f in glob.glob(('./tutorial/*.png'))]
+        self.tutorial_images = []
+        for f in glob.glob('./tutorial/*.png'):
+            image = {
+                'surf': pygame.image.load(f),
+                'name': 'tut' + f.split('tut')[-1]
+            }
+            self.tutorial_images.append(image)
 
     def mult_up(self):
         self.multiplier += 1
