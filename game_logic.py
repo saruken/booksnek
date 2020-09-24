@@ -352,6 +352,7 @@ class Game:
             else:
                 self.animating = True
             print('Queue empty; unpausing all tiles')
+            self.update_tile_rows()
             for tile in [t for t in self.tiles if t.paused]:
                 tile.paused = False
             return
@@ -712,13 +713,13 @@ class Game:
         self.bonus_word = ''
         self.god_mode = False
         self.history = []
+        self.input_disabled = False
         self.last_five_words = []
         self.last_typed = ''
         self.level = 1
         self.level_best = 1
         self.mult_best = 1
         self.multiplier = 1
-        self.input_disabled = False
         self.prev_bonus = ''
         self.score = 0
         self.submitted_word = ''
@@ -868,6 +869,7 @@ class Game:
 
     def scramble(self):
         print('----Scramble----')
+        self.input_disabled = True
         self.snake.empty()
         self.unhighlight_all()
         self.create_event_queue()

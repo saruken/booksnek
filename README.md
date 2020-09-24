@@ -7,13 +7,14 @@
 ### Features
 - Load & save gamestates
 - `High score`, `longest word` and `best word` metrics
-- Word history, including tile types used
+- Word history, including tile types
 - HP damage & heal mechanics replace the old "burn down the library" endgame
 - "Explosive" area-effect tiles
 - Quickly find tiles on the board by typing their letter
 - Right click to mark tiles so you don't misplace them
+- Click or drag to form words
 - No more losing your power-up tiles on Scramble
-- Word difficulty ranking system that prevents the game from choosing ridiculously rare bonus words like "PYX" and "QUIZZES"
+- Word difficulty ranking system that prevents the game from choosing ridiculously rare bonus words like "PYX" or "QUIZZES"
 - Letter distribution and value scales based on Scrabble
 - Straightforward scoring system
 
@@ -27,4 +28,4 @@
 - Music?
 
 ### Known bugs
-- ...
+- 

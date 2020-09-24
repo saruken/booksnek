@@ -697,7 +697,6 @@ class GFXSurf:
                 'vy_accel': 0
             }
             pygame.draw.arc(surf, color, pygame.Rect(left, top, width, height), start_angle, stop_angle, width=3)
-            print(f'Drew arc: l={left}, t={top}, w={width}, h={height}, c={color}')
             self.gfx.append(arc)
 
             self.create_delta(amt=source[2], offset_x=arc_end[0])
