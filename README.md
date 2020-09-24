@@ -23,9 +23,12 @@
 - Numpy 1.18.5
 
 ### TODO
-- Add tutorial GIFs and documentation
+- Add 'Gamestate saved' popup
+- Add tutorial screenshots
 - SFX (and menu to control)
 - Music?
 
 ### Known bugs
-- ...
+- 'Invalid word' and 'Game over' popups' OK buttons are outside of windows
+- Remove 'FER' from word list
+- Add 'NAMER' to word list

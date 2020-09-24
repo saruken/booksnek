@@ -337,7 +337,7 @@ class Board():
             '',
             'of its letters\' point values * its length.',
             'field? Submit this word to increase letter point values.',
-            'are worth double the normal point value.',
+            'are worth 3 times the normal point value.',
             'restore HP equal to the current Multiplier value.',
             '',
             'These explode when matched, taking out all neighbors.',
