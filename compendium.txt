@@ -25158,7 +25158,6 @@ fends,0.29
 fenestration,0.87
 fennel,0.42
 fens,0.25
-fer,0.2
 feral,0.33
 ferment,0.47
 fermentation,0.85
@@ -43898,6 +43897,8 @@ namelessly,0.62
 namely,0.36
 nameplate,0.63
 nameplates,0.68
+namer,0.36
+namers,0.41
 names,0.35
 namesake,0.57
 namesakes,0.62

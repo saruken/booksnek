@@ -23,11 +23,8 @@
 - Numpy 1.18.5
 
 ### TODO
-- Add 'Gamestate saved' popup
-- Add tutorial screenshots
 - SFX (and menu to control)
 - Music?
 
 ### Known bugs
-- Remove 'FER' from word list
-- Add 'NAMER' to word list
+- ...
