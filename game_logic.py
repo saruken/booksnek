@@ -565,8 +565,6 @@ class Game:
         elif 'save slot' in elem.name:
             slot = int(elem.name.split(' ')[-1]) - 1
             self.save_game(slot)
-            self.board.ui_elements = self.tiles + self.board.game_elements
-            self.mode = 'play'
         elif elem.name == 'game saved ok':
             self.mode = 'play'
             self.board.ui_elements = self.tiles + self.board.game_elements
@@ -853,7 +851,6 @@ class Game:
         with open('saved_gamestates.json', 'w') as file:
             json.dump(saved_gamestates, file)
 
-        self.mode = 'menu'
         self.board.create_game_saved_menu(gamestate['id'])
         self.board.ui_elements += self.board.splash_elements
         print(f'Gamestate saved to slot {slot}')

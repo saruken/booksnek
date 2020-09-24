@@ -102,6 +102,7 @@ class Board():
         self.splash_elements = [shade, menu_bg, btn]
 
     def create_game_saved_menu(self, id):
+        print('create_game_saved_menu() called')
         self.hide_splash_menu()
         shade = self.create_shade()
         header = self.fonts['medium'].render('GAME SAVED AS:', True, self.colors['light_gray'], None)
@@ -113,7 +114,8 @@ class Board():
         w = id_text.get_size()[0]
         h = header.get_size()[1]
         menu_bg.surf.blit(id_text, dest=(surf_dims[0] / 2 - w / 2, 20 + h))
-        btn = ui.Interactive(name='game saved ok', dims=(64, 40), coords=(136, 380), fonts=self.fonts, text='OK', colors=self.colors, text_color='light_gray')
+        coords = offset_from_element(menu_bg, corner=(0, 1), offset=(120, -50))
+        btn = ui.Interactive(name='game saved ok', dims=(64, 40), coords=coords, fonts=self.fonts, text='OK', colors=self.colors, text_color='light_gray')
         self.splash_elements = [shade, menu_bg, btn]
 
     def create_invalid_word_menu(self, word):
