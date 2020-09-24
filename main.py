@@ -1,4 +1,4 @@
-import pygame
+import pygame, sys
 
 import game_logic
 from ui import Tile, HPDisplay
@@ -29,12 +29,12 @@ def load_dictionary():
 
     return words
 
-def main():
+def main(debug):
     dims = (676, 608)
     pygame.init()
     pygame.display.set_caption('Booksnek')
     window_surface = pygame.display.set_mode(dims)
-    game = game_logic.Game(dims=dims, dictionary=load_dictionary())
+    game = game_logic.Game(dims=dims, dictionary=load_dictionary(), debug=debug)
 
     mouse_down = pygame.MOUSEBUTTONDOWN
     mouse_up = pygame.MOUSEBUTTONUP
@@ -120,4 +120,8 @@ def main():
         pygame.display.update()
 
 if __name__ == '__main__':
-    main()
+    debug = False
+    if len(sys.argv) == 2:
+        if sys.argv[1] == 'debug':
+            debug = True
+    main(debug)

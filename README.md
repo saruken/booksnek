@@ -27,5 +27,8 @@
 - SFX (and menu to control)
 - Music?
 
+### Planned features
+- Bonus points for creating certain shapes with tiles
+
 ### Known bugs
-- 
+- Attack [Qu] + Attack [A] produces red [Q], red [U], beige [A] in history

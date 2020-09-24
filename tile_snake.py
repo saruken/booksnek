@@ -12,7 +12,6 @@ class Snake():
             self.update()
 
     def empty(self):
-        print(f'snake.empty(): {len(self.tiles)} tiles to empty')
         if not self.tiles:
             return
         self.last.mouse_out()

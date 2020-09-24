@@ -6,7 +6,7 @@ import gameboard, tile_snake
 from ui import Interactive, Tile
 
 class Game:
-    def __init__(self, dims, dictionary):
+    def __init__(self, dims, dictionary, debug):
         self.colors = {
             'attack': pygame.Color('#ad3e3e'),
             'beige': pygame.Color('#aaaa66'),
@@ -51,6 +51,7 @@ class Game:
 
         self.animating = False
         self.board = gameboard.Board(dims=dims, coords=(0, 0), colors=self.colors)
+        self.debug_mode = debug
         self.dictionary = dictionary
         self.hi_scores = self.load_hi_scores()
         self.uncurrent_hi_scores()
@@ -71,7 +72,7 @@ class Game:
             traversed = [] # of mutable defaults in Python
         traversed.append(tile.identify())
         if tile.tile_type == 'heal':
-            print(f'Creating heal event @ {tile.identify()} from gold tile neighbor')
+            self.print_log(f'Creating heal event @ {tile.identify()} from gold tile neighbor')
             event = {
                 'event': 'heal',
                 'tile': tile,
@@ -83,7 +84,7 @@ class Game:
             }
             return event
         elif tile.tile_type == 'gold':
-            print(f'Creating gold event @ {tile.identify()}')
+            self.print_log(f'Creating gold event @ {tile.identify()}')
             precedence += 1
             event = {
                 'event': 'gold',
@@ -100,7 +101,7 @@ class Game:
                     self.queue.append(self.add_gold_tile_event(t, precedence, traversed, source_tile))
             return event
         else:
-            print(f'Creating explode event @ {tile.identify()}')
+            self.print_log(f'Creating explode event @ {tile.identify()}')
             event = {
                 'event': 'explode',
                 'tile': tile,
@@ -217,7 +218,7 @@ class Game:
         return word
 
     def commit_word_to_history(self, word):
-        print(f'----Committed word "{word}"----')
+        self.print_log(f'----Committed word "{word}"----')
         color = 'green' if word == self.bonus_word else 'beige'
         history_word = {
             'word': word,
@@ -232,11 +233,11 @@ class Game:
         self.last_five_words = [len(w['word']) for w in self.history[-5:]]
 
     def create_event_queue(self, ghost_color=None):
-        print('Creating event queue...')
+        self.print_log('Creating event queue...')
         self.queue = []
         for tile in self.snake.tiles:
             if tile.tile_type == 'heal':
-                print(f'Creating heal event @ {tile.identify()}')
+                self.print_log(f'Creating heal event @ {tile.identify()}')
                 event = {
                     'event': 'heal',
                     'tile': tile,
@@ -250,7 +251,7 @@ class Game:
             elif tile.tile_type == 'gold':
                 self.queue.append(self.add_gold_tile_event(tile))
             else:
-                print(f'Creating remove event @ {tile.identify()}')
+                self.print_log(f'Creating remove event @ {tile.identify()}')
                 ghost_color_override = 'green' if self.snake.word == self.prev_bonus else None
                 event = {
                     'event': 'remove',
@@ -264,7 +265,7 @@ class Game:
                 self.queue.append(event)
         for tile in self.tiles:
             if tile.tile_type == 'poison':
-                print(f'Creating poison event @ {tile.identify()}')
+                self.print_log(f'Creating poison event @ {tile.identify()}')
                 event = {
                     'event': 'poison',
                     'tile': tile,
@@ -277,7 +278,7 @@ class Game:
                 self.queue.append(event)
             elif tile.tile_type == 'attack':
                 if tile.event_timer == 1:
-                    print(f'Creating attack event @ {tile.identify()}')
+                    self.print_log(f'Creating attack event @ {tile.identify()}')
                     event = {
                         'event': 'attack',
                         'source_tile': tile,
@@ -289,7 +290,7 @@ class Game:
                     }
                     self.queue.append(event)
                     for t in self.get_neighbors(tile):
-                        print(f'Creating kill event @ {t.identify()}')
+                        self.print_log(f'Creating kill event @ {t.identify()}')
                         event = {
                             'event': 'kill',
                             'source_tile': tile,
@@ -301,7 +302,7 @@ class Game:
                         }
                         self.queue.append(event)
                 else:
-                    print(f'Creating tick event @ {tile.identify()}')
+                    self.print_log(f'Creating tick event @ {tile.identify()}')
                     event = {
                         'event': 'tick',
                         'tile': tile,
@@ -316,7 +317,7 @@ class Game:
         self.queue = sorted(self.queue, key=lambda k: k['precedence'])
         if self.queue:
             self.group_queue_by_precedence()
-        print(f'Event queue creation complete: {sum([len(l) for l in self.queue])} events in queue')
+        self.print_log(f'Event queue creation complete: {sum([len(l) for l in self.queue])} events in queue')
 
     def create_tile_from_last_5(self):
         # Based on len of last 5 words
@@ -339,9 +340,9 @@ class Game:
         # ---- DEBUG STUFF ----
         if self.queue:
             current_precedence = self.queue[0][0]['precedence']
-            print(f'Event precedence: {current_precedence}')
-            print('Events scheduled for this round:')
-            print('    ' + '; '.join([e['event'] + ' ' + e['tile'].identify() for e in self.queue[0]]))
+            self.print_log(f'Event precedence: {current_precedence}')
+            self.print_log('Events scheduled for this round:')
+            self.print_log('    ' + '; '.join([e['event'] + ' ' + e['tile'].identify() for e in self.queue[0]]))
         # ---- DEBUG STUFF ----
         if not self.queue:
             if self.snake.length:
@@ -351,7 +352,7 @@ class Game:
                 self.update_word_display()
             else:
                 self.animating = True
-            print('Queue empty; unpausing all tiles')
+            self.print_log('Queue empty; unpausing all tiles')
             self.update_tile_rows()
             for tile in [t for t in self.tiles if t.paused]:
                 tile.paused = False
@@ -361,7 +362,7 @@ class Game:
             if tile.paused:
                 # Skip this event if another event has already removed
                 # the tile
-                print(f'{tile.identify()} already removed')
+                self.print_log(f'{tile.identify()} already removed')
                 continue
             action = event['event']
             if event['ghost_color_override']:
@@ -386,12 +387,12 @@ class Game:
                     h.hp_max += tile.multiplier
                     arc_sources = [tile.middle, 'teal', f'{tile.multiplier} MAX', 'HP_MAX', 0]
                     self.board.gfx.draw_arcs([arc_sources])
-                    print(f'{tile.identify()} increased HP MAX')
+                    self.print_log(f'{tile.identify()} increased HP MAX')
                 else:
                     h.hp = min(h.hp + tile.multiplier, h.hp_max)
                     arc_sources = [tile.middle, 'teal', tile.multiplier, 'HP', 20]
                     self.board.gfx.draw_arcs([arc_sources])
-                    print(f'{tile.identify()} healed HP')
+                    self.print_log(f'{tile.identify()} healed HP')
                 self.board.gfx.create_ghost(tile, self.colors[color])
                 self.remove_tile(tile)
                 h.update()
@@ -402,14 +403,14 @@ class Game:
                     else:
                         motion = 'burst'
                     self.board.gfx.create_ghost(tile, self.colors[color], motion, event['direction'])
-                    print(f'{action} event: {tile.identify()} was removed')
+                    self.print_log(f'{action} event: {tile.identify()} was removed')
                     self.remove_tile(tile)
                     for precedence in self.queue:
                         for evt in [e for e in precedence if e['source_tile'] == tile]:
-                            print(f'{tile.identify()} was the source tile for {evt["tile"].identify()}\'s {evt["event"]} event; discarding that event')
+                            self.print_log(f'{tile.identify()} was the source tile for {evt["tile"].identify()}\'s {evt["event"]} event; discarding that event')
                             evt['active'] = False
                 else:
-                    print('Event was discarded')
+                    self.print_log('Event was discarded')
             elif action == 'poison':
                 tile.poison_tick()
                 tile.update()
@@ -417,7 +418,7 @@ class Game:
                 h.hp -= tile.multiplier
                 arc_sources = [tile.middle, 'poison_bright', tile.multiplier * -1, 'HP', -20]
                 self.board.gfx.draw_arcs([arc_sources])
-                print(f'{tile.identify()} dealt {tile.multiplier * -1} poison damage')
+                self.print_log(f'{tile.identify()} dealt {tile.multiplier * -1} poison damage')
             elif action == 'attack':
                 tile.attack_tick()
                 tile.update()
@@ -425,13 +426,13 @@ class Game:
                 h.hp -= tile.point_value
                 arc_sources = [tile.middle, 'bg_attack', tile.point_value * -1, 'HP', -20]
                 self.board.gfx.create_ghost(tile, self.colors[color])
-                print(f'{tile.identify()} dealt {tile.point_value * -1} damage')
+                self.print_log(f'{tile.identify()} dealt {tile.point_value * -1} damage')
                 self.board.gfx.draw_arcs([arc_sources])
                 self.remove_tile(tile)
             elif action == 'tick':
                 tile.attack_tick()
                 tile.update()
-                print(f'{tile.identify()} ticked to "{tile.event_timer}"')
+                self.print_log(f'{tile.identify()} ticked to "{tile.event_timer}"')
         threading.Timer(0.2, self.execute_event_queue).start()
 
     def fetch_gamestates(self):
@@ -479,7 +480,7 @@ class Game:
 
     def get_neighbors(self, base_tile):
         neighbors = [t for t in self.tiles if self.board.is_neighbor(new_tile=t, old_tile=base_tile) and not t == base_tile]
-        print(f'get_neighbors(): Neighbors of {base_tile.tile_type} tile {base_tile.identify()} are: {", ".join([t.identify() for t in neighbors])}')
+        self.print_log(f'get_neighbors(): Neighbors of {base_tile.tile_type} tile {base_tile.identify()} are: {", ".join([t.identify() for t in neighbors])}')
         return neighbors
 
     def group_queue_by_precedence(self):
@@ -603,10 +604,10 @@ class Game:
             self.unhighlight_all()
             self.last_typed = ''
             if self.god_mode:
-                print('God mode disabled')
+                self.print_log('God mode disabled')
                 self.god_mode = False
             else:
-                print('God mode enabled')
+                self.print_log('God mode enabled')
                 self.god_mode = True
             return
 
@@ -628,7 +629,7 @@ class Game:
         d.progress_actual -= d.progress_max
         d.progress_max += self.level * d.progress_lv_increment
         self.level += 1
-        print(f'Level up: Lv{self.level}')
+        self.print_log(f'Level up: Lv{self.level}')
         d.update(self.level)
         buff = self.board.hp_display.level_up(self.level)
         arc_sources = [[(125, 184), 'bg_gold', str(buff), 'HP', 0], [(135, 180), 'bg_gold', f'{buff} MAX', 'HP_MAX', 0]]
@@ -639,7 +640,7 @@ class Game:
     def load_game(self, slot):
         self.new_game()
 
-        print(f'Loading gamestate from slot {slot}')
+        self.print_log(f'Loading gamestate from slot {slot}')
         gamestate = self.fetch_gamestates()[slot]
         h = self.board.hp_display
         d = self.board.level_display
@@ -705,7 +706,7 @@ class Game:
         self.board.multiplier_display.marquee = True
         self.board.multiplier_display.marquee_timer = 1
         self.board.bonus_display.border_color = self.colors['mid_gray']
-        print(f'Multiplier set to {self.multiplier}')
+        self.print_log(f'Multiplier set to {self.multiplier}')
 
     def new_game(self):
         self.animating = False
@@ -758,6 +759,10 @@ class Game:
         for t in self.tiles:
             t.reset()
 
+    def print_log(self, msg):
+        if self.debug_mode:
+            print(msg)
+
     def remove_tile(self, tile):
         tile.reset()
         self.set_row(tile)
@@ -778,7 +783,7 @@ class Game:
         rolling average of player's last 5 word lengths.
         '''
         tiles = [t for t in self.tiles if t.paused]
-        print(f'roll_create_special_tile(): Rerolling {len(tiles)} tiles')
+        self.print_log(f'roll_create_special_tile(): Rerolling {len(tiles)} tiles')
         tile_type = 'normal'
         special_index = 0
 
@@ -794,7 +799,7 @@ class Game:
         if tile_type != 'normal':
             # Randomly choose which new tile will have the special type
             special_index = random.choice(range(len(tiles)))
-            print(f'New {tile_type} tile @ {tiles[special_index].identify()}')
+            self.print_log(f'New {tile_type} tile @ {tiles[special_index].identify()}')
             tiles[special_index].tile_type = tile_type
             if tile_type == 'attack':
                 self.set_tile_timer(tiles[special_index])
@@ -802,7 +807,7 @@ class Game:
                 tiles[special_index].event_timer = 3
             tiles[special_index].update()
         else:
-            print('No special tiles created for this batch')
+            self.print_log('No special tiles created for this batch')
 
     def save_game(self, slot):
         h = self.board.hp_display
@@ -852,14 +857,14 @@ class Game:
         with open('saved_gamestates.json', 'w') as file:
             json.dump(saved_gamestates, file)
 
-        self.board.create_game_saved_menu(gamestate['id'])
+        self.board.create_game_saved_menu(gamestate['id'], slot)
         self.board.ui_elements += self.board.splash_elements
-        print(f'Gamestate saved to slot {slot}')
+        self.print_log(f'Gamestate saved to slot {slot}')
 
     def save_hi_scores(self, scores):
         with open('scores.json', 'w') as file:
             json.dump(scores, file)
-        print('Hi scores updated')
+        self.print_log('Hi scores updated')
 
     def score_word(self, word):
         value = 0
@@ -868,7 +873,7 @@ class Game:
         return value * len(word)
 
     def scramble(self):
-        print('----Scramble----')
+        self.print_log('----Scramble----')
         self.input_disabled = True
         self.snake.empty()
         self.unhighlight_all()
@@ -881,7 +886,7 @@ class Game:
             self.set_tile_timer(atk)
             atk.update()
         except IndexError:
-            print('scramble(): No "normal" type tiles on top row')
+            self.print_log('scramble(): No "normal" type tiles on top row')
             pass
         for tile in [t for t in self.tiles if t.tile_type == 'normal']:
             tile.marked = False
@@ -1005,7 +1010,7 @@ class Game:
                 self.create_event_queue(ghost_color)
                 self.execute_event_queue()
             else:
-                print(f'Word "{self.snake.word}" not in dictionary')
+                self.print_log(f'Word "{self.snake.word}" not in dictionary')
                 self.mode = 'menu'
                 self.board.create_invalid_word_menu(self.snake.word)
                 self.board.ui_elements += self.board.splash_elements

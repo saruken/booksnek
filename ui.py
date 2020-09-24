@@ -247,7 +247,6 @@ class HPDisplay():
         self.hp_max += buff
         self.hp += buff
         self.hp_displayed += buff
-        print(f'HP and HP_MAX increased by {buff}: {self.hp} / {self.hp_max}')
         self.update()
         return buff
 

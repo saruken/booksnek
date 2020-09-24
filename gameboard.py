@@ -101,11 +101,10 @@ class Board():
         btn = ui.Interactive(name='game over ok', dims=(63, 40), coords=coords, fonts=self.fonts, text='OK', colors=self.colors, text_color='light_gray')
         self.splash_elements = [shade, menu_bg, btn]
 
-    def create_game_saved_menu(self, id):
-        print('create_game_saved_menu() called')
+    def create_game_saved_menu(self, id, slot):
         self.hide_splash_menu()
         shade = self.create_shade()
-        header = self.fonts['medium'].render('GAME SAVED AS:', True, self.colors['light_gray'], None)
+        header = self.fonts['medium'].render(f'GAME SAVED TO SLOT {slot} AS:', True, self.colors['light_gray'], None)
         w = header.get_size()[0]
         surf_dims = (304, 140)
         menu_bg = ui.Display(dims=surf_dims, coords=self.get_centered_coords(surf_dims), fonts=self.fonts, colors=self.colors)
@@ -599,7 +598,6 @@ class GFXSurf:
                 prefix = '+'
                 offset_x += 10
             surf = self.fonts['large'].render(prefix + str(amt), True, color)
-        print(f'Creating delta with offset_x={offset_x}')
         delta = {
             'dims': surf.get_size(),
             'fade_counter': 255 + random.choice(range(50)),

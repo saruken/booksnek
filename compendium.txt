@@ -17429,7 +17429,6 @@ defuses,0.44
 defusing,0.45
 defy,0.2
 defying,0.38
-deg,0.19
 degas,0.33
 degases,0.5
 degassed,0.54
@@ -31015,6 +31014,7 @@ haunters,0.5
 haunting,0.45
 hauntingly,0.51
 haunts,0.32
+haut,0.21
 hauteur,0.43
 have,0.25
 haven,0.31
@@ -33278,6 +33278,7 @@ idolized,0.51
 idolizes,0.52
 idolizing,0.53
 idols,0.3
+ids,0.18
 idyll,0.23
 idyllic,0.34
 idyllically,0.53
@@ -43342,6 +43343,7 @@ mowed,0.29
 mower,0.31
 mowers,0.36
 mowing,0.31
+mown,0.19
 mows,0.18
 moxie,0.33
 mozzarella,0.57
@@ -43364,12 +43366,14 @@ mucky,0.12
 mucous,0.26
 mucus,0.18
 mud,0.11
+mudded,0.31
 muddied,0.4
 muddier,0.42
 muddies,0.41
 muddiest,0.47
 muddily,0.3
 muddiness,0.52
+mudding,0.33000000000000007
 muddle,0.31
 muddled,0.35
 muddleheaded,0.74
@@ -43387,6 +43391,7 @@ mudpack,0.25
 mudpacks,0.3
 mudroom,0.36
 mudrooms,0.41
+muds,0.16000000000000003
 mudslide,0.45
 mudslides,0.5
 mudslinger,0.56
@@ -52729,7 +52734,6 @@ promulgating,0.63
 promulgation,0.68
 promulgator,0.59
 promulgators,0.64
-pron,0.22
 prone,0.34
 proneness,0.62
 prong,0.25
@@ -62402,6 +62406,8 @@ sizzlers,0.43
 sizzles,0.37
 sizzling,0.38
 ska,0.15
+skarn,0.27
+skarns,0.32
 skate,0.33
 skateboard,0.62
 skateboarded,0.78
