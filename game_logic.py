@@ -507,35 +507,35 @@ class Game:
             return
         # New game
         if elem.name == 'splash new':
-            self.sfx['menu_next'].play()
+            self.play_sound('menu_next')
             self.board.create_name_menu(self.player_name)
             self.board.ui_elements = self.board.splash_elements
             self.mode = 'name entry'
         # Name entry
         elif elem.name == 'name start':
             if self.player_name:
-                self.sfx['menu_start'].play()
+                self.play_sound('menu_start')
                 self.new_game()
                 self.board.ui_elements = self.tiles + self.board.game_elements
                 self.mode = 'play'
             else:
-                self.sfx['oops'].play()
+                self.play_sound('oops')
         elif elem.name == 'name clear':
-            self.sfx['menu_next'].play()
+            self.play_sound('menu_next')
             self.player_name = ''
             self.board.clear_name()
             self.board.ui_elements = self.board.splash_elements
         # Tutorial
         elif elem.name == 'splash tutorial':
-            self.sfx['menu_next'].play()
+            self.play_sound('menu_next')
             self.board.create_tutorial(self.tutorial_images)
             self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'tutorial next':
-            self.sfx['menu_next'].play()
+            self.play_sound('menu_next')
             if elem.enabled:
                 self.board.advance_tutorial(self.tutorial_images)
         elif elem.name == 'tutorial back':
-            self.sfx['menu_next'].play()
+            self.play_sound('menu_next')
             if elem.enabled:
                 self.board.advance_tutorial(self.tutorial_images, -1)
         # Game action buttons
@@ -550,64 +550,64 @@ class Game:
                 self.last_typed = ''
         # Game over
         elif elem.name == 'game over ok':
-            self.sfx['menu_next'].play()
+            self.play_sound('menu_next')
             self.try_update_hi_score_file()
             self.board.create_splash_menu(self.hi_scores)
             self.board.ui_elements = self.board.splash_elements
         # Invalid word
         elif elem.name == 'invalid word ok':
-            self.sfx['menu_next'].play()
+            self.play_sound('menu_next')
             self.board.ui_elements = self.tiles + self.board.game_elements
             self.mode = 'play'
         # Load
         elif elem.name == 'splash load':
-            self.sfx['menu_next'].play()
+            self.play_sound('menu_next')
             gamestates = [f'{s["username"]} {s["timestamp"]}' if s else 'EMPTY' for s in self.fetch_gamestates()]
             self.board.create_splash_load_menu(gamestates)
             self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'load':
-            self.sfx['menu_next'].play()
+            self.play_sound('menu_next')
             self.mode = 'menu'
             gamestates = [f'{s["username"]} {s["timestamp"]}' if s else 'EMPTY' for s in self.fetch_gamestates()]
             self.board.create_load_menu(gamestates)
             self.board.ui_elements += self.board.splash_elements
         elif 'load slot' in elem.name:
-            self.sfx['menu_start'].play()
+            self.play_sound('menu_start')
             slot = int(elem.name.split(' ')[-1]) - 1
             self.load_game(slot)
         # Quit
         elif elem.name == 'quit':
-            self.sfx['alert'].play()
+            self.play_sound('alert')
             self.mode = 'menu'
             self.board.create_quit_menu()
             self.board.ui_elements += self.board.splash_elements
         elif elem.name == 'quit yes':
-            self.sfx['menu_start'].play()
+            self.play_sound('menu_start')
             self.try_update_hi_score_file()
             self.board.create_splash_menu(self.hi_scores)
             self.board.ui_elements = self.board.splash_elements
         # Save
         elif elem.name == 'save':
-            self.sfx['menu_next'].play()
+            self.play_sound('menu_next')
             self.mode = 'menu'
             gamestates = [f'{s["username"]} {s["timestamp"]}' if s else 'EMPTY' for s in self.fetch_gamestates()]
             self.board.create_save_menu(gamestates)
             self.board.ui_elements += self.board.splash_elements
         elif 'save slot' in elem.name:
-            self.sfx['menu_start'].play()
+            self.play_sound('menu_start')
             slot = int(elem.name.split(' ')[-1]) - 1
             self.save_game(slot)
         elif elem.name == 'game saved ok':
-            self.sfx['menu_next'].play()
+            self.play_sound('menu_next')
             self.mode = 'play'
             self.board.ui_elements = self.tiles + self.board.game_elements
         # Other
         elif elem.name in ('tutorial done', 'back to splash'):
-            self.sfx['menu_start'].play()
+            self.play_sound('menu_start')
             self.board.create_splash_menu(self.hi_scores)
             self.board.ui_elements = self.board.splash_elements
         elif elem.name in ('quit no', 'back to game'):
-            self.sfx['menu_next'].play()
+            self.play_sound('menu_next')
             self.board.ui_elements = self.tiles + self.board.game_elements
             self.mode = 'play'
         elif elem.name == 'volume':
@@ -803,6 +803,10 @@ class Game:
 
         for t in self.tiles:
             t.reset()
+
+    def play_sound(self, sound):
+        if not self.board.muted:
+            self.sfx[sound].play()
 
     def print_log(self, msg):
         if self.debug_mode:
