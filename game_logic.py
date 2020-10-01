@@ -610,6 +610,8 @@ class Game:
             self.sfx['menu_next'].play()
             self.board.ui_elements = self.tiles + self.board.game_elements
             self.mode = 'play'
+        elif elem.name == 'volume':
+            self.board.toggle_mute()
 
     def handle_name_entry(self, key):
         letter = pygame.key.name(key).upper()
@@ -1032,6 +1034,7 @@ class Game:
             self.snake.empty()         # snake.length due to 'Qu' tiles
         elif self.snake.length > 2:
             if self.check_dictionary():
+                self.sfx['submit_valid'].play()
                 self.input_disabled = True
                 multUP_flag = True if self.snake.word == self.bonus_word else False
                 word = self.snake.word
@@ -1055,6 +1058,7 @@ class Game:
                 self.create_event_queue(ghost_color)
                 self.execute_event_queue()
             else:
+                self.sfx['submit_invalid'].play()
                 self.print_log(f'Word "{self.snake.word}" not in dictionary')
                 self.mode = 'menu'
                 self.board.create_invalid_word_menu(self.snake.word)

@@ -275,6 +275,7 @@ class Interactive(BaseObj):
         self.border_color = None
         self.enabled = enabled
         self.hovered = False
+        self.img = None
         self.interactive = True
         self.label = label
         self.name = name
@@ -286,12 +287,15 @@ class Interactive(BaseObj):
     def build_image(self):
         self.set_colors()
         self.surf.fill(self.border_color)
-        pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
-        # Render text
-        surf = self.fonts['medium'].render(self.text, True, self.text_color, self.bg_color)
-        # Horiz/vert align center
-        offset = tuple([floor((self.dims[i]) - surf.get_size()[i]) / 2 for i in range(2)])
-        self.surf.blit(surf, dest=offset)
+        if self.text:
+            pygame.draw.rect(self.surf, self.bg_color, pygame.Rect((2, 2), (self.dims[0] - 4, self.dims[1] - 4)))
+            # Render text
+            surf = self.fonts['medium'].render(self.text, True, self.text_color, self.bg_color)
+            # Horiz/vert align center
+            offset = tuple([floor((self.dims[i]) - surf.get_size()[i]) / 2 for i in range(2)])
+            self.surf.blit(surf, dest=offset)
+        if self.img:
+            self.surf.blit(self.img, dest=(2, 2))
         if self.label:
             self.set_label()
 

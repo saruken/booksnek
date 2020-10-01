@@ -1,4 +1,4 @@
-import numpy, os, pygame, random, string
+import glob, numpy, os, pygame, random, string
 from math import pi
 from time import sleep
 
@@ -15,7 +15,9 @@ class Board():
             'medium': pygame.font.Font('VCR_OSD_MONO.ttf', 18),
             'small': pygame.font.Font('VCR_OSD_MONO.ttf', 12)
         }
+        self.muted = True
         self.name_entry_pos = 0
+        self.load_sound_icons()
 
         self.menu_bg = ui.Display(dims=(348, 60), coords=(-2, -2), fonts=self.fonts, colors=colors)
         coords = offset_from_element(self.menu_bg, corner=(0, 0), offset=(10, 10))
@@ -34,11 +36,16 @@ class Board():
         self.level_display = ui.Display(dims=(246, 40), coords=coords, fonts=self.fonts, colors=colors, label='LEVEL / EXP: ', text_prefix='Lv. ', text_color='light_gray', center=True, show_progress=True)
         coords = offset_from_element(self.level_display, corner=(1, 0), offset=(10, 0))
         self.multiplier_display = ui.Display(dims=(80, 40), coords=coords, fonts=self.fonts, colors=colors, label='MULT.', text_prefix='x', text_color='light_gray', center=True)
+
         coords = offset_from_element(self.menu_bg, corner=(1, 0), offset=(10, 10))
-        self.score_display = ui.Display(dims=(243, 40), coords=coords, fonts=self.fonts, colors=colors, text='0', text_color='light_gray', label='SCORE', center=True)
+        self.btn_mute = ui.Interactive(name='volume', dims=(40, 40), coords=coords, fonts=self.fonts, text=None, colors=colors)
+        self.toggle_mute()
+
+        coords = offset_from_element(self.btn_mute, corner=(1, 0), offset=(4, 0))
+        self.score_display = ui.Display(dims=(199, 40), coords=coords, fonts=self.fonts, colors=colors, text='0', text_color='light_gray', label='SCORE', center=True)
         coords = offset_from_element(self.score_display, corner=(1, 0), offset=(4, 0))
         self.menu_quit = ui.Interactive(name='quit', dims=(63, 40), coords=coords, fonts=self.fonts, text='QUIT', colors=colors, text_color='light_gray')
-        coords = offset_from_element(self.score_display, corner=(0, 1), offset=(0, 4))
+        coords = offset_from_element(self.btn_mute, corner=(0, 1), offset=(0, 4))
         self.word_display = ui.Display(dims=(310, 40), coords=coords, fonts=self.fonts, colors=colors, text_color='light_gray', label="SELECTED", center=True)
         coords = offset_from_element(self.word_display, corner=(0, 1), offset=(0, 4))
         self.longest_display = ui.Display(dims=(310, 34), coords=coords, fonts=self.fonts, colors=colors, label='LONGEST WORD', text_color='beige', center=True)
@@ -53,8 +60,8 @@ class Board():
 
         self.splash_elements = []
         self.ui_elements = []
-        self.menu_btns = [self.menu_open, self.menu_save, self.btn_clear_marked, self.btn_scramble, self.menu_quit]
-        self.game_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.hi_score_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.menu_bg, self.menu_quit, self.menu_open, self.menu_save, self.btn_clear_marked, self.btn_scramble]
+        self.menu_btns = [self.menu_open, self.menu_save, self.btn_clear_marked, self.btn_scramble, self.btn_mute, self.menu_quit]
+        self.game_elements = [self.bonus_display, self.hp_display, self.score_display, self.word_display, self.history_display, self.hi_score_display, self.longest_display, self.best_display, self.level_display, self.multiplier_display, self.menu_bg, self.menu_quit, self.menu_open, self.menu_save, self.btn_clear_marked, self.btn_scramble, self.btn_mute]
 
     def advance_tutorial(self, images, adv=1):
         self.tutorial_current_step += adv
@@ -477,6 +484,14 @@ class Board():
 
         return False
 
+    def load_sound_icons(self):
+        self.sound_icons = {}
+        dirname = os.path.dirname(__file__)
+        filepath = os.path.join(dirname, 'img')
+        for filename in glob.glob(filepath + '/vol_*.png'):
+            name = os.path.split(filename)[-1].split('.')[0].lower()
+            self.sound_icons[name] = pygame.image.load(filename)
+
     def lookup_letter_value(self, letter):
         if letter in 'AEILNORSTU':
             return 1
@@ -492,6 +507,14 @@ class Board():
             return 8
         else:
             return 10
+
+    def toggle_mute(self):
+        self.muted = not self.muted
+        if self.muted:
+            self.btn_mute.img = self.sound_icons['vol_off']
+        else:
+            self.btn_mute.img = self.sound_icons['vol_on']
+        self.btn_mute.update()
 
     def update_hi_score_display(self, scores):
         self.hi_score_display.update()

@@ -17,6 +17,7 @@
 - Word difficulty ranking system that prevents the game from choosing ridiculously rare bonus words like "PYX" or "QUIZZES"
 - Letter distribution and value scales based on Scrabble
 - Straightforward scoring system
+- Sound effects by [Wesley Wyatt (ObsydianX)](soundcloud.com/obsydianx)
 
 ### Requires
 - Python 3.8.3
@@ -24,7 +25,7 @@
 - Numpy 1.18.5
 
 ### TODO
-- SFX (and menu to control)
+- Finish adding SFX
 - Music?
 
 ### Planned features
