@@ -204,7 +204,9 @@ class Game:
             tile.toggle_mark()
 
     def color_letters(self, word):
-        for i, tile in enumerate(self.snake.tiles):
+        skip = False
+        i = 0
+        for tile in self.snake.tiles:
             if tile.tile_type == 'attack':
                 word['colors'][i] = 'attack'
             elif tile.tile_type == 'heal':
@@ -215,16 +217,30 @@ class Game:
                 word['colors'][i] = 'poison'
             elif tile.tile_type == 'silver':
                 word['colors'][i] = 'silver'
+            i += 1
+            if tile.letter == 'Qu':
+                i += 1
         return word
 
     def commit_word_to_history(self, word):
         self.print_log(f'----Committed word "{word}"----')
         color = 'green' if word == self.bonus_word else 'beige'
+        # Account for 'Qu' tiles
+        letters_in_word = [t.letter for t in self.snake.tiles]
         history_word = {
             'word': word,
             'value': self.score_word(word),
-            'colors': [color for _ in range(len(word))]
+            'colors': []
         }
+        for t in letters_in_word:
+            if t == 'Qu':
+                history_word['colors'] += [color, color]
+            else:
+                history_word['colors'].append(color)
+        print(f'length of history_word: {len(history_word)}')
+        print(f'length of word: {len(history_word["word"])}')
+        print(f'length of snake.tiles: {len(self.snake.tiles)}')
+        print(f'length of colors: {len(history_word["colors"])}')
         history_word = self.color_letters(history_word)
 
         self.history.append(history_word)
@@ -884,6 +900,8 @@ class Game:
             atk = random.choice([t for t in self.tiles if (t.row == 0 and t.tile_type == 'normal')])
             atk.tile_type = 'attack'
             self.set_tile_timer(atk)
+            # atk.choose_letter()
+            atk.letter = 'Qu'
             atk.update()
         except IndexError:
             self.print_log('scramble(): No "normal" type tiles on top row')
