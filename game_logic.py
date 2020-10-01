@@ -1,4 +1,4 @@
-import glob, json, pygame, random, threading
+import glob, json, os, pygame, random, threading
 from datetime import datetime
 from math import ceil, floor
 
@@ -66,6 +66,7 @@ class Game:
         self.board.create_splash_menu(self.hi_scores)
         self.board.ui_elements = self.board.splash_elements
         self.load_tutorial_images()
+        self.load_sfx()
 
     def add_gold_tile_event(self, tile, precedence=2, traversed=None, source_tile=None):
         if not traversed:  # Have to use this workaround due to behavior
@@ -237,10 +238,6 @@ class Game:
                 history_word['colors'] += [color, color]
             else:
                 history_word['colors'].append(color)
-        print(f'length of history_word: {len(history_word)}')
-        print(f'length of word: {len(history_word["word"])}')
-        print(f'length of snake.tiles: {len(self.snake.tiles)}')
-        print(f'length of colors: {len(history_word["colors"])}')
         history_word = self.color_letters(history_word)
 
         self.history.append(history_word)
@@ -510,27 +507,35 @@ class Game:
             return
         # New game
         if elem.name == 'splash new':
+            self.sfx['menu_next'].play()
             self.board.create_name_menu(self.player_name)
             self.board.ui_elements = self.board.splash_elements
             self.mode = 'name entry'
         # Name entry
         elif elem.name == 'name start':
             if self.player_name:
+                self.sfx['menu_start'].play()
                 self.new_game()
                 self.board.ui_elements = self.tiles + self.board.game_elements
                 self.mode = 'play'
+            else:
+                self.sfx['oops'].play()
         elif elem.name == 'name clear':
+            self.sfx['menu_next'].play()
             self.player_name = ''
             self.board.clear_name()
             self.board.ui_elements = self.board.splash_elements
         # Tutorial
         elif elem.name == 'splash tutorial':
+            self.sfx['menu_next'].play()
             self.board.create_tutorial(self.tutorial_images)
             self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'tutorial next':
+            self.sfx['menu_next'].play()
             if elem.enabled:
                 self.board.advance_tutorial(self.tutorial_images)
         elif elem.name == 'tutorial back':
+            self.sfx['menu_next'].play()
             if elem.enabled:
                 self.board.advance_tutorial(self.tutorial_images, -1)
         # Game action buttons
@@ -545,52 +550,64 @@ class Game:
                 self.last_typed = ''
         # Game over
         elif elem.name == 'game over ok':
+            self.sfx['menu_next'].play()
             self.try_update_hi_score_file()
             self.board.create_splash_menu(self.hi_scores)
             self.board.ui_elements = self.board.splash_elements
         # Invalid word
         elif elem.name == 'invalid word ok':
+            self.sfx['menu_next'].play()
             self.board.ui_elements = self.tiles + self.board.game_elements
             self.mode = 'play'
         # Load
         elif elem.name == 'splash load':
+            self.sfx['menu_next'].play()
             gamestates = [f'{s["username"]} {s["timestamp"]}' if s else 'EMPTY' for s in self.fetch_gamestates()]
             self.board.create_splash_load_menu(gamestates)
             self.board.ui_elements = self.board.splash_elements
         elif elem.name == 'load':
+            self.sfx['menu_next'].play()
             self.mode = 'menu'
             gamestates = [f'{s["username"]} {s["timestamp"]}' if s else 'EMPTY' for s in self.fetch_gamestates()]
             self.board.create_load_menu(gamestates)
             self.board.ui_elements += self.board.splash_elements
         elif 'load slot' in elem.name:
+            self.sfx['menu_start'].play()
             slot = int(elem.name.split(' ')[-1]) - 1
             self.load_game(slot)
         # Quit
         elif elem.name == 'quit':
+            self.sfx['alert'].play()
             self.mode = 'menu'
             self.board.create_quit_menu()
             self.board.ui_elements += self.board.splash_elements
         elif elem.name == 'quit yes':
+            self.sfx['menu_start'].play()
             self.try_update_hi_score_file()
             self.board.create_splash_menu(self.hi_scores)
             self.board.ui_elements = self.board.splash_elements
         # Save
         elif elem.name == 'save':
+            self.sfx['menu_next'].play()
             self.mode = 'menu'
             gamestates = [f'{s["username"]} {s["timestamp"]}' if s else 'EMPTY' for s in self.fetch_gamestates()]
             self.board.create_save_menu(gamestates)
             self.board.ui_elements += self.board.splash_elements
         elif 'save slot' in elem.name:
+            self.sfx['menu_start'].play()
             slot = int(elem.name.split(' ')[-1]) - 1
             self.save_game(slot)
         elif elem.name == 'game saved ok':
+            self.sfx['menu_next'].play()
             self.mode = 'play'
             self.board.ui_elements = self.tiles + self.board.game_elements
         # Other
         elif elem.name in ('tutorial done', 'back to splash'):
+            self.sfx['menu_start'].play()
             self.board.create_splash_menu(self.hi_scores)
             self.board.ui_elements = self.board.splash_elements
         elif elem.name in ('quit no', 'back to game'):
+            self.sfx['menu_next'].play()
             self.board.ui_elements = self.tiles + self.board.game_elements
             self.mode = 'play'
 
@@ -706,12 +723,22 @@ class Game:
             scores = json.load(file)
         return scores
 
+    def load_sfx(self):
+        self.sfx = {}
+        dirname = os.path.dirname(__file__)
+        filepath = os.path.join(dirname, 'sfx')
+        for filename in glob.glob(filepath + '/*.MP3'):
+            name = os.path.split(filename)[-1].split('.')[0].lower()
+            self.sfx[name] = pygame.mixer.Sound(filename)
+
     def load_tutorial_images(self):
         self.tutorial_images = []
-        for f in glob.glob('./tutorial/*.png'):
+        dirname = os.path.dirname(__file__)
+        filepath = os.path.join(dirname, 'tutorial')
+        for f in glob.glob(filepath + '/*.png'):
             image = {
                 'surf': pygame.image.load(f),
-                'name': 'tut' + f.split('tut')[-1]
+                'name': 'tut' + f.split('tut')[-1].lower()
             }
             self.tutorial_images.append(image)
 
