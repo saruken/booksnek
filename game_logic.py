@@ -721,7 +721,8 @@ class Game:
         self.mode = 'play'
 
     def load_hi_scores(self):
-        with open('scores.json') as file:
+        filepath = os.path.dirname(__file__) + '/scores.json'
+        with open(filepath) as file:
             scores = json.load(file)
         return scores
 

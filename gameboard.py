@@ -10,10 +10,11 @@ class Board():
         self.background.fill(colors['bg_back'])
         self.colors = colors
         self.coords = coords
+        font_filepath = os.path.dirname(__file__) + '/VCR_OSD_MONO.ttf'
         self.fonts = {
-            'large': pygame.font.Font('VCR_OSD_MONO.ttf', 36),
-            'medium': pygame.font.Font('VCR_OSD_MONO.ttf', 18),
-            'small': pygame.font.Font('VCR_OSD_MONO.ttf', 12)
+            'large': pygame.font.Font(font_filepath, 36),
+            'medium': pygame.font.Font(font_filepath, 18),
+            'small': pygame.font.Font(font_filepath, 12)
         }
         self.muted = True
         self.name_entry_pos = 0

@@ -1,4 +1,4 @@
-import pygame, sys
+import glob, os, pygame, sys
 
 import game_logic
 from ui import Tile, HPDisplay
@@ -18,7 +18,8 @@ def load_dictionary():
     words = []
 
     try:
-        with open('compendium.txt') as file:
+        filepath = os.path.dirname(__file__)
+        with open(filepath + '/compendium.txt') as file:
             for line in file.read().split('\n'):
                 x = line.split(',')
                 words.append([x[0], float(x[1])])

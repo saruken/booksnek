@@ -492,8 +492,9 @@ class Tile():
         return f'c{self.col}r{self.row}'
 
     def load_images(self):
+        dirname = os.path.dirname(__file__)
         for img_name in ('attack', 'heal', 'poison'):
-            self.images[img_name] = pygame.image.load(os.path.join('img', img_name + '.png'))
+            self.images[img_name] = pygame.image.load(os.path.join(dirname, 'img', img_name + '.png'))
             self.images[img_name].set_colorkey(self.colors['transparent'])
 
     def mouse_out(self):
